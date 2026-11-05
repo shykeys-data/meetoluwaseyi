@@ -106,21 +106,35 @@ export function Admin() {
 function Login({ onDone }: { onDone: (email: string) => void }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [email, setEmail] = useState('');
+  const [setup, setSetup] = useState<{ token: string; secret: string; uri: string } | null>(null);
+
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    const code = String(fd.get('totp') ?? '').replace(/\s/g, '');
     setBusy(true);
     setError('');
     try {
-      const d = await api<{ csrf: string }>('/auth/login', {
+      if (setup) {
+        const d = await api<{ csrf: string }>('/auth/totp/confirm', {
+          method: 'POST',
+          body: JSON.stringify({ token: setup.token, totp: code }),
+        });
+        csrf = d.csrf;
+        onDone(email);
+        return;
+      }
+      const d = await api<{ csrf?: string; setup?: { token: string; secret: string; uri: string } }>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({
-          email: fd.get('email'),
-          password: fd.get('password'),
-          totp: String(fd.get('totp') ?? '').replace(/\s/g, ''),
-        }),
+        body: JSON.stringify({ email: fd.get('email'), password: fd.get('password'), totp: code }),
       });
-      csrf = d.csrf;
+      setEmail(String(fd.get('email')));
+      if (d.setup) {
+        setSetup(d.setup);
+        return;
+      }
+      csrf = d.csrf ?? '';
       onDone(String(fd.get('email')));
     } catch (err) {
       setError((err as Error).message);
@@ -128,6 +142,36 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
       setBusy(false);
     }
   }
+
+  if (setup) {
+    return (
+      <form className="card narrow" onSubmit={submit}>
+        <h1>Set up two-step sign-in</h1>
+        <p>
+          This is your first sign-in. Open your authenticator app (Google Authenticator, Microsoft Authenticator,
+          1Password or similar), choose <strong>Add account → Enter a setup key</strong>, and type this key:
+        </p>
+        <p className="mono" style={{ fontSize: 18, wordBreak: 'break-all', userSelect: 'all' }}>
+          {setup.secret.replace(/(.{4})/g, '$1 ').trim()}
+        </p>
+        <p className="muted">
+          On a phone you can also <a href={setup.uri}>open it in your authenticator app</a>. Keep this key private.
+        </p>
+        <Field label="Then enter the 6-digit code the app shows">
+          <input name="totp" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required autoFocus />
+        </Field>
+        {error && (
+          <p role="alert" className="error">
+            {error}
+          </p>
+        )}
+        <button type="submit" disabled={busy}>
+          {busy ? 'Checking…' : 'Confirm and sign in'}
+        </button>
+      </form>
+    );
+  }
+
   return (
     <form className="card narrow" onSubmit={submit}>
       <h1>Sign in</h1>
@@ -137,15 +181,8 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
       <Field label="Password">
         <input name="password" type="password" autoComplete="current-password" required minLength={12} />
       </Field>
-      <Field label="6-digit code from your authenticator app">
-        <input
-          name="totp"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          pattern="\d{6}"
-          maxLength={6}
-          required
-        />
+      <Field label="6-digit code from your authenticator app (leave empty on your very first sign-in)">
+        <input name="totp" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} />
       </Field>
       {error && (
         <p role="alert" className="error">

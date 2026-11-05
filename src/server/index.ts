@@ -3,6 +3,10 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig, loadDotEnv, ConfigError } from './config.ts';
 import { createDb } from './db/pool.ts';
+import { migrate } from './db/migrations.ts';
+import { seed } from './db/seed.ts';
+import { bootstrapAdmin } from './services/auth.ts';
+import { getProfile } from './services/content.ts';
 import { createLogger } from './lib/log.ts';
 import { createApp } from './app.ts';
 import { createRenderer } from './render.ts';
@@ -35,6 +39,17 @@ async function main() {
     if (off.length) log.warn('features off until their keys are set', { missing: off });
   }
   const ctx: Ctx = { db, config, log, fetch: globalThis.fetch };
+
+  // The host has no shell, so the app prepares its own database on start: apply new migrations, load the
+  // launch content if the database is empty, and create the first admin from ADMIN_INITIAL_PASSWORD.
+  // All three are safe to repeat. If the database is down, the app still starts and /readyz reports it.
+  try {
+    await migrate(db, (m) => log.info('migration', { m }));
+    if (!(await getProfile(db))) log.info('loaded launch content', await seed(db));
+    if (await bootstrapAdmin(ctx)) log.warn('first admin created: sign in and set up 2FA, then remove ADMIN_INITIAL_PASSWORD');
+  } catch (err) {
+    log.error('database setup failed', { err });
+  }
 
   const assets: express.RequestHandler[] = [];
   let vite: import('vite').ViteDevServer | undefined;

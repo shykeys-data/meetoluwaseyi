@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import type { Ctx } from './context.ts';
-import { LoginInputSchema } from '../../shared/schemas.ts';
+import { LoginInputSchema, TotpConfirmSchema } from '../../shared/schemas.ts';
 import {
   decrypt,
   deriveKey,
@@ -9,6 +9,7 @@ import {
   hashPassword,
   newTotpSecret,
   randomToken,
+  totpUri,
   sign,
   unsign,
   verifyPassword,
@@ -29,7 +30,15 @@ export interface Session {
   csrf: string;
 }
 
-const keys = (secret: string) => ({ session: deriveKey(secret, 'session'), totp: deriveKey(secret, 'totp') });
+const keys = (secret: string) => ({
+  session: deriveKey(secret, 'session'),
+  totp: deriveKey(secret, 'totp'),
+  setup: deriveKey(secret, 'totp-setup'),
+});
+
+export type LoginResult =
+  | { kind: 'session'; cookie: string; session: Session }
+  | { kind: 'setup'; token: string; secret: string; uri: string };
 
 export function encodeSession(s: Session, secret: string): string {
   const payload = Buffer.from(JSON.stringify(s)).toString('base64url');
@@ -68,10 +77,10 @@ const GENERIC = 'That email, password or code isn’t right.';
  * Password + TOTP. The same message is returned for every failure so it never reveals which
  * part was wrong or whether the email exists. 5 failures lock the account for 15 minutes.
  */
-export async function login(ctx: Ctx, raw: unknown): Promise<{ cookie: string; session: Session }> {
+export async function login(ctx: Ctx, raw: unknown): Promise<LoginResult> {
   const input = parse(LoginInputSchema, raw);
   const [rows] = await ctx.db.execute<RowDataPacket[]>(
-    'SELECT id, email, password_hash, totp_secret_enc, failed_logins, locked_until, session_version FROM admins WHERE email = ?',
+    'SELECT id, email, password_hash, totp_secret_enc, totp_enabled, failed_logins, locked_until, session_version FROM admins WHERE email = ?',
     [input.email],
   );
   const a = rows[0];
@@ -85,11 +94,26 @@ export async function login(ctx: Ctx, raw: unknown): Promise<{ cookie: string; s
     throw new HttpError(423, 'locked', `Too many attempts. Try again in ${LOCK_MINUTES} minutes.`);
   }
   const passOk = await verifyPassword(input.password, String(a.password_hash));
+  const enrolled = Boolean(a.totp_enabled) && Boolean(a.totp_secret_enc);
   let codeOk = false;
-  try {
-    codeOk = verifyTotp(decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp), input.totp);
-  } catch {
-    codeOk = false;
+  if (enrolled && input.totp) {
+    try {
+      codeOk = verifyTotp(decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp), input.totp);
+    } catch {
+      codeOk = false;
+    }
+  }
+  // First sign-in: the password is right but 2FA isn't set up yet. Hand back a secret to enrol;
+  // no session is issued until a code from the authenticator app confirms it (confirmTotp).
+  if (passOk && !enrolled) {
+    const secret = newTotpSecret();
+    await ctx.db.execute('UPDATE admins SET totp_secret_enc = ?, failed_logins = 0 WHERE id = ?', [
+      encrypt(secret, keys(ctx.config.SESSION_SECRET).totp),
+      a.id,
+    ]);
+    const token = sign(`${a.id}.${Date.now() + 10 * 60_000}`, keys(ctx.config.SESSION_SECRET).setup);
+    ctx.log.info('2fa enrolment started', { adminId: a.id });
+    return { kind: 'setup', token, secret, uri: totpUri(secret, String(a.email)) };
   }
   if (!passOk || !codeOk) {
     const fails = Number(a.failed_logins) + 1;
@@ -106,22 +130,69 @@ export async function login(ctx: Ctx, raw: unknown): Promise<{ cookie: string; s
     'UPDATE admins SET failed_logins = 0, locked_until = NULL, last_login_at = UTC_TIMESTAMP() WHERE id = ?',
     [a.id],
   );
+  ctx.log.info('login ok', { adminId: a.id });
+  sendLoginAlert(ctx, String(a.email));
+  return { kind: 'session', ...issueSession(ctx, Number(a.id), Number(a.session_version)) };
+}
+
+function issueSession(ctx: Ctx, adminId: number, version: number): { cookie: string; session: Session } {
   const session: Session = {
-    adminId: Number(a.id),
-    version: Number(a.session_version),
+    adminId,
+    version,
     expires: Date.now() + SESSION_DAYS * 86_400_000,
     csrf: randomToken(24),
   };
-  ctx.log.info('login ok', { adminId: a.id });
-  if (ctx.config.RESEND_API_KEY) {
-    void sendEmail(
-      ctx,
-      String(a.email),
-      'New sign-in to meetoluwaseyi.com admin',
-      `Someone signed in to the admin at ${new Date().toUTCString()}.\nIf this wasn’t you, change the password now: it ends every other session.`,
-    ).catch((err) => ctx.log.warn('login alert email failed', { err }));
-  }
   return { cookie: encodeSession(session, ctx.config.SESSION_SECRET), session };
+}
+
+/** Every successful sign-in emails the admin, so an unexpected one is noticed. */
+function sendLoginAlert(ctx: Ctx, email: string): void {
+  if (!ctx.config.RESEND_API_KEY) return;
+  void sendEmail(
+    ctx,
+    email,
+    'New sign-in to meetoluwaseyi.com admin',
+    `Someone signed in to the admin at ${new Date().toUTCString()}.\nIf this wasn’t you, change the password now: it ends every other session.`,
+  ).catch((err) => ctx.log.warn('login alert email failed', { err }));
+}
+
+/** Finishes 2FA enrolment: the code proves the authenticator app holds the secret. Then a session starts. */
+export async function confirmTotp(ctx: Ctx, raw: unknown): Promise<{ cookie: string; session: Session }> {
+  const input = parse(TotpConfirmSchema, raw);
+  const payload = unsign(input.token, keys(ctx.config.SESSION_SECRET).setup);
+  const [idStr, expStr] = (payload ?? '').split('.');
+  if (!payload || !idStr || Number(expStr) < Date.now()) {
+    throw new HttpError(401, 'setup_expired', 'That setup link expired. Sign in again to restart.');
+  }
+  const [rows] = await ctx.db.execute<RowDataPacket[]>(
+    'SELECT id, email, totp_secret_enc, totp_enabled, session_version FROM admins WHERE id = ?',
+    [Number(idStr)],
+  );
+  const a = rows[0];
+  if (!a || a.totp_enabled || !a.totp_secret_enc) throw new HttpError(401, 'setup_expired', 'Sign in again to restart.');
+  const ok = verifyTotp(decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp), input.totp);
+  if (!ok) throw new HttpError(401, 'invalid_login', 'That code isn’t right. Check the time on your phone and try the newest code.');
+  await ctx.db.execute('UPDATE admins SET totp_enabled = 1, last_login_at = UTC_TIMESTAMP() WHERE id = ?', [a.id]);
+  ctx.log.info('2fa enrolled', { adminId: a.id });
+  sendLoginAlert(ctx, String(a.email));
+  return issueSession(ctx, Number(a.id), Number(a.session_version));
+}
+
+/**
+ * No SSH on the host, so the first admin is created at start-up from ADMIN_EMAIL + ADMIN_INITIAL_PASSWORD
+ * when no admin exists yet. 2FA is then set up on the first sign-in.
+ */
+export async function bootstrapAdmin(ctx: Ctx): Promise<boolean> {
+  const pass = ctx.config.ADMIN_INITIAL_PASSWORD;
+  if (!pass) return false;
+  const [rows] = await ctx.db.execute<RowDataPacket[]>('SELECT COUNT(*) AS n FROM admins');
+  if (Number(rows[0]?.n ?? 0) > 0) return false;
+  await ctx.db.execute('INSERT INTO admins (email, password_hash) VALUES (?, ?)', [
+    ctx.config.ADMIN_EMAIL.trim().toLowerCase(),
+    await hashPassword(pass),
+  ]);
+  ctx.log.info('admin created from ADMIN_INITIAL_PASSWORD; sign in to set up 2FA, then remove that variable');
+  return true;
 }
 
 /** Bumping session_version invalidates every cookie issued so far for this admin. */
@@ -140,9 +211,9 @@ export async function upsertAdmin(
   const hash = await hashPassword(password);
   const enc = encrypt(totpSecret, keys(ctx.config.SESSION_SECRET).totp);
   await ctx.db.execute<ResultSetHeader>(
-    `INSERT INTO admins (email, password_hash, totp_secret_enc) VALUES (?, ?, ?)
+    `INSERT INTO admins (email, password_hash, totp_secret_enc, totp_enabled) VALUES (?, ?, ?, 1)
      ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), totp_secret_enc = VALUES(totp_secret_enc),
-       failed_logins = 0, locked_until = NULL, session_version = session_version + 1`,
+       totp_enabled = 1, failed_logins = 0, locked_until = NULL, session_version = session_version + 1`,
     [email.trim().toLowerCase(), hash, enc],
   );
   return { totpSecret };

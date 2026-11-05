@@ -8,7 +8,7 @@ import { migrate } from '../src/server/db/migrations.ts';
 import { seed } from '../src/server/db/seed.ts';
 import { createLogger } from '../src/server/lib/log.ts';
 import { totpAt } from '../src/server/lib/crypto.ts';
-import { upsertAdmin } from '../src/server/services/auth.ts';
+import { bootstrapAdmin, upsertAdmin } from '../src/server/services/auth.ts';
 import { createProject } from '../src/server/services/content.ts';
 import type { Ctx } from '../src/server/services/context.ts';
 import type { DocumentRenderer } from '../src/server/render.ts';
@@ -211,6 +211,30 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
       for (let i = 0; i < 6; i++) codes.push((await post({ ...good, website: 'x' }, '198.51.100.9')).status);
       expect(codes.slice(0, 5).every((c) => c === 202)).toBe(true);
       expect(codes[5]).toBe(429);
+    });
+  });
+
+  describe('first sign-in (no shell on the host)', () => {
+    it('creates the admin from ADMIN_INITIAL_PASSWORD, then requires 2FA enrolment before a session', async () => {
+      await db.query('DELETE FROM admins');
+      const first = { ...ctx, config: { ...ctx.config, ADMIN_EMAIL: 'first@example.com', ADMIN_INITIAL_PASSWORD: 'first time password 123' } };
+      expect(await bootstrapAdmin(first)).toBe(true);
+      expect(await bootstrapAdmin(first)).toBe(false); // never twice
+      const post = (path: string, body: object) =>
+        fetch(`${base}/api/v1${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-forwarded-for': '192.0.2.99' }, body: JSON.stringify(body) });
+      const r = await post('/auth/login', { email: 'first@example.com', password: 'first time password 123' });
+      expect(r.status).toBe(200);
+      expect(r.headers.getSetCookie().join(';')).not.toContain('mo_sess=');
+      const { data } = await r.json();
+      expect(data.setup.secret).toMatch(/^[A-Z2-7]{32}$/);
+      const bad = await post('/auth/totp/confirm', { token: data.setup.token, totp: '000000' });
+      expect(bad.status).toBe(401);
+      const good = await post('/auth/totp/confirm', { token: data.setup.token, totp: totpAt(data.setup.secret, Math.floor(Date.now() / 30000)) });
+      expect(good.status).toBe(200);
+      expect(good.headers.getSetCookie().join(';')).toContain('mo_sess=');
+      // From now on a code is required.
+      const noCode = await post('/auth/login', { email: 'first@example.com', password: 'first time password 123' });
+      expect(noCode.status).toBe(401);
     });
   });
 

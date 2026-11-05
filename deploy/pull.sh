@@ -5,16 +5,16 @@
 #   bash $HOME/deploy/pull.sh production >> $HOME/logs/deploy-production.log 2>&1
 #
 # It downloads the latest built release from the public deploy/<env> branch, and only when the
-# version changed: installs runtime packages, migrates the database, restarts the app, checks health,
-# and rolls back to the previous release if the health check fails.
+# version changed: installs runtime packages, restarts the app (which applies database migrations
+# itself on start), checks health, and rolls back to the previous release if the health check fails.
 set -euo pipefail
 
 ENVNAME="${1:?usage: pull.sh staging|production}"
 REPO="shykeys-data/meetoluwaseyi"
 CONF="$HOME/deploy/$ENVNAME.conf"
 # shellcheck source=/dev/null
-source "$CONF"   # sets APP_DIR, VENV (nodevenv activate script), HEALTH_URL, and the app's env vars file ENV_FILE
-: "${APP_DIR:?}" "${VENV:?}" "${HEALTH_URL:?}" "${ENV_FILE:?}"
+source "$CONF"   # sets APP_DIR, VENV (the Node.js app's activate script) and HEALTH_URL. No secrets here.
+: "${APP_DIR:?}" "${VENV:?}" "${HEALTH_URL:?}"
 
 LOCK="$HOME/deploy/.$ENVNAME.lock"
 exec 9>"$LOCK"
@@ -44,9 +44,8 @@ cp -a incoming/dist incoming/app.cjs incoming/package.json incoming/package-lock
 # shellcheck source=/dev/null
 source "$VENV"
 cd "$APP_DIR"
-npm ci --omit=dev --no-audit --no-fund
-set -a; source "$ENV_FILE"; set +a
-node dist/jobs/cli.js migrate
+# The host links node_modules into the app's virtual environment, so install in place (no npm ci).
+npm install --omit=dev --no-audit --no-fund
 mkdir -p tmp && touch tmp/restart.txt
 
 ok=0
@@ -62,6 +61,6 @@ fi
 echo "$(date -u +%FT%TZ) health check failed, rolling back to $CUR"
 rm -rf "$APP_DIR/dist"
 cp -a "$WORK/previous/." "$APP_DIR/"
-npm ci --omit=dev --no-audit --no-fund
+npm install --omit=dev --no-audit --no-fund
 touch tmp/restart.txt
 exit 1

@@ -26,6 +26,8 @@ const schema = z
     SESSION_SECRET: z.string().min(32, 'must be at least 32 characters').optional(),
     IP_HASH_SALT: z.string().min(16, 'must be at least 16 characters').optional(),
     ADMIN_EMAIL: z.email().optional(),
+    /** First sign-in only: creates the admin when none exists. Remove it once 2FA is set up. */
+    ADMIN_INITIAL_PASSWORD: z.string().min(14, 'must be at least 14 characters').optional(),
     ADMIN_PATH: z
       .string()
       .regex(/^\/[a-z0-9-]{4,40}$/, 'must look like /myadm')

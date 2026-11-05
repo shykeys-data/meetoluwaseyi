@@ -55,9 +55,19 @@ export type ContactInput = z.infer<typeof ContactInputSchema>;
 export const LoginInputSchema = z.object({
   email: z.string().trim().toLowerCase().pipe(z.email().max(254)),
   password: z.string().min(12).max(200),
-  totp: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code from your authenticator app.'),
+  /** Required once 2FA is set up; absent only on the very first sign-in, which then enrols 2FA. */
+  totp: z
+    .string()
+    .regex(/^\d{6}$/, 'Enter the 6-digit code from your authenticator app.')
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
 });
 export type LoginInput = z.infer<typeof LoginInputSchema>;
+
+export const TotpConfirmSchema = z.object({
+  token: z.string().min(10).max(500),
+  totp: z.string().regex(/^\d{6}$/, 'Enter the 6-digit code from your authenticator app.'),
+});
 
 export const PillarSchema = z.enum(PILLARS);
 

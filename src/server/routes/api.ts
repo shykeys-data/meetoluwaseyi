@@ -95,18 +95,27 @@ export function apiRouter(ctx: Ctx): express.Router {
   );
 
   // ---------- Auth ----------
+  const loginLimit = limiter(15 * 60_000, 5);
+  const startSession = (res: Response, cookie: string, csrf: string) => {
+    setCookie(res, SESSION_COOKIE, cookie, { httpOnly: true, secure, sameSite: 'Strict', maxAge: SESSION_DAYS * 86400 });
+    ok(res, { csrf });
+  };
   r.post(
     '/auth/login',
-    limiter(15 * 60_000, 5),
+    loginLimit,
     handler(async (req, res) => {
-      const { cookie, session } = await login(ctx, req.body);
-      setCookie(res, SESSION_COOKIE, cookie, {
-        httpOnly: true,
-        secure,
-        sameSite: 'Strict',
-        maxAge: SESSION_DAYS * 86400,
-      });
-      ok(res, { csrf: session.csrf });
+      const result = await login(ctx, req.body);
+      if (result.kind === 'setup') return ok(res, { setup: { token: result.token, secret: result.secret, uri: result.uri } });
+      startSession(res, result.cookie, result.session.csrf);
+    }),
+  );
+  // First sign-in only: confirm the authenticator app with one code, then the session starts.
+  r.post(
+    '/auth/totp/confirm',
+    loginLimit,
+    handler(async (req, res) => {
+      const { cookie, session } = await confirmTotp(ctx, req.body);
+      startSession(res, cookie, session.csrf);
     }),
   );
 
