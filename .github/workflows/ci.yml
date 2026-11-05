@@ -140,7 +140,7 @@ jobs:
         env:
           TARGET: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
         run: |
-          mkdir release && cp -a dist app.cjs package.json package-lock.json release/
+          mkdir release && cp -a dist app.cjs package.json package-lock.json deploy/pull.sh release/
           echo "${GITHUB_SHA::12}" > release/VERSION
           cd release
           git init -q -b "deploy/$TARGET"
