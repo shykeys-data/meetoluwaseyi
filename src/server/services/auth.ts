@@ -98,7 +98,10 @@ export async function login(ctx: Ctx, raw: unknown): Promise<LoginResult> {
   let codeOk = false;
   if (enrolled && input.totp) {
     try {
-      codeOk = verifyTotp(decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp), input.totp);
+      codeOk = verifyTotp(
+        decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp),
+        input.totp,
+      );
     } catch {
       codeOk = false;
     }
@@ -169,10 +172,18 @@ export async function confirmTotp(ctx: Ctx, raw: unknown): Promise<{ cookie: str
     [Number(idStr)],
   );
   const a = rows[0];
-  if (!a || a.totp_enabled || !a.totp_secret_enc) throw new HttpError(401, 'setup_expired', 'Sign in again to restart.');
+  if (!a || a.totp_enabled || !a.totp_secret_enc)
+    throw new HttpError(401, 'setup_expired', 'Sign in again to restart.');
   const ok = verifyTotp(decrypt(String(a.totp_secret_enc), keys(ctx.config.SESSION_SECRET).totp), input.totp);
-  if (!ok) throw new HttpError(401, 'invalid_login', 'That code isn’t right. Check the time on your phone and try the newest code.');
-  await ctx.db.execute('UPDATE admins SET totp_enabled = 1, last_login_at = UTC_TIMESTAMP() WHERE id = ?', [a.id]);
+  if (!ok)
+    throw new HttpError(
+      401,
+      'invalid_login',
+      'That code isn’t right. Check the time on your phone and try the newest code.',
+    );
+  await ctx.db.execute('UPDATE admins SET totp_enabled = 1, last_login_at = UTC_TIMESTAMP() WHERE id = ?', [
+    a.id,
+  ]);
   ctx.log.info('2fa enrolled', { adminId: a.id });
   sendLoginAlert(ctx, String(a.email));
   return issueSession(ctx, Number(a.id), Number(a.session_version));

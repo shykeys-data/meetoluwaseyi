@@ -125,10 +125,13 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
         onDone(email);
         return;
       }
-      const d = await api<{ csrf?: string; setup?: { token: string; secret: string; uri: string } }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email: fd.get('email'), password: fd.get('password'), totp: code }),
-      });
+      const d = await api<{ csrf?: string; setup?: { token: string; secret: string; uri: string } }>(
+        '/auth/login',
+        {
+          method: 'POST',
+          body: JSON.stringify({ email: fd.get('email'), password: fd.get('password'), totp: code }),
+        },
+      );
       setEmail(String(fd.get('email')));
       if (d.setup) {
         setSetup(d.setup);
@@ -148,17 +151,27 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
       <form className="card narrow" onSubmit={submit}>
         <h1>Set up two-step sign-in</h1>
         <p>
-          This is your first sign-in. Open your authenticator app (Google Authenticator, Microsoft Authenticator,
-          1Password or similar), choose <strong>Add account → Enter a setup key</strong>, and type this key:
+          This is your first sign-in. Open your authenticator app (Google Authenticator, Microsoft
+          Authenticator, 1Password or similar), choose <strong>Add account → Enter a setup key</strong>, and
+          type this key:
         </p>
         <p className="mono" style={{ fontSize: 18, wordBreak: 'break-all', userSelect: 'all' }}>
           {setup.secret.replace(/(.{4})/g, '$1 ').trim()}
         </p>
         <p className="muted">
-          On a phone you can also <a href={setup.uri}>open it in your authenticator app</a>. Keep this key private.
+          On a phone you can also <a href={setup.uri}>open it in your authenticator app</a>. Keep this key
+          private.
         </p>
         <Field label="Then enter the 6-digit code the app shows">
-          <input name="totp" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required autoFocus />
+          <input
+            name="totp"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            required
+            autoFocus
+          />
         </Field>
         {error && (
           <p role="alert" className="error">

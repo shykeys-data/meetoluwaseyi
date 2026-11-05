@@ -8,6 +8,7 @@
 - Deploy log: `~/logs/deploy-<env>.log` on the host
 
 ## First launch of an environment
+
 1. Control panel → MySQL Management: create a database and user (let the panel generate the password).
 2. Control panel → Setup Node.js App: the app's environment variables need `DATABASE_URL`,
    `SESSION_SECRET` (48+ random characters), `IP_HASH_SALT` (24+), `ADMIN_EMAIL`, `ADMIN_INITIAL_PASSWORD`

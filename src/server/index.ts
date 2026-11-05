@@ -46,7 +46,8 @@ async function main() {
   try {
     await migrate(db, (m) => log.info('migration', { m }));
     if (!(await getProfile(db))) log.info('loaded launch content', await seed(db));
-    if (await bootstrapAdmin(ctx)) log.warn('first admin created: sign in and set up 2FA, then remove ADMIN_INITIAL_PASSWORD');
+    if (await bootstrapAdmin(ctx))
+      log.warn('first admin created: sign in and set up 2FA, then remove ADMIN_INITIAL_PASSWORD');
   } catch (err) {
     log.error('database setup failed', { err });
   }

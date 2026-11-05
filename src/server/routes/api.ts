@@ -98,7 +98,12 @@ export function apiRouter(ctx: Ctx): express.Router {
   // ---------- Auth ----------
   const loginLimit = limiter(15 * 60_000, 5);
   const startSession = (res: Response, cookie: string, csrf: string) => {
-    setCookie(res, SESSION_COOKIE, cookie, { httpOnly: true, secure, sameSite: 'Strict', maxAge: SESSION_DAYS * 86400 });
+    setCookie(res, SESSION_COOKIE, cookie, {
+      httpOnly: true,
+      secure,
+      sameSite: 'Strict',
+      maxAge: SESSION_DAYS * 86400,
+    });
     ok(res, { csrf });
   };
   r.post(
@@ -106,7 +111,8 @@ export function apiRouter(ctx: Ctx): express.Router {
     loginLimit,
     handler(async (req, res) => {
       const result = await login(ctx, req.body);
-      if (result.kind === 'setup') return ok(res, { setup: { token: result.token, secret: result.secret, uri: result.uri } });
+      if (result.kind === 'setup')
+        return ok(res, { setup: { token: result.token, secret: result.secret, uri: result.uri } });
       startSession(res, result.cookie, result.session.csrf);
     }),
   );
