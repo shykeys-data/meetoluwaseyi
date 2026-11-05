@@ -28,6 +28,7 @@ HTML_ATTRS = {'class': 'className', 'for': 'htmlFor', 'tabindex': 'tabIndex', 'a
               'onclick': 'onClick', 'onsubmit': 'onSubmit', 'onfocus': 'onFocus', 'onpointerenter': 'onPointerEnter',
               'onpointerleave': 'onPointerLeave', 'onpointermove': 'onPointerMove', 'onkeydown': 'onKeyDown', 'onchange': 'onChange',
               'oninput': 'onInput', 'onblur': 'onBlur', 'onmouseenter': 'onMouseEnter', 'onmouseleave': 'onMouseLeave'}
+NUMERIC = {'tabIndex', 'rows', 'cols', 'maxLength', 'minLength', 'colSpan', 'rowSpan', 'size', 'span'}
 VOID = {'img', 'input', 'br', 'hr', 'meta', 'link', 'source', 'area', 'col', 'wbr'}
 BOOL_ATTRS = {'hidden', 'disabled', 'required', 'checked', 'selected', 'autofocus', 'multiple', 'open', 'playsinline', 'muted', 'loop', 'autoplay', 'defer', 'async'}
 WHOLE = re.compile(r'^\s*\{\{\s*([A-Za-z_$][\w$.]*)\s*\}\}\s*$')
@@ -114,6 +115,8 @@ class Gen:
             return f'{jname}={{{self.ref(m.group(1))}}}'
         if PART.search(value):
             return f'{jname}={{{self.tpl(value)}}}'
+        if jname in NUMERIC and re.fullmatch(r'-?\d+', value):
+            return f'{jname}={{{value}}}'
         if jname == 'value' and tag in ('input', 'textarea'):
             jname = 'defaultValue'
         if jname in ('checked',):

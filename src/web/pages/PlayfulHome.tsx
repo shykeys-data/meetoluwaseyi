@@ -104,7 +104,7 @@ export class PlayfulHome extends Component<Props, any> {
     }
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     const win = window;
     this.reduce = prefersReducedMotion();
     // Clock-based bits are set after mount, so server and browser render the same first frame.
@@ -446,11 +446,11 @@ export class PlayfulHome extends Component<Props, any> {
     } else countUp();
   }
 
-  componentDidUpdate() {
+  override componentDidUpdate() {
     this.scan();
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     for (const t of ['timer']) clearInterval(this[t]);
     for (const t of ['bt', 'bt2', 'tt', 'tt2', 'i1', 'i2', 'i3', 'lt', 'st', 'ss', 'hintT', 'snapT1', 'snapT2']) clearTimeout(this[t]);
     window.cancelAnimationFrame(this.raf);
@@ -681,7 +681,7 @@ export class PlayfulHome extends Component<Props, any> {
     };
   }
 
-  render() {
+  override render() {
     return <PlayfulHomeView v={this.renderVals()} />;
   }
 }

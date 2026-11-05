@@ -7,7 +7,7 @@ export type V = Record<string, any>;
 
 export function IntroView({ v }: { v: V }) {
   return (
-    <><div className={v.rootCls} style={css("position:relative;min-height:100vh;overflow:hidden;background:#FFF6E5;color:#1B1A2E;font-family:'DM Sans',sans-serif")}><a className="sr-only" ref={v.setDay} href="/" tabIndex="-1" aria-hidden="true">Playful home</a>
+    <><div className={v.rootCls} style={css("position:relative;min-height:100vh;overflow:hidden;background:#FFF6E5;color:#1B1A2E;font-family:'DM Sans',sans-serif")}><a className="sr-only" ref={v.setDay} href="/" tabIndex={-1} aria-hidden="true">Playful home</a>
         <div aria-hidden="true" style={css("position:absolute;inset:0;background-color:#FFF6E5;background-image:radial-gradient(rgba(27,26,46,.09) 1.3px,transparent 1.3px);background-size:24px 24px")} />
         <p className="enter" style={css("position:absolute;inset:0;margin:0;display:flex;align-items:center;justify-content:center;font:700 clamp(28px,3vw,40px) 'Caveat',cursive;color:#1B1A2E")}>taking you in…</p>
         {v.introShow ? (<><div className={`intro ${v.introCls ?? ''}`} style={css(`position:fixed;inset:0;z-index:20;${v.introBg ?? ''};background-size:24px 24px;display:flex;align-items:center;justify-content:center;overflow:hidden`)}>{v.isNight ? (<><div aria-hidden="true" style={css("position:absolute;inset:0")}>{(v.stars ?? []).map((st: any, st_i: number) => (<Fragment key={st_i}><span className="star" style={css(`position:absolute;top:${st.y ?? ''};left:${st.x ?? ''};width:${st.s ?? ''};height:${st.s ?? ''};border-radius:50%;background:${st.c ?? ''};animation-delay:${st.d ?? ''}`)} /></Fragment>))}</div>

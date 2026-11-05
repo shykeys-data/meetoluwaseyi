@@ -11,12 +11,12 @@ export function signCloudinaryUpload(ctx: Ctx, now = Math.floor(Date.now() / 100
   const { CLOUDINARY_CLOUD: cloud, CLOUDINARY_KEY: apiKey, CLOUDINARY_SECRET: secret } = ctx.config;
   if (!cloud || !apiKey || !secret) return null;
   // Every signed parameter is fixed server-side, so the browser can't change the folder or allowed types.
-  const params: Record<string, string> = {
+  const params = {
     allowed_formats: UPLOAD_RULES.formats,
     folder: UPLOAD_RULES.folder,
     timestamp: String(now),
   };
-  const toSign = Object.keys(params)
+  const toSign = (Object.keys(params) as (keyof typeof params)[])
     .sort()
     .map((k) => `${k}=${params[k]}`)
     .join('&');

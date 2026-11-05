@@ -41,6 +41,13 @@ jobs:
           name: package-lock
           path: package-lock.json
           retention-days: 7
+      - name: Print the generated lockfile (until it is committed)
+        if: ${{ hashFiles('package-lock.json') != '' }}
+        run: |
+          if ! git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
+            echo "::group::package-lock.json (gzip+base64)"; echo "=====LOCK-BEGIN====="
+            gzip -9c package-lock.json | base64 -w 120; echo "=====LOCK-END====="; echo "::endgroup::"
+          fi
       - name: Create separate databases for the smoke and end-to-end tests
         run: mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE meetoluwaseyi_smoke; CREATE DATABASE meetoluwaseyi_e2e;"
       - name: Self-host the fonts
@@ -51,7 +58,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           if ! npm run format:check; then
-            npx prettier --write . >/dev/null && git diff > format.patch && exit 1
+            npx prettier --write . >/dev/null && git diff > format.patch
+            echo "::group::format.patch (gzip+base64)"; echo "=====FORMAT-PATCH-BEGIN====="
+            gzip -9c format.patch | base64 -w 120; echo "=====FORMAT-PATCH-END====="; echo "::endgroup::"
+            exit 1
           fi
       - uses: actions/upload-artifact@v4
         if: failure()

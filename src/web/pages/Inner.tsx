@@ -30,7 +30,7 @@ abstract class InnerPage extends Component<Props, any> {
     return {};
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     this.offMode = onModeChange((m: Mode) => this.setState({ theme: m, menu: false }));
     if (this.bars && (!window.IntersectionObserver || prefersReducedMotion())) this.bars.classList.add('bars-in');
     else if (this.bars) {
@@ -47,7 +47,7 @@ abstract class InnerPage extends Component<Props, any> {
     }
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     this.offMode?.();
     this.io2?.disconnect();
   }
@@ -103,10 +103,10 @@ function projectLinks(x: PublicProject) {
 }
 
 export class WorkPage extends InnerPage {
-  initial() {
+  override initial() {
     return { filter: 'all' };
   }
-  render() {
+  override render() {
     const s = this.state;
     const base = this.shell('work');
     const p = base.isPlayful;
@@ -160,7 +160,7 @@ export class WorkPage extends InnerPage {
 
 // ---------- About ----------
 export class AboutPage extends InnerPage {
-  render() {
+  override render() {
     const base = this.shell('about');
     const p = base.isPlayful;
     const prof = this.props.data.profile;
@@ -187,7 +187,7 @@ export class AboutPage extends InnerPage {
 
 // ---------- Writing ----------
 export class WritingPage extends InnerPage {
-  render() {
+  override render() {
     const base = this.shell('writing');
     const p = base.isPlayful;
     const series = this.props.data.profile.writing.map((x) => {
@@ -202,7 +202,7 @@ export class WritingPage extends InnerPage {
 
 // ---------- Contact ----------
 export class ContactPage extends InnerPage {
-  render() {
+  override render() {
     const base = this.shell('contact');
     const p = base.isPlayful;
     const { profile, form, turnstileSiteKey } = this.props.data;
@@ -225,10 +225,10 @@ export class ContactPage extends InnerPage {
 const TONE: Record<string, string> = { plain: 'var(--ink)', warn: 'var(--a)', bad: '#FF7A59', good: 'var(--g)' };
 
 export class CaseStudyPage extends InnerPage {
-  initial() {
+  override initial() {
     return { phase: 0 };
   }
-  render() {
+  override render() {
     const s = this.state;
     const pr = this.props.data.project;
     const cs = pr?.caseStudy;
@@ -281,7 +281,7 @@ export class CaseStudyPage extends InnerPage {
 
 // ---------- Pages the mockup doesn't show: Privacy, Thanks, 404, 500 (same chrome as Writing) ----------
 export class SimplePage extends InnerPage {
-  render() {
+  override render() {
     const base = this.shell('none');
     const { route, profile } = this.props.data;
     const email = profile.links.email;

@@ -57,7 +57,7 @@ export class SeriousHome extends Component<Props, any> {
     });
   }
 
-  componentDidMount() {
+  override componentDidMount() {
     const win = window;
     const mq = (q: string) => !!(win.matchMedia && win.matchMedia(q).matches);
     this.reduce = prefersReducedMotion();
@@ -158,11 +158,11 @@ export class SeriousHome extends Component<Props, any> {
     } else countUp();
   }
 
-  componentDidUpdate() {
+  override componentDidUpdate() {
     this.scan();
   }
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     clearInterval(this.t1);
     clearInterval(this.t2);
     clearTimeout(this.tt2);
@@ -173,7 +173,7 @@ export class SeriousHome extends Component<Props, any> {
     this.io2?.disconnect();
   }
 
-  render() {
+  override render() {
     const s = this.state;
     const { profile, projects: all, turnstileSiteKey } = this.props.data;
     const first = profile.name.split(' ')[0] ?? 'Oluwaseyi';
