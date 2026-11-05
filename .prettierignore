@@ -7,3 +7,4 @@ test-results
 playwright-report
 src/web/mockup/*View.tsx
 src/web/mockup/page-css.ts
+src/web/styles/fonts.css
