@@ -236,3 +236,15 @@ describe('GitHub sync rules', () => {
     expect(signCloudinaryUpload({ config: {} } as never)).toBeNull();
   });
 });
+
+describe('playful homepage content', () => {
+  it('has all seven roles on the road, each with a role, company and note', async () => {
+    const { ROAD } = await import('../src/web/content/playful.ts');
+    expect(ROAD).toHaveLength(7);
+    for (const r of ROAD) {
+      expect(r.role.length).toBeGreaterThan(3);
+      expect(r.org.length).toBeGreaterThan(1);
+      expect(r.note.length).toBeGreaterThan(10);
+    }
+  });
+});
