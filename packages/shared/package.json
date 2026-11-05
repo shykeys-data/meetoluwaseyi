@@ -1,0 +1,11 @@
+{
+  "name": "@meetoluwaseyi/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Zod schemas and TypeScript types shared by the server and the web app, so rules are written once.",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": {
+    "zod": "^4.0.5"
+  }
+}

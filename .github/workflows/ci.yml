@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            apps/server/dist
+            apps/web/dist
+          retention-days: 7
+
+  # Every push to `dev` goes to staging, then a smoke test checks it is up.
+  # Turned on by setting the repository variable STAGING_HOST and these secrets:
+  # STAGING_SSH_KEY, STAGING_SSH_USER, STAGING_PATH, STAGING_RESTART_CMD, STAGING_PASSWORD.
+  deploy-staging:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' && vars.STAGING_HOST != ''
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: apps
+      - name: Upload to the host
+        env:
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          HOST: ${{ vars.STAGING_HOST }}
+          USER: ${{ secrets.STAGING_SSH_USER }}
+          DEST: ${{ secrets.STAGING_PATH }}
+        run: |
+          install -m 600 /dev/null ~/.ssh_key && echo "$SSH_KEY" > ~/.ssh_key
+          rsync -az --delete --exclude node_modules --exclude .git --exclude .env \
+            -e "ssh -i ~/.ssh_key -o StrictHostKeyChecking=accept-new" ./ "$USER@$HOST:$DEST/"
+      - name: Install and restart
+        env:
+          HOST: ${{ vars.STAGING_HOST }}
+          USER: ${{ secrets.STAGING_SSH_USER }}
+          DEST: ${{ secrets.STAGING_PATH }}
+          RESTART: ${{ secrets.STAGING_RESTART_CMD }}
+        run: ssh -i ~/.ssh_key "$USER@$HOST" "cd '$DEST' && npm ci --omit=dev && $RESTART"
+      - name: Smoke test
+        env:
+          PASS: ${{ secrets.STAGING_PASSWORD }}
+        run: |
+          sleep 5
+          curl -fsS https://staging.meetoluwaseyi.com/healthz
+          curl -fsS -o /dev/null -u "preview:$PASS" https://staging.meetoluwaseyi.com/

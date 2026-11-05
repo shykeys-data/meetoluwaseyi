@@ -1,0 +1,15 @@
+/* Serious (night, glass) tokens. */
+[data-theme='serious'] {
+  --bg: #07080b;
+  --ink: #f3efe7;
+  --muted: #a9aeb9;
+  --accent: #f5a524;
+  --signal: #3ddc97;
+  --indigo: #6e7cf5;
+  --display: 'Instrument Serif', Georgia, serif;
+  --display-weight: 400;
+  --body: 'Geist', system-ui, sans-serif;
+  --radius-shell: 32px;
+  --radius-core: 26px;
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
