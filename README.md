@@ -5,7 +5,9 @@ React (server-rendered) + Express + Node.js + MySQL. Two moods: playful (default
 the first visit) and serious.
 
 ## Run locally
+
 Needs Node 20.10+ and a MySQL database.
+
 ```
 npm install
 cp .env.example .env        # set DATABASE_URL to your local MySQL
@@ -14,6 +16,7 @@ npm run dev                 # http://localhost:3000
 ```
 
 ## Checks
+
 ```
 npm run check               # lint, format, typecheck, unit tests
 TEST_DATABASE_URL=mysql://root:root@127.0.0.1:3306/test npm test   # + MySQL integration tests
@@ -21,6 +24,7 @@ npm run build && npm run test:e2e                                    # browser t
 ```
 
 ## Layout
+
 ```
 src/shared      validation rules and types used by both sides
 src/server      Express app, routes → services → SQL, jobs CLI

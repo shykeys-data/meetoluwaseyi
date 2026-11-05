@@ -42,7 +42,8 @@ export function decodeSession(cookie: string | undefined, secret: string, now = 
   if (!payload) return null;
   try {
     const s = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as Session;
-    if (typeof s.adminId !== 'number' || typeof s.version !== 'number' || typeof s.csrf !== 'string') return null;
+    if (typeof s.adminId !== 'number' || typeof s.version !== 'number' || typeof s.csrf !== 'string')
+      return null;
     return s.expires > now ? s : null;
   } catch {
     return null;
@@ -52,7 +53,10 @@ export function decodeSession(cookie: string | undefined, secret: string, now = 
 /** Checks the session against the database, so logout and password changes end old sessions at once. */
 export async function loadAdmin(ctx: Ctx, s: Session | null): Promise<{ id: number; email: string } | null> {
   if (!s) return null;
-  const [rows] = await ctx.db.execute<RowDataPacket[]>('SELECT id, email, session_version FROM admins WHERE id = ?', [s.adminId]);
+  const [rows] = await ctx.db.execute<RowDataPacket[]>(
+    'SELECT id, email, session_version FROM admins WHERE id = ?',
+    [s.adminId],
+  );
   const r = rows[0];
   if (!r || Number(r.session_version) !== s.version) return null;
   return { id: Number(r.id), email: String(r.email) };
@@ -94,10 +98,14 @@ export async function login(ctx: Ctx, raw: unknown): Promise<{ cookie: string; s
       [fails >= MAX_FAILS ? 0 : fails, a.id],
     );
     ctx.log.warn('login failed', { adminId: a.id, fails, locked: fails >= MAX_FAILS });
-    if (fails >= MAX_FAILS) throw new HttpError(423, 'locked', `Too many attempts. Try again in ${LOCK_MINUTES} minutes.`);
+    if (fails >= MAX_FAILS)
+      throw new HttpError(423, 'locked', `Too many attempts. Try again in ${LOCK_MINUTES} minutes.`);
     throw new HttpError(401, 'invalid_login', GENERIC);
   }
-  await ctx.db.execute('UPDATE admins SET failed_logins = 0, locked_until = NULL, last_login_at = UTC_TIMESTAMP() WHERE id = ?', [a.id]);
+  await ctx.db.execute(
+    'UPDATE admins SET failed_logins = 0, locked_until = NULL, last_login_at = UTC_TIMESTAMP() WHERE id = ?',
+    [a.id],
+  );
   const session: Session = {
     adminId: Number(a.id),
     version: Number(a.session_version),
@@ -106,9 +114,12 @@ export async function login(ctx: Ctx, raw: unknown): Promise<{ cookie: string; s
   };
   ctx.log.info('login ok', { adminId: a.id });
   if (ctx.config.RESEND_API_KEY) {
-    void sendEmail(ctx, String(a.email), 'New sign-in to meetoluwaseyi.com admin', `Someone signed in to the admin at ${new Date().toUTCString()}.\nIf this wasn’t you, change the password now: it ends every other session.`).catch(
-      (err) => ctx.log.warn('login alert email failed', { err }),
-    );
+    void sendEmail(
+      ctx,
+      String(a.email),
+      'New sign-in to meetoluwaseyi.com admin',
+      `Someone signed in to the admin at ${new Date().toUTCString()}.\nIf this wasn’t you, change the password now: it ends every other session.`,
+    ).catch((err) => ctx.log.warn('login alert email failed', { err }));
   }
   return { cookie: encodeSession(session, ctx.config.SESSION_SECRET), session };
 }
@@ -119,7 +130,11 @@ export async function endAllSessions(ctx: Ctx, adminId: number): Promise<void> {
 }
 
 /** Used by the CLI to create (or reset) the admin. Prints the 2FA secret once, for the authenticator app. */
-export async function upsertAdmin(ctx: Ctx, email: string, password: string): Promise<{ totpSecret: string }> {
+export async function upsertAdmin(
+  ctx: Ctx,
+  email: string,
+  password: string,
+): Promise<{ totpSecret: string }> {
   if (password.length < 14) throw new Error('Use a password of at least 14 characters.');
   const totpSecret = newTotpSecret();
   const hash = await hashPassword(password);

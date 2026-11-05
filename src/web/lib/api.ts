@@ -14,7 +14,9 @@ export const NETWORK_ERROR: ApiError = {
 };
 
 /** The browser only ever calls the API for the contact form and the playful chat. */
-export async function sendContact(input: Partial<ContactInput> & Record<string, unknown>): Promise<ContactResult> {
+export async function sendContact(
+  input: Partial<ContactInput> & Record<string, unknown>,
+): Promise<ContactResult> {
   try {
     const res = await fetch('/api/v1/contact', {
       method: 'POST',

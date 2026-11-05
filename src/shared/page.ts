@@ -1,7 +1,8 @@
 import type { Mode, Profile, PublicProject } from './schemas.ts';
 
 /** Every public route the site has. Anything else is a 404. */
-export type RouteName = 'home' | 'work' | 'project' | 'about' | 'writing' | 'contact' | 'thanks' | 'privacy' | 'notfound' | 'error';
+export type RouteName =
+  'home' | 'work' | 'project' | 'about' | 'writing' | 'contact' | 'thanks' | 'privacy' | 'notfound' | 'error';
 
 /**
  * What the server hands to React for one page. It is rendered to HTML on the server and the same

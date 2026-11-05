@@ -1,4 +1,12 @@
-import { createCipheriv, createDecipheriv, createHmac, hkdfSync, randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHmac,
+  hkdfSync,
+  randomBytes,
+  scrypt,
+  timingSafeEqual,
+} from 'node:crypto';
 
 /*
  * Small, dependency-free security helpers built on Node's own crypto.
@@ -8,9 +16,18 @@ import { createCipheriv, createDecipheriv, createHmac, hkdfSync, randomBytes, sc
 // ---- Passwords: scrypt (memory-hard, built into Node; no native module to compile on the host) ----
 const SCRYPT = { N: 2 ** 15, r: 8, p: 1, keylen: 64, maxmem: 64 * 1024 * 1024 } as const;
 
-function scryptAsync(password: string, salt: Buffer, N: number, r: number, p: number, keylen: number): Promise<Buffer> {
+function scryptAsync(
+  password: string,
+  salt: Buffer,
+  N: number,
+  r: number,
+  p: number,
+  keylen: number,
+): Promise<Buffer> {
   return new Promise((resolve, reject) =>
-    scrypt(password, salt, keylen, { N, r, p, maxmem: SCRYPT.maxmem }, (err, key) => (err ? reject(err) : resolve(key))),
+    scrypt(password, salt, keylen, { N, r, p, maxmem: SCRYPT.maxmem }, (err, key) =>
+      err ? reject(err) : resolve(key),
+    ),
   );
 }
 
@@ -18,20 +35,28 @@ function scryptAsync(password: string, salt: Buffer, N: number, r: number, p: nu
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16);
   const key = await scryptAsync(password, salt, SCRYPT.N, SCRYPT.r, SCRYPT.p, SCRYPT.keylen);
-  return ['scrypt', SCRYPT.N, SCRYPT.r, SCRYPT.p, salt.toString('base64url'), key.toString('base64url')].join('$');
+  return ['scrypt', SCRYPT.N, SCRYPT.r, SCRYPT.p, salt.toString('base64url'), key.toString('base64url')].join(
+    '$',
+  );
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [alg, n, r, p, saltB64, hashB64] = stored.split('$');
   if (alg !== 'scrypt' || !n || !r || !p || !saltB64 || !hashB64) return false;
   const expected = Buffer.from(hashB64, 'base64url');
-  const key = await scryptAsync(password, Buffer.from(saltB64, 'base64url'), Number(n), Number(r), Number(p), expected.length);
+  const key = await scryptAsync(
+    password,
+    Buffer.from(saltB64, 'base64url'),
+    Number(n),
+    Number(r),
+    Number(p),
+    expected.length,
+  );
   return timingSafeEqual(key, expected);
 }
 
 /** A real hash to compare against when the email is unknown, so timing doesn't reveal which emails exist. */
-export const DUMMY_HASH =
-  'scrypt$32768$8$1$AAAAAAAAAAAAAAAAAAAAAA$' + Buffer.alloc(64).toString('base64url');
+export const DUMMY_HASH = 'scrypt$32768$8$1$AAAAAAAAAAAAAAAAAAAAAA$' + Buffer.alloc(64).toString('base64url');
 
 // ---- TOTP (RFC 6238, SHA-1, 6 digits, 30 s), the format every authenticator app uses ----
 const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

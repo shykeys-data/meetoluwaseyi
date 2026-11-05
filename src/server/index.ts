@@ -29,7 +29,9 @@ async function main() {
   const log = createLogger(config.isDev ? 'debug' : 'info');
   const db = createDb(config.DATABASE_URL);
   if (!config.isDev) {
-    const off = (['TURNSTILE_SECRET', 'RESEND_API_KEY', 'WHATSAPP_TOKEN', 'CLOUDINARY_KEY'] as const).filter((k) => !config[k]);
+    const off = (['TURNSTILE_SECRET', 'RESEND_API_KEY', 'WHATSAPP_TOKEN', 'CLOUDINARY_KEY'] as const).filter(
+      (k) => !config[k],
+    );
     if (off.length) log.warn('features off until their keys are set', { missing: off });
   }
   const ctx: Ctx = { db, config, log, fetch: globalThis.fetch };
@@ -45,7 +47,10 @@ async function main() {
     const files = express.static(clientDir, {
       index: false,
       setHeaders(res, path) {
-        res.setHeader('Cache-Control', /[\\/]assets[\\/]/.test(path) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600');
+        res.setHeader(
+          'Cache-Control',
+          /[\\/]assets[\\/]/.test(path) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
+        );
       },
     });
     assets.push((req, res, next) => (req.path === '/manifest.json' ? next() : files(req, res, next)));
@@ -54,7 +59,9 @@ async function main() {
   const renderer = createRenderer({ clientDir, ...(vite ? { vite } : {}) });
   const app = createApp({ ctx, renderer, assets });
 
-  const server = app.listen(config.PORT, () => log.info('listening', { port: config.PORT, env: config.APP_ENV }));
+  const server = app.listen(config.PORT, () =>
+    log.info('listening', { port: config.PORT, env: config.APP_ENV }),
+  );
 
   // Graceful shutdown: stop taking requests, finish the ones in flight, close the database.
   let closing = false;

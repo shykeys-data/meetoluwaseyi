@@ -4,7 +4,16 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'test-results/**', 'playwright-report/**', 'scripts/*.py'] },
+  {
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      'node_modules/**',
+      'test-results/**',
+      'playwright-report/**',
+      'scripts/*.py',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {
@@ -15,7 +24,16 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/server/**/*.ts', 'src/shared/**/*.ts', 'test/**/*.ts', 'e2e/**/*.ts', 'scripts/**/*.mjs', '*.js', '*.cjs', '*.ts'],
+    files: [
+      'src/server/**/*.ts',
+      'src/shared/**/*.ts',
+      'test/**/*.ts',
+      'e2e/**/*.ts',
+      'scripts/**/*.mjs',
+      '*.js',
+      '*.cjs',
+      '*.ts',
+    ],
     languageOptions: { globals: globals.node },
   },
   {

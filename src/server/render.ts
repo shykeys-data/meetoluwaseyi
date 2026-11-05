@@ -30,9 +30,18 @@ const PRELOAD = {
   serious: ['instrument-serif-400-normal.woff2', 'geist-300-600-normal.woff2'],
 } as const;
 const preloads = (mode: 'playful' | 'serious') =>
-  PRELOAD[mode].map((f) => `<link rel="preload" href="/fonts/${f}" as="font" type="font/woff2" crossorigin>`).join('\n');
+  PRELOAD[mode]
+    .map((f) => `<link rel="preload" href="/fonts/${f}" as="font" type="font/woff2" crossorigin>`)
+    .join('\n');
 
-function doc(opts: { lang?: string; theme: string; htmlClass: string; head: string; body: string; scripts: string }): string {
+function doc(opts: {
+  lang?: string;
+  theme: string;
+  htmlClass: string;
+  head: string;
+  body: string;
+  scripts: string;
+}): string {
   return `<!doctype html>
 <html lang="${opts.lang ?? 'en'}" data-theme="${opts.theme}" class="${opts.htmlClass}">
 <head>
@@ -87,8 +96,13 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
   const scriptsFor = async (entry: string, nonce: string, url: string) => {
     if (opts.vite) {
       // Development: let Vite inject its client and the React refresh preamble.
-      const html = await opts.vite.transformIndexHtml(url, `<html><head></head><body><script type="module" src="/${entry}"></script></body></html>`);
-      return (html.match(/<script[\s\S]*?<\/script>/g) ?? []).map((s) => s.replace('<script', `<script nonce="${nonce}"`)).join('\n');
+      const html = await opts.vite.transformIndexHtml(
+        url,
+        `<html><head></head><body><script type="module" src="/${entry}"></script></body></html>`,
+      );
+      return (html.match(/<script[\s\S]*?<\/script>/g) ?? [])
+        .map((s) => s.replace('<script', `<script nonce="${nonce}"`))
+        .join('\n');
     }
     return assetTags(getManifest(), entry, nonce);
   };
@@ -104,14 +118,22 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
         extraHead,
         bootScript(data, nonce),
       ].join('\n');
-      const scripts = [dataScript(data), await scriptsFor('src/web/entry-client.tsx', nonce, data.path)].join('\n');
+      const scripts = [dataScript(data), await scriptsFor('src/web/entry-client.tsx', nonce, data.path)].join(
+        '\n',
+      );
       const htmlClass = `mode-${data.mode}`;
       return doc({ theme: data.mode, htmlClass, head, body, scripts });
     },
     async admin(nonce) {
       const head = `<title>Admin · meetoluwaseyi.com</title>\n<meta name="robots" content="noindex, nofollow">`;
       const scripts = await scriptsFor('src/web/admin/entry-admin.tsx', nonce, '/admin');
-      return doc({ theme: 'admin', htmlClass: 'admin', head, body: '<p class="admin-loading">Loading…</p>', scripts });
+      return doc({
+        theme: 'admin',
+        htmlClass: 'admin',
+        head,
+        body: '<p class="admin-loading">Loading…</p>',
+        scripts,
+      });
     },
   };
 }

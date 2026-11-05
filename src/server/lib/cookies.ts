@@ -26,12 +26,17 @@ export interface CookieOpts {
 }
 
 export function setCookie(res: Response, name: string, value: string, o: CookieOpts): void {
-  const parts = [`${name}=${encodeURIComponent(value)}`, `Path=${o.path ?? '/'}`, `SameSite=${o.sameSite ?? 'Lax'}`];
+  const parts = [
+    `${name}=${encodeURIComponent(value)}`,
+    `Path=${o.path ?? '/'}`,
+    `SameSite=${o.sameSite ?? 'Lax'}`,
+  ];
   if (o.maxAge !== undefined) parts.push(`Max-Age=${o.maxAge}`);
   if (o.httpOnly) parts.push('HttpOnly');
   if (o.secure) parts.push('Secure');
   res.append('Set-Cookie', parts.join('; '));
 }
 
-const BOTS = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|twitterbot|linkedin|embedly|preview|lighthouse|headless/i;
+const BOTS =
+  /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|twitterbot|linkedin|embedly|preview|lighthouse|headless/i;
 export const isBot = (ua: string | undefined) => !ua || BOTS.test(ua);

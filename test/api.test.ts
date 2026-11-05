@@ -20,7 +20,8 @@ import type { DocumentRenderer } from '../src/server/render.ts';
 const url = process.env.TEST_DATABASE_URL;
 
 const renderer: DocumentRenderer = {
-  page: async (d) => `<html data-route="${d.route}" data-mode="${d.mode}" data-intro="${d.intro}">${d.profile.name}${d.form ? JSON.stringify(d.form.errors) : ''}</html>`,
+  page: async (d) =>
+    `<html data-route="${d.route}" data-mode="${d.mode}" data-intro="${d.intro}">${d.profile.name}${d.form ? JSON.stringify(d.form.errors) : ''}</html>`,
   admin: async () => '<html>admin</html>',
 };
 
@@ -34,7 +35,15 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
 
   beforeAll(async () => {
     db = createDb(url!);
-    for (const t of ['project_slug_history', 'projects', 'messages', 'admins', 'profile', 'settings', 'schema_migrations']) {
+    for (const t of [
+      'project_slug_history',
+      'projects',
+      'messages',
+      'admins',
+      'profile',
+      'settings',
+      'schema_migrations',
+    ]) {
       await db.query(`DROP TABLE IF EXISTS ${t}`);
     }
     await migrate(db, () => {});
@@ -63,7 +72,12 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
 
   it('rejects a duplicate slug at the database', async () => {
     await expect(
-      createProject(db, { slug: 'korrect-cars', title: 'Again', pillars: ['data'], summary: 'Duplicate slug test.' }),
+      createProject(db, {
+        slug: 'korrect-cars',
+        title: 'Again',
+        pillars: ['data'],
+        summary: 'Duplicate slug test.',
+      }),
     ).rejects.toMatchObject({ status: 409 });
   });
 
@@ -95,7 +109,9 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect(back).toContain('data-mode="playful"');
     const bot = await (await fetch(`${base}/`, { headers: { 'user-agent': 'Googlebot/2.1' } })).text();
     expect(bot).toContain('data-intro="false"');
-    const forced = await (await fetch(`${base}/?intro=1`, { headers: { ...browserUA, cookie: 'mo_seen=1' } })).text();
+    const forced = await (
+      await fetch(`${base}/?intro=1`, { headers: { ...browserUA, cookie: 'mo_seen=1' } })
+    ).text();
     expect(forced).toContain('data-intro="true"');
   });
 
@@ -106,7 +122,9 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     const cookies = r.headers.getSetCookie().join(';');
     expect(cookies).toContain('mo_mode=serious');
     expect(cookies).toContain('mo_seen=1');
-    const page = await (await fetch(`${base}/about`, { headers: { cookie: 'mo_mode=serious; mo_seen=1' } })).text();
+    const page = await (
+      await fetch(`${base}/about`, { headers: { cookie: 'mo_mode=serious; mo_seen=1' } })
+    ).text();
     expect(page).toContain('data-mode="serious"');
   });
 
@@ -128,15 +146,26 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
   });
 
   describe('contact', () => {
-    const good = { name: 'Ada Lovelace', email: 'ada@example.com', intent: 'hire', message: 'I would love to talk about a role.' };
+    const good = {
+      name: 'Ada Lovelace',
+      email: 'ada@example.com',
+      intent: 'hire',
+      message: 'I would love to talk about a role.',
+    };
     const post = (body: unknown, ip = '203.0.113.1') =>
-      fetch(`${base}/api/v1/contact`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-forwarded-for': ip }, body: JSON.stringify(body) });
+      fetch(`${base}/api/v1/contact`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-forwarded-for': ip },
+        body: JSON.stringify(body),
+      });
 
     it('accepts a good message with 202 and records a failed alert instead of losing it', async () => {
       const r = await post(good);
       expect(r.status).toBe(202);
       await new Promise((res) => setTimeout(res, 7000)); // three retries with backoff
-      const [rows] = await db.query('SELECT notify_email, notify_error FROM messages ORDER BY id DESC LIMIT 1');
+      const [rows] = await db.query(
+        'SELECT notify_email, notify_error FROM messages ORDER BY id DESC LIMIT 1',
+      );
       const row = (rows as { notify_email: string; notify_error: string }[])[0]!;
       expect(row.notify_email).toBe('failed');
       expect(row.notify_error).toContain('Resend 500');
@@ -160,10 +189,19 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
 
     it('works without JavaScript: form post lands on the thank-you page', async () => {
       const form = new URLSearchParams({ ...good, website: '' });
-      const r = await fetch(`${base}/contact`, { method: 'POST', body: form, redirect: 'manual', headers: { 'x-forwarded-for': '203.0.113.4' } });
+      const r = await fetch(`${base}/contact`, {
+        method: 'POST',
+        body: form,
+        redirect: 'manual',
+        headers: { 'x-forwarded-for': '203.0.113.4' },
+      });
       expect(r.status).toBe(303);
       expect(r.headers.get('location')).toBe('/contact/thanks');
-      const bad = await fetch(`${base}/contact`, { method: 'POST', body: new URLSearchParams({ ...good, email: 'x' }), headers: { 'x-forwarded-for': '203.0.113.4' } });
+      const bad = await fetch(`${base}/contact`, {
+        method: 'POST',
+        body: new URLSearchParams({ ...good, email: 'x' }),
+        headers: { 'x-forwarded-for': '203.0.113.4' },
+      });
       expect(bad.status).toBe(400);
       expect(await bad.text()).toContain('email');
     });
@@ -181,7 +219,11 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     const email = 'owner@example.com';
     const password = 'correct horse battery staple';
     const login = (body: object, ip: string) =>
-      fetch(`${base}/api/v1/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-forwarded-for': ip }, body: JSON.stringify(body) });
+      fetch(`${base}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-forwarded-for': ip },
+        body: JSON.stringify(body),
+      });
     const code = () => totpAt(secret, Math.floor(Date.now() / 30000));
 
     beforeAll(async () => {
@@ -197,14 +239,21 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
       const r = await login({ email, password, totp: code() }, '192.0.2.10');
       expect(r.status).toBe(200);
       const { data } = await r.json();
-      const cookie = r.headers.getSetCookie().find((c) => c.startsWith('mo_sess='))!.split(';')[0]!;
+      const cookie = r.headers
+        .getSetCookie()
+        .find((c) => c.startsWith('mo_sess='))!
+        .split(';')[0]!;
       expect(r.headers.getSetCookie().join(';')).toMatch(/HttpOnly/i);
 
       const list = await (await fetch(`${base}/api/v1/admin/projects`, { headers: { cookie } })).json();
       const korrect = list.data.find((p: { slug: string }) => p.slug === 'korrect-cars');
       const body = JSON.stringify({ ...korrect, slug: 'korrect-cars-marketplace', caseStudy: { steps: [] } });
 
-      const noCsrf = await fetch(`${base}/api/v1/admin/projects/${korrect.id}`, { method: 'PATCH', headers: { cookie, 'content-type': 'application/json' }, body });
+      const noCsrf = await fetch(`${base}/api/v1/admin/projects/${korrect.id}`, {
+        method: 'PATCH',
+        headers: { cookie, 'content-type': 'application/json' },
+        body,
+      });
       expect(noCsrf.status).toBe(403);
 
       const ok = await fetch(`${base}/api/v1/admin/projects/${korrect.id}`, {
@@ -217,21 +266,31 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
       expect(old.status).toBe(301);
       expect(old.headers.get('location')).toBe('/work/korrect-cars-marketplace');
 
-      const out = await fetch(`${base}/api/v1/auth/logout`, { method: 'POST', headers: { cookie, 'x-csrf-token': data.csrf } });
+      const out = await fetch(`${base}/api/v1/auth/logout`, {
+        method: 'POST',
+        headers: { cookie, 'x-csrf-token': data.csrf },
+      });
       expect(out.status).toBe(200);
       expect((await fetch(`${base}/api/v1/admin/projects`, { headers: { cookie } })).status).toBe(401);
     });
 
     it('gives the same answer for a wrong password, wrong code or unknown email', async () => {
-      const a = await (await login({ email, password: 'wrong password here', totp: code() }, '192.0.2.20')).json();
-      const b = await (await login({ email: 'nobody@example.com', password, totp: code() }, '192.0.2.21')).json();
+      const a = await (
+        await login({ email, password: 'wrong password here', totp: code() }, '192.0.2.20')
+      ).json();
+      const b = await (
+        await login({ email: 'nobody@example.com', password, totp: code() }, '192.0.2.21')
+      ).json();
       expect(a.error.message).toBe(b.error.message);
     });
 
     it('locks the account after 5 failures', async () => {
       await upsertAdmin(ctx, email, password).then((r) => (secret = r.totpSecret));
       const statuses: number[] = [];
-      for (let i = 0; i < 6; i++) statuses.push((await login({ email, password: 'wrong password here', totp: code() }, `192.0.2.${30 + i}`)).status);
+      for (let i = 0; i < 6; i++)
+        statuses.push(
+          (await login({ email, password: 'wrong password here', totp: code() }, `192.0.2.${30 + i}`)).status,
+        );
       expect(statuses.slice(0, 4)).toEqual([401, 401, 401, 401]);
       expect(statuses[4]).toBe(423);
       expect(statuses[5]).toBe(423);

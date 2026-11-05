@@ -23,7 +23,15 @@ const rot = (n: number, cur: number, i: number) => {
 function card(p: PublicProject) {
   const data = p.pillars.includes('data');
   const href = p.caseStudy ? `/work/${p.slug}` : (p.links.live ?? p.links.book ?? p.links.repo ?? '/work');
-  const cta = p.caseStudy ? 'Read case study' : p.links.live ? `Visit ${new URL(p.links.live).hostname.replace(/^www\./, '')}` : p.links.book ? 'Read the free book' : p.links.repo ? 'View on GitHub' : 'See the work';
+  const cta = p.caseStudy
+    ? 'Read case study'
+    : p.links.live
+      ? `Visit ${new URL(p.links.live).hostname.replace(/^www\./, '')}`
+      : p.links.book
+        ? 'Read the free book'
+        : p.links.repo
+          ? 'View on GitHub'
+          : 'See the work';
   return {
     pillars: p.pillars,
     label: data ? 'Data & BI' : p.pillars.includes('community') ? 'Community' : 'Venture',
@@ -43,7 +51,23 @@ export class SeriousHome extends Component<Props, any> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { toast: false, w: 0, tk: 0, acc: 0, day: null, today: 0, n1: 0, n2: 0, n3: 0, n4: 0, fine: false, hot: false, moved: false, menu: false, rvOn: false };
+    this.state = {
+      toast: false,
+      w: 0,
+      tk: 0,
+      acc: 0,
+      day: null,
+      today: 0,
+      n1: 0,
+      n2: 0,
+      n3: 0,
+      n4: 0,
+      fine: false,
+      hot: false,
+      moved: false,
+      menu: false,
+      rvOn: false,
+    };
   }
 
   scan() {
@@ -64,7 +88,9 @@ export class SeriousHome extends Component<Props, any> {
     const fine = mq('(hover: hover) and (pointer: fine)') && !this.reduce;
     let today = 0;
     try {
-      const wd = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Africa/Lagos' }).format(new Date());
+      const wd = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Africa/Lagos' }).format(
+        new Date(),
+      );
       today = Math.max(0, ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(wd));
     } catch {
       /* default Monday */
@@ -108,11 +134,21 @@ export class SeriousHome extends Component<Props, any> {
       if (!this.reduce) {
         this.sx += (this.mx - this.sx) * 0.06;
         this.sy += (this.my - this.sy) * 0.06;
-        if (this.spot) this.spot.style.transform = 'translate3d(' + (this.sx - 450).toFixed(1) + 'px,' + (this.sy - 450).toFixed(1) + 'px,0)';
+        if (this.spot)
+          this.spot.style.transform =
+            'translate3d(' + (this.sx - 450).toFixed(1) + 'px,' + (this.sy - 450).toFixed(1) + 'px,0)';
         this.rx += (this.mx - this.rx) * 0.2;
         this.ry += (this.my - this.ry) * 0.2;
         this.rs += ((this.state.hot ? 1.7 : 1) - this.rs) * 0.16;
-        if (this.ring) this.ring.style.transform = 'translate3d(' + this.rx.toFixed(1) + 'px,' + this.ry.toFixed(1) + 'px,0) scale(' + this.rs.toFixed(3) + ')';
+        if (this.ring)
+          this.ring.style.transform =
+            'translate3d(' +
+            this.rx.toFixed(1) +
+            'px,' +
+            this.ry.toFixed(1) +
+            'px,0) scale(' +
+            this.rs.toFixed(3) +
+            ')';
         if (this.orbA) this.orbA.style.transform = 'translate3d(0,' + (y * 0.25).toFixed(1) + 'px,0)';
         if (this.orbB) this.orbB.style.transform = 'translate3d(0,' + (y * -0.12).toFixed(1) + 'px,0)';
       }
@@ -139,7 +175,12 @@ export class SeriousHome extends Component<Props, any> {
       const step = (now: number) => {
         const p = this.reduce ? 1 : Math.min(1, (now - start) / 1800);
         const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-        this.setState({ n1: Math.round(99 * e), n2: Math.round(25 * e), n3: Math.round(7 * e), n4: Math.round(12 * e) });
+        this.setState({
+          n1: Math.round(99 * e),
+          n2: Math.round(25 * e),
+          n3: Math.round(7 * e),
+          n4: Math.round(12 * e),
+        });
         if (p < 1) this.raf2 = win.requestAnimationFrame(step);
       };
       this.raf2 = win.requestAnimationFrame(step);
@@ -203,12 +244,21 @@ export class SeriousHome extends Component<Props, any> {
         if ((this.state.acc || 0) !== i) this.setState({ acc: i });
       },
     }));
-    const projects = all.filter((p) => p.featured).slice(0, 3).map(card);
+    const projects = all
+      .filter((p) => p.featured)
+      .slice(0, 3)
+      .map(card);
     const marquee = PROGRAMS.concat(PROGRAMS).map((t) => ({ t }));
     const marquee2 = PHRASES.concat(PHRASES, PHRASES).map((t) => ({ t }));
     const today = s.today || 0;
     const sel = s.day == null ? today : s.day;
-    const days = DAY_DEFS.map((d, i) => ({ short: d.short, today: i === today, pressed: i === sel, col: i === sel ? '#F3EFE7' : '#7C8290', pick: () => this.setState({ day: i }) }));
+    const days = DAY_DEFS.map((d, i) => ({
+      short: d.short,
+      today: i === today,
+      pressed: i === sel,
+      col: i === sel ? '#F3EFE7' : '#7C8290',
+      pick: () => this.setState({ day: i }),
+    }));
     const panels = DAY_DEFS.map((d, i) => ({
       name: d.name,
       items: d.items,
@@ -238,7 +288,9 @@ export class SeriousHome extends Component<Props, any> {
     }));
     const certs = profile.certificates.map((c) => ({ t: c.title }));
     const allPosts = profile.writing.flatMap((w) => w.posts.map((p) => ({ ...p, series: w.title })));
-    const posts = allPosts.slice(0, 3).map((p, i) => ({ tag: p.kicker, c: i < 2 ? GREEN : AMBER, t: p.title, href: p.url, i }));
+    const posts = allPosts
+      .slice(0, 3)
+      .map((p, i) => ({ tag: p.kicker, c: i < 2 ? GREEN : AMBER, t: p.title, href: p.url, i }));
     const menu = !!s.menu;
     const menuLinks = [
       ['/work', 'Work'],
@@ -261,12 +313,21 @@ export class SeriousHome extends Component<Props, any> {
       if (inner) inner.style.transform = '';
     };
     const glow = (e: any) => {
-      const el = ((e.currentTarget as HTMLElement).querySelector('.core') as HTMLElement | null) ?? (e.currentTarget as HTMLElement);
+      const el =
+        ((e.currentTarget as HTMLElement).querySelector('.core') as HTMLElement | null) ??
+        (e.currentTarget as HTMLElement);
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
       el.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
     };
-    const form_0 = <ContactForm mode="serious" variant="home" email={profile.links.email} {...(turnstileSiteKey ? { siteKey: turnstileSiteKey } : {})} />;
+    const form_0 = (
+      <ContactForm
+        mode="serious"
+        variant="home"
+        email={profile.links.email}
+        {...(turnstileSiteKey ? { siteKey: turnstileSiteKey } : {})}
+      />
+    );
     const v = {
       accent: AMBER,
       letters,

@@ -51,7 +51,13 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
     const started = Date.now();
     res.on('finish', () => {
       if (req.path.startsWith('/assets/')) return;
-      log.info('request', { id, method: req.method, path: req.path, status: res.statusCode, ms: Date.now() - started });
+      log.info('request', {
+        id,
+        method: req.method,
+        path: req.path,
+        status: res.statusCode,
+        ms: Date.now() - started,
+      });
     });
     next();
   });
@@ -65,7 +71,11 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
             useDefaults: false,
             directives: {
               defaultSrc: ["'self'"],
-              scriptSrc: ["'self'", `'nonce-${res.locals.nonce as string}'`, 'https://challenges.cloudflare.com'],
+              scriptSrc: [
+                "'self'",
+                `'nonce-${res.locals.nonce as string}'`,
+                'https://challenges.cloudflare.com',
+              ],
               styleSrc: ["'self'", "'unsafe-inline'"],
               imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
               fontSrc: ["'self'"],
@@ -85,7 +95,10 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
     })(req, res, next),
   );
   app.use((_req, res, next) => {
-    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()');
+    res.setHeader(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
+    );
     next();
   });
 
@@ -104,7 +117,13 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
 
   // Every route: 300 requests per minute per IP.
   app.use(
-    rateLimit({ windowMs: 60_000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_q, _s, next) => next(tooMany()) }),
+    rateLimit({
+      windowMs: 60_000,
+      limit: 300,
+      standardHeaders: 'draft-8',
+      legacyHeaders: false,
+      handler: (_q, _s, next) => next(tooMany()),
+    }),
   );
 
   // Bodies are small: 50 KB cap, JSON for the API, urlencoded for the no-JavaScript contact form.
@@ -152,14 +171,24 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
     try {
       const profile = (await getProfile(ctx.db).catch(() => null)) ?? PROFILE;
       const html = await renderer.page(
-        { route: status === 404 ? 'notfound' : 'error', path: req.path, mode: 'playful', intro: false, profile, projects: [] },
+        {
+          route: status === 404 ? 'notfound' : 'error',
+          path: req.path,
+          mode: 'playful',
+          intro: false,
+          profile,
+          projects: [],
+        },
         res.locals.nonce as string,
         config.SITE_URL,
       );
       res.status(status).setHeader('Cache-Control', 'no-store');
       res.type('html').send(html);
     } catch {
-      res.status(status).type('text/plain').send('Something went wrong on our side. Please try again in a minute.');
+      res
+        .status(status)
+        .type('text/plain')
+        .send('Something went wrong on our side. Please try again in a minute.');
     }
   });
 

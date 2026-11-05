@@ -54,7 +54,12 @@ export type ContactResult = { id: number } | { ignored: true };
  */
 export async function submitContact(ctx: Ctx, raw: unknown, ip: string): Promise<ContactResult> {
   // Honeypot first: bots get a normal-looking success and nothing is stored or sent.
-  if (raw && typeof raw === 'object' && 'website' in raw && String((raw as { website: unknown }).website ?? '') !== '') {
+  if (
+    raw &&
+    typeof raw === 'object' &&
+    'website' in raw &&
+    String((raw as { website: unknown }).website ?? '') !== ''
+  ) {
     ctx.log.info('contact honeypot tripped');
     return { ignored: true };
   }
@@ -107,7 +112,10 @@ function toRow(r: RowDataPacket): MessageRow {
   };
 }
 
-export async function listMessages(ctx: Ctx, opts: { status?: string; intent?: string; limit?: number } = {}): Promise<MessageRow[]> {
+export async function listMessages(
+  ctx: Ctx,
+  opts: { status?: string; intent?: string; limit?: number } = {},
+): Promise<MessageRow[]> {
   const where: string[] = [];
   const params: (string | number)[] = [];
   if (opts.status && ['new', 'replied', 'archived'].includes(opts.status)) {
@@ -127,13 +135,19 @@ export async function listMessages(ctx: Ctx, opts: { status?: string; intent?: s
 }
 
 export async function setMessageStatus(ctx: Ctx, id: number, status: string): Promise<void> {
-  if (!['new', 'replied', 'archived'].includes(status)) throw badRequest('Unknown status.', { status: 'Unknown status.' });
-  const [res] = await ctx.db.execute<ResultSetHeader>('UPDATE messages SET status = ? WHERE id = ?', [status, id]);
+  if (!['new', 'replied', 'archived'].includes(status))
+    throw badRequest('Unknown status.', { status: 'Unknown status.' });
+  const [res] = await ctx.db.execute<ResultSetHeader>('UPDATE messages SET status = ? WHERE id = ?', [
+    status,
+    id,
+  ]);
   if (res.affectedRows === 0) throw notFound('That message doesn’t exist.');
 }
 
 export async function countNewMessages(ctx: Ctx): Promise<number> {
-  const [rows] = await ctx.db.execute<RowDataPacket[]>("SELECT COUNT(*) AS n FROM messages WHERE status = 'new'");
+  const [rows] = await ctx.db.execute<RowDataPacket[]>(
+    "SELECT COUNT(*) AS n FROM messages WHERE status = 'new'",
+  );
   return Number(rows[0]?.n ?? 0);
 }
 
@@ -144,7 +158,9 @@ export function toCsv(rows: MessageRow[]): string {
     return `"${safe.replace(/"/g, '""')}"`;
   };
   const head = ['id', 'date', 'name', 'email', 'intent', 'status', 'message'];
-  const lines = rows.map((r) => [String(r.id), r.createdAt, r.name, r.email, r.intent, r.status, r.body].map(cell).join(','));
+  const lines = rows.map((r) =>
+    [String(r.id), r.createdAt, r.name, r.email, r.intent, r.status, r.body].map(cell).join(','),
+  );
   return [head.join(','), ...lines].join('\r\n') + '\r\n';
 }
 

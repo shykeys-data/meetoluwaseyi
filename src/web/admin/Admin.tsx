@@ -31,10 +31,21 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`/api/v1${path}`, {
     ...init,
     credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}), ...(init.headers ?? {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+      ...(init.headers ?? {}),
+    },
   });
-  const body = (await res.json().catch(() => ({}))) as { data?: T; error?: { message: string; fields?: Record<string, string> } };
-  if (!res.ok) throw Object.assign(new Error(body.error?.message ?? `Request failed (${res.status})`), { status: res.status, fields: body.error?.fields });
+  const body = (await res.json().catch(() => ({}))) as {
+    data?: T;
+    error?: { message: string; fields?: Record<string, string> };
+  };
+  if (!res.ok)
+    throw Object.assign(new Error(body.error?.message ?? `Request failed (${res.status})`), {
+      status: res.status,
+      fields: body.error?.fields,
+    });
   return body.data as T;
 }
 
@@ -60,7 +71,12 @@ export function Admin() {
         <strong>meetoluwaseyi admin</strong>
         <nav aria-label="Admin sections">
           {(['dashboard', 'projects', 'profile', 'messages'] as Tab[]).map((t) => (
-            <button key={t} type="button" aria-current={tab === t ? 'page' : undefined} onClick={() => setTab(t)}>
+            <button
+              key={t}
+              type="button"
+              aria-current={tab === t ? 'page' : undefined}
+              onClick={() => setTab(t)}
+            >
               {t[0]!.toUpperCase() + t.slice(1)}
             </button>
           ))}
@@ -98,7 +114,11 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
     try {
       const d = await api<{ csrf: string }>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email: fd.get('email'), password: fd.get('password'), totp: String(fd.get('totp') ?? '').replace(/\s/g, '') }),
+        body: JSON.stringify({
+          email: fd.get('email'),
+          password: fd.get('password'),
+          totp: String(fd.get('totp') ?? '').replace(/\s/g, ''),
+        }),
       });
       csrf = d.csrf;
       onDone(String(fd.get('email')));
@@ -118,7 +138,14 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
         <input name="password" type="password" autoComplete="current-password" required minLength={12} />
       </Field>
       <Field label="6-digit code from your authenticator app">
-        <input name="totp" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required />
+        <input
+          name="totp"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          pattern="\d{6}"
+          maxLength={6}
+          required
+        />
       </Field>
       {error && (
         <p role="alert" className="error">
@@ -132,7 +159,15 @@ function Login({ onDone }: { onDone: (email: string) => void }) {
   );
 }
 
-function Field({ label, children, error }: { label: string; children: ReactNode; error?: string | undefined }) {
+function Field({
+  label,
+  children,
+  error,
+}: {
+  label: string;
+  children: ReactNode;
+  error?: string | undefined;
+}) {
   return (
     <label className="field">
       <span>{label}</span>
@@ -143,7 +178,12 @@ function Field({ label, children, error }: { label: string; children: ReactNode;
 }
 
 function Dashboard() {
-  const [d, setD] = useState<{ newMessages: number; dbOk: boolean; githubLastOk: { at: string } | null; githubLastError: { at: string; error: string } | null } | null>(null);
+  const [d, setD] = useState<{
+    newMessages: number;
+    dbOk: boolean;
+    githubLastOk: { at: string } | null;
+    githubLastError: { at: string; error: string } | null;
+  } | null>(null);
   const [sync, setSync] = useState('');
   const load = useCallback(() => void api<typeof d>('/admin/dashboard').then(setD), []);
   useEffect(load, [load]);
@@ -161,15 +201,29 @@ function Dashboard() {
           <p>database</p>
         </div>
         <div className="card">
-          <p>GitHub sync: {d.githubLastOk ? `last good ${new Date(d.githubLastOk.at).toLocaleString()}` : 'not run yet'}</p>
+          <p>
+            GitHub sync:{' '}
+            {d.githubLastOk ? `last good ${new Date(d.githubLastOk.at).toLocaleString()}` : 'not run yet'}
+          </p>
           {d.githubLastError && <p className="error">Last error: {d.githubLastError.error}</p>}
           <button
             type="button"
             onClick={async () => {
               setSync('Syncing…');
               try {
-                const r = await api<{ created: number; updated: number; notModified?: boolean; error?: string }>('/admin/github/sync', { method: 'POST' });
-                setSync(r.error ? `Failed: ${r.error}` : r.notModified ? 'Nothing new on GitHub.' : `Done: ${r.created} new, ${r.updated} updated.`);
+                const r = await api<{
+                  created: number;
+                  updated: number;
+                  notModified?: boolean;
+                  error?: string;
+                }>('/admin/github/sync', { method: 'POST' });
+                setSync(
+                  r.error
+                    ? `Failed: ${r.error}`
+                    : r.notModified
+                      ? 'Nothing new on GitHub.'
+                      : `Done: ${r.created} new, ${r.updated} updated.`,
+                );
                 load();
               } catch (err) {
                 setSync((err as Error).message);
@@ -217,7 +271,17 @@ function Projects() {
     load();
   }
 
-  if (editing) return <ProjectForm project={editing} onClose={(m) => { setEditing(null); setMsg(m ?? ''); load(); }} />;
+  if (editing)
+    return (
+      <ProjectForm
+        project={editing}
+        onClose={(m) => {
+          setEditing(null);
+          setMsg(m ?? '');
+          load();
+        }}
+      />
+    );
   return (
     <section>
       <h1>Projects</h1>
@@ -239,10 +303,20 @@ function Projects() {
           {list.map((p, i) => (
             <tr key={p.id}>
               <td>
-                <button type="button" aria-label={`Move ${p.title} up`} onClick={() => move(i, -1)} disabled={i === 0}>
+                <button
+                  type="button"
+                  aria-label={`Move ${p.title} up`}
+                  onClick={() => move(i, -1)}
+                  disabled={i === 0}
+                >
                   ↑
                 </button>
-                <button type="button" aria-label={`Move ${p.title} down`} onClick={() => move(i, 1)} disabled={i === list.length - 1}>
+                <button
+                  type="button"
+                  aria-label={`Move ${p.title} down`}
+                  onClick={() => move(i, 1)}
+                  disabled={i === list.length - 1}
+                >
                   ↓
                 </button>
               </td>
@@ -274,9 +348,17 @@ function Projects() {
 }
 
 async function uploadImage(file: File): Promise<string> {
-  if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type)) throw new Error('Use a JPG, PNG, WebP or AVIF image.');
+  if (!/^image\/(jpeg|png|webp|avif)$/.test(file.type))
+    throw new Error('Use a JPG, PNG, WebP or AVIF image.');
   if (file.size > 5 * 1024 * 1024) throw new Error('Images must be 5 MB or smaller.');
-  const s = await api<{ cloud: string; apiKey: string; signature: string; timestamp: string; folder: string; allowed_formats: string }>('/admin/upload', { method: 'POST' });
+  const s = await api<{
+    cloud: string;
+    apiKey: string;
+    signature: string;
+    timestamp: string;
+    folder: string;
+    allowed_formats: string;
+  }>('/admin/upload', { method: 'POST' });
   const fd = new FormData();
   fd.append('file', file);
   fd.append('api_key', s.apiKey);
@@ -284,13 +366,22 @@ async function uploadImage(file: File): Promise<string> {
   fd.append('signature', s.signature);
   fd.append('folder', s.folder);
   fd.append('allowed_formats', s.allowed_formats);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${s.cloud}/image/upload`, { method: 'POST', body: fd });
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${s.cloud}/image/upload`, {
+    method: 'POST',
+    body: fd,
+  });
   const body = (await res.json()) as { public_id?: string; error?: { message: string } };
   if (!res.ok || !body.public_id) throw new Error(body.error?.message ?? 'Upload failed.');
   return body.public_id;
 }
 
-function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInput; onClose: (msg?: string) => void }) {
+function ProjectForm({
+  project,
+  onClose,
+}: {
+  project: AdminProject | ProjectInput;
+  onClose: (msg?: string) => void;
+}) {
   const [p, setP] = useState<ProjectInput>({ ...EMPTY, ...project });
   const [cs, setCs] = useState(project.caseStudy ? JSON.stringify(project.caseStudy, null, 2) : '');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -319,7 +410,10 @@ function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInpu
     }
     setBusy(true);
     try {
-      await api(id ? `/admin/projects/${id}` : '/admin/projects', { method: id ? 'PATCH' : 'POST', body: JSON.stringify(parsed.data) });
+      await api(id ? `/admin/projects/${id}` : '/admin/projects', {
+        method: id ? 'PATCH' : 'POST',
+        body: JSON.stringify(parsed.data),
+      });
       onClose(`Saved “${parsed.data.title}”.`);
     } catch (err) {
       setErrors((err as { fields?: Record<string, string> }).fields ?? { _: (err as Error).message });
@@ -340,30 +434,60 @@ function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInpu
       <Field label="Title" error={errors.title}>
         <input value={p.title} onChange={(e) => set('title', e.target.value)} required />
       </Field>
-      <Field label="Address (slug): lowercase-with-hyphens. Changing it keeps old links working." error={errors.slug}>
+      <Field
+        label="Address (slug): lowercase-with-hyphens. Changing it keeps old links working."
+        error={errors.slug}
+      >
         <input value={p.slug} onChange={(e) => set('slug', e.target.value)} required />
       </Field>
       <Field label="Summary (max 280 characters)" error={errors.summary}>
-        <textarea value={p.summary} onChange={(e) => set('summary', e.target.value)} rows={3} maxLength={280} />
+        <textarea
+          value={p.summary}
+          onChange={(e) => set('summary', e.target.value)}
+          rows={3}
+          maxLength={280}
+        />
       </Field>
       <fieldset>
         <legend>Pillars</legend>
         {PILLARS.map((pl) => (
           <label key={pl} className="inline">
-            <input type="checkbox" checked={p.pillars.includes(pl)} onChange={(e) => set('pillars', e.target.checked ? [...p.pillars, pl] : p.pillars.filter((x) => x !== pl))} /> {pl}
+            <input
+              type="checkbox"
+              checked={p.pillars.includes(pl)}
+              onChange={(e) =>
+                set('pillars', e.target.checked ? [...p.pillars, pl] : p.pillars.filter((x) => x !== pl))
+              }
+            />{' '}
+            {pl}
           </label>
         ))}
         {errors.pillars && <span className="error">{errors.pillars}</span>}
       </fieldset>
       <Field label="Stack (comma separated)">
-        <input value={p.stack.join(', ')} onChange={(e) => set('stack', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} />
+        <input
+          value={p.stack.join(', ')}
+          onChange={(e) =>
+            set(
+              'stack',
+              e.target.value
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean),
+            )
+          }
+        />
       </Field>
       <Field label="Card mark (short text on the cover)">
         <input value={p.mark} onChange={(e) => set('mark', e.target.value)} maxLength={40} />
       </Field>
       {(['live', 'repo', 'book'] as const).map((k) => (
         <Field key={k} label={`Link: ${k} (https only)`} error={errors[`links.${k}`]}>
-          <input type="url" value={p.links[k] ?? ''} onChange={(e) => set('links', { ...p.links, [k]: e.target.value || undefined })} />
+          <input
+            type="url"
+            value={p.links[k] ?? ''}
+            onChange={(e) => set('links', { ...p.links, [k]: e.target.value || undefined })}
+          />
         </Field>
       ))}
       <fieldset>
@@ -386,7 +510,11 @@ function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInpu
         />
         {p.cover && (
           <Field label="Alt text (required: describe the image)" error={errors['cover.alt']}>
-            <input value={p.cover.alt} onChange={(e) => set('cover', { id: p.cover!.id, alt: e.target.value })} required />
+            <input
+              value={p.cover.alt}
+              onChange={(e) => set('cover', { id: p.cover!.id, alt: e.target.value })}
+              required
+            />
           </Field>
         )}
         <p role="status" className="muted">
@@ -395,10 +523,12 @@ function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInpu
       </fieldset>
       <div className="row">
         <label className="inline">
-          <input type="checkbox" checked={p.featured} onChange={(e) => set('featured', e.target.checked)} /> Featured on the homepage
+          <input type="checkbox" checked={p.featured} onChange={(e) => set('featured', e.target.checked)} />{' '}
+          Featured on the homepage
         </label>
         <label className="inline">
-          <input type="checkbox" checked={p.hidden} onChange={(e) => set('hidden', e.target.checked)} /> Hidden
+          <input type="checkbox" checked={p.hidden} onChange={(e) => set('hidden', e.target.checked)} />{' '}
+          Hidden
         </label>
         <label className="inline">
           Status{' '}
@@ -409,7 +539,13 @@ function ProjectForm({ project, onClose }: { project: AdminProject | ProjectInpu
         </label>
       </div>
       <Field label="Case study (JSON). Leave empty for a card-only project." error={errors.caseStudy}>
-        <textarea value={cs} onChange={(e) => setCs(e.target.value)} rows={14} spellCheck={false} className="mono" />
+        <textarea
+          value={cs}
+          onChange={(e) => setCs(e.target.value)}
+          rows={14}
+          spellCheck={false}
+          className="mono"
+        />
       </Field>
       {errors._ && (
         <p role="alert" className="error">
@@ -466,10 +602,19 @@ function ProfileEditor() {
   return (
     <form className="card" onSubmit={save}>
       <h1>Profile</h1>
-      <p className="muted">Everything that isn’t a project: bio, links, roles, stats, certificates and writing. Edit the text between the quotes and save.</p>
+      <p className="muted">
+        Everything that isn’t a project: bio, links, roles, stats, certificates and writing. Edit the text
+        between the quotes and save.
+      </p>
       <label className="field">
         <span>Profile data</span>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={30} spellCheck={false} className="mono" />
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={30}
+          spellCheck={false}
+          className="mono"
+        />
       </label>
       {errors.length > 0 && (
         <ul role="alert" className="error">
@@ -528,8 +673,8 @@ function Messages() {
       {rows.map((m) => (
         <article key={m.id} className="card">
           <p>
-            <strong>{m.name}</strong> · <a href={`mailto:${m.email}`}>{m.email}</a> · {m.intent} · via {m.source} ·{' '}
-            <span className="muted">{new Date(m.createdAt).toLocaleString()}</span>
+            <strong>{m.name}</strong> · <a href={`mailto:${m.email}`}>{m.email}</a> · {m.intent} · via{' '}
+            {m.source} · <span className="muted">{new Date(m.createdAt).toLocaleString()}</span>
           </p>
           <p className="pre">{m.body}</p>
           <p className="muted">

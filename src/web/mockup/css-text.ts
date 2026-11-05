@@ -34,7 +34,9 @@ export function css(text: string): CSSProperties {
       continue;
     }
     const key = prop
-      .replace(/^-(webkit|moz|ms)-/, (_m, v: string) => (v === 'ms' ? 'ms-' : v[0]!.toUpperCase() + v.slice(1) + '-'))
+      .replace(/^-(webkit|moz|ms)-/, (_m, v: string) =>
+        v === 'ms' ? 'ms-' : v[0]!.toUpperCase() + v.slice(1) + '-',
+      )
       .replace(/-([a-z])/g, (_m, c: string) => c.toUpperCase());
     out[key] = value;
   }

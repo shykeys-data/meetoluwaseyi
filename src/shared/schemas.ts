@@ -16,20 +16,27 @@ export type AppEnv = z.infer<typeof AppEnvSchema>;
 
 /** Strips tags and control characters, collapses runs of blank lines. Text fields are stored as plain text. */
 export function plainText(input: string): string {
-  return input
-    .replace(/<[^>]*>/g, '')
-    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
-    .replace(/\r\n?/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return (
+    input
+      .replace(/<[^>]*>/g, '')
+      // eslint-disable-next-line no-control-regex -- stripping control characters is the point
+      .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+      .replace(/\r\n?/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  );
 }
 
 const text = (min: number, max: number) =>
   z
     .string()
     .transform(plainText)
-    .pipe(z.string().min(min, `Please write at least ${min} characters.`).max(max, `Please keep it under ${max} characters.`));
+    .pipe(
+      z
+        .string()
+        .min(min, `Please write at least ${min} characters.`)
+        .max(max, `Please keep it under ${max} characters.`),
+    );
 
 export const IntentSchema = z.enum(INTENTS);
 
@@ -69,17 +76,44 @@ export const ImageSchema = z.object({
 });
 
 export const CaseStudySchema = z.object({
-  meta: z.array(z.object({ label: z.string().max(40), value: z.string().max(160) })).max(8).default([]),
+  meta: z
+    .array(z.object({ label: z.string().max(40), value: z.string().max(160) }))
+    .max(8)
+    .default([]),
   kpis: z
-    .array(z.object({ value: z.string().max(16), label: z.string().max(80), tone: z.enum(['plain', 'warn', 'bad']).default('plain') }))
+    .array(
+      z.object({
+        value: z.string().max(16),
+        label: z.string().max(80),
+        tone: z.enum(['plain', 'warn', 'bad']).default('plain'),
+      }),
+    )
     .max(6)
     .default([]),
   ratings: z
-    .array(z.object({ label: z.string().max(60), value: z.number().min(0).max(5), tone: z.enum(['good', 'warn', 'bad']) }))
+    .array(
+      z.object({
+        label: z.string().max(60),
+        value: z.number().min(0).max(5),
+        tone: z.enum(['good', 'warn', 'bad']),
+      }),
+    )
     .max(6)
     .default([]),
-  steps: z.array(z.object({ week: z.string().max(20), title: z.string().max(80), items: z.array(z.string().max(300)).max(6) })).max(8).default([]),
-  revised: z.array(z.object({ was: z.string().max(300), now: z.string().max(500) })).max(6).default([]),
+  steps: z
+    .array(
+      z.object({
+        week: z.string().max(20),
+        title: z.string().max(80),
+        items: z.array(z.string().max(300)).max(6),
+      }),
+    )
+    .max(8)
+    .default([]),
+  revised: z
+    .array(z.object({ was: z.string().max(300), now: z.string().max(500) }))
+    .max(6)
+    .default([]),
   recommendations: z
     .array(z.object({ value: z.string().max(20), title: z.string().max(100), body: z.string().max(300) }))
     .max(8)
@@ -133,11 +167,17 @@ export const ProfileSchema = z.object({
   }),
   experience: z.array(ExperienceSchema).max(30),
   tagline: z.string().max(200).default(''),
-  education: z.array(z.object({ title: z.string().max(120), org: z.string().max(120), year: z.string().max(20) })).max(10),
-  certificates: z.array(z.object({ title: z.string().max(160), org: z.string().max(80), year: z.string().max(20) })).max(30),
+  education: z
+    .array(z.object({ title: z.string().max(120), org: z.string().max(120), year: z.string().max(20) }))
+    .max(10),
+  certificates: z
+    .array(z.object({ title: z.string().max(160), org: z.string().max(80), year: z.string().max(20) }))
+    .max(30),
   languages: z.array(z.object({ name: z.string().max(40), level: z.string().max(40) })).max(10),
   stats: z.array(z.object({ value: z.string().max(16), label: z.string().max(80) })).max(8),
-  programs: z.array(z.object({ name: z.string().max(80), cadence: z.string().max(40), note: z.string().max(200) })).max(12),
+  programs: z
+    .array(z.object({ name: z.string().max(80), cadence: z.string().max(40), note: z.string().max(200) }))
+    .max(12),
   now: z.array(z.string().max(200)).max(8),
   writing: z
     .array(
@@ -145,7 +185,10 @@ export const ProfileSchema = z.object({
         kicker: z.string().max(60),
         title: z.string().max(120),
         /** An https link, or a page on this site such as /work/olist-ecommerce-bi. */
-        link: z.union([httpsUrl, z.string().regex(/^\/[a-z0-9/-]*$/, 'Use https:// or a path on this site.')]),
+        link: z.union([
+          httpsUrl,
+          z.string().regex(/^\/[a-z0-9/-]*$/, 'Use https:// or a path on this site.'),
+        ]),
         linkLabel: z.string().max(60).default(''),
         posts: z
           .array(

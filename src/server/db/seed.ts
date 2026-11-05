@@ -8,7 +8,9 @@ import { saveProfile } from '../services/content.ts';
  * Loads the launch content. Safe to run twice: the profile is upserted and projects are
  * matched by slug, so a second run changes nothing it already wrote.
  */
-export async function seed(db: Db): Promise<{ profile: 'saved'; projectsCreated: number; projectsKept: number }> {
+export async function seed(
+  db: Db,
+): Promise<{ profile: 'saved'; projectsCreated: number; projectsKept: number }> {
   await saveProfile(db, ProfileSchema.parse(PROFILE));
   let created = 0;
   let kept = 0;

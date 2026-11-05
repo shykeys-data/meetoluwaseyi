@@ -57,15 +57,30 @@ const schema = z
   .superRefine((env, ctx) => {
     const deployed = env.APP_ENV === 'staging' || env.APP_ENV === 'production';
     if (deployed) {
-      for (const key of ['SITE_URL', 'DATABASE_URL', 'SESSION_SECRET', 'IP_HASH_SALT', 'ADMIN_EMAIL'] as const) {
-        if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: `is required in ${env.APP_ENV}` });
+      for (const key of [
+        'SITE_URL',
+        'DATABASE_URL',
+        'SESSION_SECRET',
+        'IP_HASH_SALT',
+        'ADMIN_EMAIL',
+      ] as const) {
+        if (!env[key])
+          ctx.addIssue({ code: 'custom', path: [key], message: `is required in ${env.APP_ENV}` });
       }
       if (env.NODE_ENV !== 'production') {
-        ctx.addIssue({ code: 'custom', path: ['NODE_ENV'], message: `must be "production" when APP_ENV is ${env.APP_ENV}` });
+        ctx.addIssue({
+          code: 'custom',
+          path: ['NODE_ENV'],
+          message: `must be "production" when APP_ENV is ${env.APP_ENV}`,
+        });
       }
     }
     if (env.APP_ENV === 'staging' && !env.STAGING_PASSWORD) {
-      ctx.addIssue({ code: 'custom', path: ['STAGING_PASSWORD'], message: 'is required on staging (the site is password-protected)' });
+      ctx.addIssue({
+        code: 'custom',
+        path: ['STAGING_PASSWORD'],
+        message: 'is required on staging (the site is password-protected)',
+      });
     }
   });
 
@@ -78,7 +93,9 @@ const DEV_DEFAULTS = {
 } as const;
 
 type Parsed = z.infer<typeof schema>;
-export type Config = Omit<Parsed, keyof typeof DEV_DEFAULTS> & { [K in keyof typeof DEV_DEFAULTS]: string } & {
+export type Config = Omit<Parsed, keyof typeof DEV_DEFAULTS> & {
+  [K in keyof typeof DEV_DEFAULTS]: string;
+} & {
   isDev: boolean;
   isStaging: boolean;
   isProd: boolean;
@@ -94,7 +111,9 @@ export class ConfigError extends Error {
 /** Parse and check the environment. Throws ConfigError listing every problem at once. */
 export function loadConfig(source: Record<string, string | undefined> = process.env): Config {
   // Empty strings count as unset, so `KEY=` in a .env file is treated as missing.
-  const env = Object.fromEntries(Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ''));
+  const env = Object.fromEntries(
+    Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ''),
+  );
   const parsed = schema.safeParse(env);
   if (!parsed.success) {
     throw new ConfigError(parsed.error.issues.map((i) => `${i.path.join('.') || 'env'} ${i.message}`));

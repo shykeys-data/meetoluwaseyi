@@ -6,7 +6,18 @@ import type { PublicProject } from '../../shared/schemas.ts';
 import { markIntroSeen, prefersReducedMotion } from '../lib/mode.ts';
 import { sendContact } from '../lib/api.ts';
 import { turnstileToken } from '../lib/turnstile.ts';
-import { DAYS, DOING, LOVES, NOTES, NUMS, PLAYFUL_CARDS, ROAD, TAPE_NOTES, TAPE_WORDS, INTENTS } from '../content/playful.ts';
+import {
+  DAYS,
+  DOING,
+  LOVES,
+  NOTES,
+  NUMS,
+  PLAYFUL_CARDS,
+  ROAD,
+  TAPE_NOTES,
+  TAPE_WORDS,
+  INTENTS,
+} from '../content/playful.ts';
 
 /**
  * Playful homepage. Behaviour ported from the approved mockup: the intro on a first visit, the living sky
@@ -35,7 +46,8 @@ function cardFor(p: PublicProject, i: number) {
   const href = p.caseStudy ? `/work/${p.slug}` : (p.links.live ?? p.links.book ?? p.links.repo ?? '/work');
   return {
     tags: p.pillars,
-    label: o.label ?? (p.pillars[0] === 'data' ? 'Data' : p.pillars[0] === 'community' ? 'Community' : 'Venture'),
+    label:
+      o.label ?? (p.pillars[0] === 'data' ? 'Data' : p.pillars[0] === 'community' ? 'Community' : 'Venture'),
     title: p.title,
     mark: o.mark ?? p.mark,
     bg: o.bg ?? CARD_BG[i % CARD_BG.length],
@@ -158,7 +170,8 @@ export class PlayfulHome extends Component<Props, any> {
           const pol = now < (this.avaPolUntil || 0);
           if (say !== el.hasAttribute('data-say')) el.toggleAttribute('data-say', say);
           if (pol !== el.hasAttribute('data-pol')) el.toggleAttribute('data-pol', pol);
-          if (!!this.avaNight !== el.hasAttribute('data-night')) el.toggleAttribute('data-night', !!this.avaNight);
+          if (!!this.avaNight !== el.hasAttribute('data-night'))
+            el.toggleAttribute('data-night', !!this.avaNight);
           if (this.snapped && !el.hasAttribute('data-snapped')) el.setAttribute('data-snapped', '');
           const b = el.querySelector('.ava-say');
           if (say && b && b.textContent !== this.avaSay) b.textContent = this.avaSay;
@@ -174,7 +187,12 @@ export class PlayfulHome extends Component<Props, any> {
       const road = this.road as HTMLElement | null;
       const pin = road ? (road.closest('.road-pin') as HTMLElement | null) : null;
       if (road && pin) {
-        if (this.roadW !== road.scrollWidth || this.roadVW !== win.innerWidth || this.roadVH !== win.innerHeight || this.roadPin !== pin) {
+        if (
+          this.roadW !== road.scrollWidth ||
+          this.roadVW !== win.innerWidth ||
+          this.roadVH !== win.innerHeight ||
+          this.roadPin !== pin
+        ) {
           this.roadW = road.scrollWidth;
           this.roadVW = win.innerWidth;
           this.roadVH = win.innerHeight;
@@ -239,7 +257,10 @@ export class PlayfulHome extends Component<Props, any> {
         el.setAttribute('data-strike', '');
       });
       clearTimeout(this.st);
-      this.st = setTimeout(() => [nav, this.sky].forEach((el: HTMLElement | null) => el && el.removeAttribute('data-strike')), 800);
+      this.st = setTimeout(
+        () => [nav, this.sky].forEach((el: HTMLElement | null) => el && el.removeAttribute('data-strike')),
+        800,
+      );
     };
     const doc = win.document;
     if (!this.reduce) {
@@ -315,7 +336,13 @@ export class PlayfulHome extends Component<Props, any> {
     // No real camera is used: no permission prompt and no image of the visitor.
     {
       const art = () => doc.querySelector('.hero-art') as HTMLElement | null;
-      const lines = ['Got you! Ẹ kú àbọ̀', 'Perfect shot!', 'You look great, abeg', 'One more? Okay, last one', 'Framed. Welcome in!'];
+      const lines = [
+        'Got you! Ẹ kú àbọ̀',
+        'Perfect shot!',
+        'You look great, abeg',
+        'One more? Okay, last one',
+        'Framed. Welcome in!',
+      ];
       let n = 0;
       const sayFor = (el: HTMLElement, text: string, ms: number) => {
         this.avaSay = text;
@@ -394,7 +421,11 @@ export class PlayfulHome extends Component<Props, any> {
           const el = art();
           if (!el) return;
           const r = el.getBoundingClientRect();
-          const near = e.clientX > r.left - 200 && e.clientX < r.right + 200 && e.clientY > r.top - 200 && e.clientY < r.bottom + 200;
+          const near =
+            e.clientX > r.left - 200 &&
+            e.clientX < r.right + 200 &&
+            e.clientY > r.top - 200 &&
+            e.clientY < r.bottom + 200;
           const tx = near ? Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1)) : 0;
           const ty = near ? Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1)) : 0;
           el.style.setProperty('--tx', tx.toFixed(2));
@@ -452,7 +483,22 @@ export class PlayfulHome extends Component<Props, any> {
 
   override componentWillUnmount() {
     for (const t of ['timer']) clearInterval(this[t]);
-    for (const t of ['bt', 'bt2', 'tt', 'tt2', 'i1', 'i2', 'i3', 'lt', 'st', 'ss', 'hintT', 'snapT1', 'snapT2']) clearTimeout(this[t]);
+    for (const t of [
+      'bt',
+      'bt2',
+      'tt',
+      'tt2',
+      'i1',
+      'i2',
+      'i3',
+      'lt',
+      'st',
+      'ss',
+      'hintT',
+      'snapT1',
+      'snapT2',
+    ])
+      clearTimeout(this[t]);
     window.cancelAnimationFrame(this.raf);
     window.cancelAnimationFrame(this.raf2);
     const doc = document;
@@ -487,7 +533,9 @@ export class PlayfulHome extends Component<Props, any> {
       website: '',
       ...(token ? { turnstileToken: token } : {}),
     });
-    this.setState(r.ok ? { chatSending: false, chatSent: true } : { chatSending: false, chatError: r.error.message });
+    this.setState(
+      r.ok ? { chatSending: false, chatSent: true } : { chatSending: false, chatError: r.error.message },
+    );
   }
 
   renderVals() {
@@ -501,8 +549,12 @@ export class PlayfulHome extends Component<Props, any> {
     };
     const first = data.profile.name.split(' ')[0] ?? 'Oluwaseyi';
     // Letters are inline-block spans, so the space must be non-breaking or it collapses.
-    const line1 = "Hi, I'm".split('').map((ch, i) => ({ ch: ch === ' ' ? '\u00A0' : ch, d: (0.1 + i * 0.05).toFixed(2) + 's' }));
-    const line2 = first.split('').map((ch, i) => ({ ch, d: (0.65 + i * 0.06).toFixed(2) + 's', c: SHADOWS[i % SHADOWS.length] }));
+    const line1 = "Hi, I'm"
+      .split('')
+      .map((ch, i) => ({ ch: ch === ' ' ? '\u00A0' : ch, d: (0.1 + i * 0.05).toFixed(2) + 's' }));
+    const line2 = first
+      .split('')
+      .map((ch, i) => ({ ch, d: (0.65 + i * 0.06).toFixed(2) + 's', c: SHADOWS[i % SHADOWS.length] }));
     const doing = DOING.map((x, i) => ({ ...x, ...rot(DOING.length, s.d || 0, i) }));
     const palette = ['#FF7A3D', '#FFD23F', '#2EC4A0', '#5BC0EB', '#F25F8B', '#1B1A2E'];
     const confetti = Array.from({ length: 28 }, (_, i) => {
@@ -528,7 +580,13 @@ export class PlayfulHome extends Component<Props, any> {
     };
     const tape = TAPE_WORDS.concat(TAPE_WORDS).map((t) => ({ t }));
     const tape2 = TAPE_NOTES.concat(TAPE_NOTES, TAPE_NOTES, TAPE_NOTES).map((t) => ({ t }));
-    const loves = LOVES.map((l) => ({ ...l, isC: l.k === 'C', isD: l.k === 'D', isDa: l.k === 'Da', isB: l.k === 'B' }));
+    const loves = LOVES.map((l) => ({
+      ...l,
+      isC: l.k === 'C',
+      isD: l.k === 'D',
+      isDa: l.k === 'Da',
+      isB: l.k === 'B',
+    }));
     const ti = s.time || 0;
     const times = DAYS.map((d, i) => ({
       t: d.t,
@@ -536,7 +594,9 @@ export class PlayfulHome extends Component<Props, any> {
       pick: () => this.setState({ time: i }),
       style: i === ti ? 'background:#1B1A2E;color:#FFF6E5' : 'background:rgba(255,255,255,.85);color:#1B1A2E',
     }));
-    const projects = data.projects.slice(0, 4).map((p, i) => ({ ...cardFor(p, i), top: 110 + i * 26 + 'px', z: i + 1 }));
+    const projects = data.projects
+      .slice(0, 4)
+      .map((p, i) => ({ ...cardFor(p, i), top: 110 + i * 26 + 'px', z: i + 1 }));
     const nums = NUMS.map((n, i) => ({ ...n, v: n.live ? `${[s.n1, s.n2, s.n3][i] || 0}${n.v}` : n.v, i }));
     const ch = INTENTS.find((x) => x.id === s.choice);
     const intents = INTENTS.map((x) => ({
@@ -560,7 +620,22 @@ export class PlayfulHome extends Component<Props, any> {
         : hr < 17
           ? 'good afternoon, welcome in!'
           : 'hey, welcome in!';
-    const starPts = [[8, 12], [18, 30], [27, 8], [36, 72], [44, 18], [58, 84], [66, 10], [74, 40], [82, 22], [90, 66], [12, 80], [50, 58], [94, 12], [30, 48]];
+    const starPts = [
+      [8, 12],
+      [18, 30],
+      [27, 8],
+      [36, 72],
+      [44, 18],
+      [58, 84],
+      [66, 10],
+      [74, 40],
+      [82, 22],
+      [90, 66],
+      [12, 80],
+      [50, 58],
+      [94, 12],
+      [30, 48],
+    ];
     const stars = starPts.map((p, i) => ({
       x: p[0] + '%',
       y: p[1] + '%',
@@ -568,7 +643,9 @@ export class PlayfulHome extends Component<Props, any> {
       c: i % 4 === 0 ? '#FFD23F' : '#FFF6E5',
       d: ((i * 0.37) % 2.6).toFixed(2) + 's',
     }));
-    const introLetters = first.split('').map((c, i) => ({ ch: c, d: (0.55 + i * 0.08).toFixed(2) + 's', c: SHADOWS[i % SHADOWS.length] }));
+    const introLetters = first
+      .split('')
+      .map((c, i) => ({ ch: c, d: (0.55 + i * 0.08).toFixed(2) + 's', c: SHADOWS[i % SHADOWS.length] }));
     const menu = !!s.menu;
     const menuLinks = [
       ['/work', 'Things I made'],
@@ -578,11 +655,27 @@ export class PlayfulHome extends Component<Props, any> {
       ['/?mode=serious', 'Serious mode'],
     ].map(([href, t], i) => ({ href, t, i: i + 1 }));
     const chatStatus: ReactNode = s.chatSent ? (
-      <p id="hi-status" role="status" className="msg" style={{ margin: '8px 0 0', alignSelf: 'flex-start', padding: '12px 16px', borderRadius: '22px 22px 22px 6px', background: '#FFD23F', fontSize: 16 }}>
+      <p
+        id="hi-status"
+        role="status"
+        className="msg"
+        style={{
+          margin: '8px 0 0',
+          alignSelf: 'flex-start',
+          padding: '12px 16px',
+          borderRadius: '22px 22px 22px 6px',
+          background: '#FFD23F',
+          fontSize: 16,
+        }}
+      >
         Got it! I’ll be in touch soon.
       </p>
     ) : (
-      <p id="hi-status" role={s.chatError ? 'alert' : 'status'} style={{ margin: '6px 0 0', fontSize: 14, color: '#B42318', minHeight: s.chatError ? undefined : 0 }}>
+      <p
+        id="hi-status"
+        role={s.chatError ? 'alert' : 'status'}
+        style={{ margin: '6px 0 0', fontSize: 14, color: '#B42318', minHeight: s.chatError ? undefined : 0 }}
+      >
         {s.chatError}
       </p>
     );
@@ -610,7 +703,8 @@ export class PlayfulHome extends Component<Props, any> {
       replied: !!(ch && !s.typing),
       reply: ch ? ch.reply : '',
       chatEmail: s.chatEmail,
-      onChatEmail: (e: { target: HTMLInputElement }) => this.setState({ chatEmail: e.target.value, chatError: '' }),
+      onChatEmail: (e: { target: HTMLInputElement }) =>
+        this.setState({ chatEmail: e.target.value, chatError: '' }),
       chatInvalid: !!s.chatError,
       chatSending: !!s.chatSending,
       chatSendLabel: s.chatSending ? 'Sending…' : s.chatSent ? 'Sent' : 'Send',

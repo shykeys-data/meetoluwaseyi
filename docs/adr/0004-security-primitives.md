@@ -3,6 +3,7 @@
 **Status:** Accepted, 5 Nov 2026
 
 ## Decision
+
 - **Passwords:** scrypt (N=2^15, r=8, p=1), with parameters stored in the hash so they can be raised later.
   The brief named argon2id; argon2 needs a native module compiled on the host, which shared hosting often
   can't do. scrypt is memory-hard and on OWASP's recommended list.
@@ -14,4 +15,5 @@
 - **Privacy:** IPs are never stored, only a salted HMAC.
 
 ## Consequences
+
 No native dependencies and nothing to compile on the host; fewer packages to trust.

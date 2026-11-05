@@ -1,7 +1,8 @@
 import type { ComponentType } from 'react';
 import type { PageData } from '../shared/page.ts';
 
-export type PageKey = 'PlayfulHome' | 'SeriousHome' | 'Work' | 'CaseStudy' | 'About' | 'Writing' | 'Contact' | 'Simple';
+export type PageKey =
+  'PlayfulHome' | 'SeriousHome' | 'Work' | 'CaseStudy' | 'About' | 'Writing' | 'Contact' | 'Simple';
 export type PageComponent = ComponentType<{ data: PageData }>;
 
 /** Which page component a route needs. Only the home has two layouts; inner pages switch theme tokens. */

@@ -25,7 +25,9 @@ svg {
   border-radius: 999px;
   background: #1b1a2e;
   color: #fff6e5;
-  font: 600 15px/1 system-ui, sans-serif;
+  font:
+    600 15px/1 system-ui,
+    sans-serif;
   text-decoration: none;
   transform: translateY(-160%);
   transition: transform 160ms ease;

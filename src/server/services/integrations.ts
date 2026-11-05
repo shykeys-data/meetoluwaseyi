@@ -5,7 +5,11 @@ import { fetchWithTimeout } from './context.ts';
 import { createProject, getSetting, setSetting } from './content.ts';
 
 // ---------- Cloudinary: the server signs, the browser uploads straight to Cloudinary ----------
-export const UPLOAD_RULES = { folder: 'meetoluwaseyi', formats: 'jpg,png,webp,avif', maxBytes: 5 * 1024 * 1024 } as const;
+export const UPLOAD_RULES = {
+  folder: 'meetoluwaseyi',
+  formats: 'jpg,png,webp,avif',
+  maxBytes: 5 * 1024 * 1024,
+} as const;
 
 export function signCloudinaryUpload(ctx: Ctx, now = Math.floor(Date.now() / 1000)) {
   const { CLOUDINARY_CLOUD: cloud, CLOUDINARY_KEY: apiKey, CLOUDINARY_SECRET: secret } = ctx.config;
@@ -20,7 +24,9 @@ export function signCloudinaryUpload(ctx: Ctx, now = Math.floor(Date.now() / 100
     .sort()
     .map((k) => `${k}=${params[k]}`)
     .join('&');
-  const signature = createHash('sha1').update(toSign + secret).digest('hex');
+  const signature = createHash('sha1')
+    .update(toSign + secret)
+    .digest('hex');
   return { cloud, apiKey, signature, maxBytes: UPLOAD_RULES.maxBytes, ...params };
 }
 
@@ -29,11 +35,15 @@ export async function purgeUrls(ctx: Ctx, paths: string[]): Promise<void> {
   const { CLOUDFLARE_ZONE_ID: zone, CLOUDFLARE_API_TOKEN: token, SITE_URL: site } = ctx.config;
   if (!zone || !token || paths.length === 0) return;
   try {
-    const res = await fetchWithTimeout(ctx, `https://api.cloudflare.com/client/v4/zones/${zone}/purge_cache`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ files: [...new Set(paths)].map((p) => site + p) }),
-    });
+    const res = await fetchWithTimeout(
+      ctx,
+      `https://api.cloudflare.com/client/v4/zones/${zone}/purge_cache`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: [...new Set(paths)].map((p) => site + p) }),
+      },
+    );
     if (!res.ok) ctx.log.warn('cloudflare purge failed', { status: res.status });
   } catch (err) {
     ctx.log.warn('cloudflare purge failed', { err });
@@ -69,11 +79,13 @@ const PILLAR_BY_TOPIC: Record<string, 'data' | 'community' | 'bd' | 'ventures'> 
 };
 
 export function repoToSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80) || 'project';
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'project'
+  );
 }
 
 export function repoToTitle(name: string): string {
@@ -81,7 +93,12 @@ export function repoToTitle(name: string): string {
 }
 
 export function shouldSkip(r: GhRepo, user: string): boolean {
-  return r.fork || r.archived || r.name.toLowerCase() === user.toLowerCase() || (r.topics ?? []).includes('hide-from-site');
+  return (
+    r.fork ||
+    r.archived ||
+    r.name.toLowerCase() === user.toLowerCase() ||
+    (r.topics ?? []).includes('hide-from-site')
+  );
 }
 
 export interface SyncResult {
@@ -110,7 +127,11 @@ export async function syncGithub(ctx: Ctx): Promise<SyncResult> {
 
   const result: SyncResult = { ok: false, created: 0, updated: 0, skipped: 0 };
   try {
-    const res = await fetchWithTimeout(ctx, `https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&type=owner&sort=pushed`, { headers });
+    const res = await fetchWithTimeout(
+      ctx,
+      `https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=100&type=owner&sort=pushed`,
+      { headers },
+    );
     if (res.status === 304) {
       await setSetting(ctx.db, 'github_last_ok', { at: new Date().toISOString() });
       return { ...result, ok: true, notModified: true };
@@ -154,7 +175,10 @@ export async function syncGithub(ctx: Ctx): Promise<SyncResult> {
           slug,
           title: repoToTitle(r.name),
           pillars: [pillar],
-          summary: description.length >= 10 ? description.slice(0, 280) : `${repoToTitle(r.name)}, a project on GitHub.`,
+          summary:
+            description.length >= 10
+              ? description.slice(0, 280)
+              : `${repoToTitle(r.name)}, a project on GitHub.`,
           stack: [...facts.languages, ...facts.topics].slice(0, 8),
           links: { repo: r.html_url, live: r.homepage?.startsWith('https://') ? r.homepage : undefined },
           status: 'published',
@@ -162,7 +186,11 @@ export async function syncGithub(ctx: Ctx): Promise<SyncResult> {
         },
         'github',
       );
-      await ctx.db.execute('UPDATE projects SET repo_id = ?, repo = ? WHERE id = ?', [r.id, JSON.stringify(facts), id]);
+      await ctx.db.execute('UPDATE projects SET repo_id = ?, repo = ? WHERE id = ?', [
+        r.id,
+        JSON.stringify(facts),
+        id,
+      ]);
       result.created++;
     }
     const newEtag = res.headers.get('etag');

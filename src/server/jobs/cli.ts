@@ -31,7 +31,8 @@ async function run() {
         console.log((await migrate(db)).length ? 'migrations applied' : 'database already up to date');
         break;
       case 'seed':
-        if (config.isProd && !args.includes('--force')) throw new Error('Refusing to seed production without --force.');
+        if (config.isProd && !args.includes('--force'))
+          throw new Error('Refusing to seed production without --force.');
         await migrate(db);
         console.log(await seed(db));
         break;
@@ -57,7 +58,9 @@ async function run() {
         break;
       }
       default:
-        console.log('Commands: check | migrate | seed [--force] | create-admin [email] | github-sync | daily');
+        console.log(
+          'Commands: check | migrate | seed [--force] | create-admin [email] | github-sync | daily',
+        );
     }
   } finally {
     await db.end();

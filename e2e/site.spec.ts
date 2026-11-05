@@ -86,7 +86,11 @@ test.describe('contact', () => {
 
   test('sends a message and shows the thank-you panel', async ({ page }) => {
     await page.goto('/contact');
-    await page.getByText('I’m hiring', { exact: false }).or(page.getByText('Hire', { exact: true })).first().click();
+    await page
+      .getByText('I’m hiring', { exact: false })
+      .or(page.getByText('Hire', { exact: true }))
+      .first()
+      .click();
     await page.fill('#c-name', 'Ada Lovelace');
     await page.fill('#c-email', 'ada@example.com');
     await page.fill('#c-msg', 'I would love to talk about a community role.');

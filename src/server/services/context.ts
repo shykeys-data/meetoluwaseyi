@@ -11,7 +11,12 @@ export interface Ctx {
 }
 
 /** fetch with a hard timeout, so a slow outside service can never hang a request or a job. */
-export async function fetchWithTimeout(ctx: Ctx, url: string, init: RequestInit = {}, ms = 10_000): Promise<Response> {
+export async function fetchWithTimeout(
+  ctx: Ctx,
+  url: string,
+  init: RequestInit = {},
+  ms = 10_000,
+): Promise<Response> {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), ms);
   try {

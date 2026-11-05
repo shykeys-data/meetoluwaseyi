@@ -42,4 +42,6 @@ export function onModeChange(cb: (mode: Mode) => void): () => void {
 }
 
 export const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  typeof window !== 'undefined' &&
+  !!window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;

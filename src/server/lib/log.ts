@@ -13,7 +13,12 @@ export function mask(text: string): string {
 
 function scrub(value: unknown): unknown {
   if (typeof value === 'string') return mask(value);
-  if (value instanceof Error) return { name: value.name, message: mask(value.message), stack: value.stack?.split('\n').slice(0, 6).join('\n') };
+  if (value instanceof Error)
+    return {
+      name: value.name,
+      message: mask(value.message),
+      stack: value.stack?.split('\n').slice(0, 6).join('\n'),
+    };
   if (Array.isArray(value)) return value.map(scrub);
   if (value && typeof value === 'object') {
     const out: Record<string, unknown> = {};
@@ -32,12 +37,22 @@ export interface Logger {
   error(msg: string, data?: object): void;
 }
 
-export function createLogger(minLevel: Level = 'info', write: (line: string) => void = (l) => process.stdout.write(l + '\n')): Logger {
+export function createLogger(
+  minLevel: Level = 'info',
+  write: (line: string) => void = (l) => process.stdout.write(l + '\n'),
+): Logger {
   const order: Level[] = ['debug', 'info', 'warn', 'error'];
   const at = order.indexOf(minLevel);
   const emit = (level: Level) => (msg: string, data?: object) => {
     if (order.indexOf(level) < at) return;
-    write(JSON.stringify({ t: new Date().toISOString(), level, msg: mask(msg), ...(data ? (scrub(data) as object) : {}) }));
+    write(
+      JSON.stringify({
+        t: new Date().toISOString(),
+        level,
+        msg: mask(msg),
+        ...(data ? (scrub(data) as object) : {}),
+      }),
+    );
   };
   return { debug: emit('debug'), info: emit('info'), warn: emit('warn'), error: emit('error') };
 }

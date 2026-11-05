@@ -24,7 +24,8 @@ describe('TOTP (RFC 6238 test vectors)', () => {
     expect(c.verifyTotp(secret, '000000', 59_000)).toBe(false);
     expect(c.verifyTotp(secret, 'abcdef', now)).toBe(false);
   });
-  it('round-trips base32', () => expect(c.base32Decode(c.base32Encode(Buffer.from('hello world'))).toString()).toBe('hello world'));
+  it('round-trips base32', () =>
+    expect(c.base32Decode(c.base32Encode(Buffer.from('hello world'))).toString()).toBe('hello world'));
 });
 
 describe('passwords, encryption, signing', () => {
@@ -60,7 +61,10 @@ describe('logs', () => {
   it('masks emails and IPs and redacts secrets', () => {
     expect(mask('jane@example.com at 10.20.30.40')).toBe('j***@example.com at 10.20.x.x');
     const lines: string[] = [];
-    createLogger('info', (l) => lines.push(l)).info('x', { password: 'p', nested: { token: 't', email: 'bob@x.io' } });
+    createLogger('info', (l) => lines.push(l)).info('x', {
+      password: 'p',
+      nested: { token: 't', email: 'bob@x.io' },
+    });
     expect(lines[0]).not.toContain('"p"');
     expect(lines[0]).toContain('[redacted]');
     expect(lines[0]).toContain('b***@x.io');
@@ -68,7 +72,12 @@ describe('logs', () => {
 });
 
 describe('shared validation', () => {
-  const good = { name: 'Ada', email: 'ADA@Example.com ', intent: 'hire', message: 'Hello there, let us talk.' };
+  const good = {
+    name: 'Ada',
+    email: 'ADA@Example.com ',
+    intent: 'hire',
+    message: 'Hello there, let us talk.',
+  };
   it('accepts a good contact message and normalises it', () => {
     const r = ContactInputSchema.parse(good);
     expect(r.email).toBe('ada@example.com');
@@ -85,8 +94,12 @@ describe('shared validation', () => {
     const p = { slug: 'ok-slug', title: 'Title', pillars: ['data'], summary: 'A summary long enough.' };
     expect(ProjectInputSchema.safeParse(p).success).toBe(true);
     expect(ProjectInputSchema.safeParse({ ...p, slug: 'Bad Slug' }).success).toBe(false);
-    expect(ProjectInputSchema.safeParse({ ...p, links: { live: 'http://insecure.example' } }).success).toBe(false);
-    expect(ProjectInputSchema.safeParse({ ...p, links: { live: 'javascript:alert(1)' } }).success).toBe(false);
+    expect(ProjectInputSchema.safeParse({ ...p, links: { live: 'http://insecure.example' } }).success).toBe(
+      false,
+    );
+    expect(ProjectInputSchema.safeParse({ ...p, links: { live: 'javascript:alert(1)' } }).success).toBe(
+      false,
+    );
   });
   it('parses modes strictly', () => {
     expect(parseMode('serious')).toBe('serious');
@@ -112,7 +125,8 @@ describe('config', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(ConfigError);
       const msg = (err as Error).message;
-      for (const k of ['SITE_URL', 'DATABASE_URL', 'SESSION_SECRET', 'IP_HASH_SALT', 'ADMIN_EMAIL']) expect(msg).toContain(k);
+      for (const k of ['SITE_URL', 'DATABASE_URL', 'SESSION_SECRET', 'IP_HASH_SALT', 'ADMIN_EMAIL'])
+        expect(msg).toContain(k);
     }
   });
   it('requires a staging password on staging', () => {
@@ -136,8 +150,30 @@ describe('SEO and exports', () => {
   });
   it('lists only case studies plus core pages in the sitemap', () => {
     const xml = sitemapXml('https://meetoluwaseyi.com', [
-      { slug: 'a', caseStudy: {}, title: '', pillars: [], summary: '', cover: null, mark: '', stack: [], links: {}, featured: false } as never,
-      { slug: 'b', caseStudy: null, title: '', pillars: [], summary: '', cover: null, mark: '', stack: [], links: {}, featured: false } as never,
+      {
+        slug: 'a',
+        caseStudy: {},
+        title: '',
+        pillars: [],
+        summary: '',
+        cover: null,
+        mark: '',
+        stack: [],
+        links: {},
+        featured: false,
+      } as never,
+      {
+        slug: 'b',
+        caseStudy: null,
+        title: '',
+        pillars: [],
+        summary: '',
+        cover: null,
+        mark: '',
+        stack: [],
+        links: {},
+        featured: false,
+      } as never,
     ]);
     expect(xml).toContain('/work/a');
     expect(xml).not.toContain('/work/b');
@@ -147,14 +183,41 @@ describe('SEO and exports', () => {
     expect(robotsTxt('https://x', true, '/myadm')).toContain('Disallow: /myadm');
   });
   it('neutralises spreadsheet formulas in CSV', () => {
-    const csv = toCsv([{ id: 1, name: '=HYPERLINK("x")', email: 'a@b.c', intent: 'hi', body: '+1', source: 'form', status: 'new', notifyEmail: 'off', notifyWhatsapp: 'off', notifyError: null, createdAt: '2026-01-01' }]);
+    const csv = toCsv([
+      {
+        id: 1,
+        name: '=HYPERLINK("x")',
+        email: 'a@b.c',
+        intent: 'hi',
+        body: '+1',
+        source: 'form',
+        status: 'new',
+        notifyEmail: 'off',
+        notifyWhatsapp: 'off',
+        notifyError: null,
+        createdAt: '2026-01-01',
+      },
+    ]);
     expect(csv).toContain(`"'=HYPERLINK(""x"")"`);
     expect(csv).toContain(`"'+1"`);
   });
 });
 
 describe('GitHub sync rules', () => {
-  const repo = { id: 1, name: 'My_Cool-Repo', full_name: 'u/x', description: null, homepage: null, html_url: '', fork: false, archived: false, topics: [], language: null, stargazers_count: 0, pushed_at: '' };
+  const repo = {
+    id: 1,
+    name: 'My_Cool-Repo',
+    full_name: 'u/x',
+    description: null,
+    homepage: null,
+    html_url: '',
+    fork: false,
+    archived: false,
+    topics: [],
+    language: null,
+    stargazers_count: 0,
+    pushed_at: '',
+  };
   it('makes clean slugs', () => expect(repoToSlug('My_Cool-Repo!!')).toBe('my-cool-repo'));
   it('skips forks, archived, the profile repo and hidden topics', () => {
     expect(shouldSkip(repo, 'u')).toBe(false);
@@ -164,7 +227,9 @@ describe('GitHub sync rules', () => {
     expect(shouldSkip({ ...repo, topics: ['hide-from-site'] }, 'u')).toBe(true);
   });
   it('signs Cloudinary uploads with fixed folder and formats', () => {
-    const ctx = { config: { CLOUDINARY_CLOUD: 'demo', CLOUDINARY_KEY: 'k', CLOUDINARY_SECRET: 'abcd' } } as never;
+    const ctx = {
+      config: { CLOUDINARY_CLOUD: 'demo', CLOUDINARY_KEY: 'k', CLOUDINARY_SECRET: 'abcd' },
+    } as never;
     const s = signCloudinaryUpload(ctx, 1315060510);
     expect(s?.folder).toBe('meetoluwaseyi');
     expect(s?.signature).toMatch(/^[a-f0-9]{40}$/);

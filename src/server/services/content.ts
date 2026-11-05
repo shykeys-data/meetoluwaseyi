@@ -1,7 +1,13 @@
 import type { ResultSetHeader, RowDataPacket } from 'mysql2';
 import type { Db } from '../db/pool.ts';
 import { json } from '../db/pool.ts';
-import { ProfileSchema, ProjectInputSchema, type Profile, type ProjectInput, type PublicProject } from '../../shared/schemas.ts';
+import {
+  ProfileSchema,
+  ProjectInputSchema,
+  type Profile,
+  type ProjectInput,
+  type PublicProject,
+} from '../../shared/schemas.ts';
 import { conflict, notFound } from '../lib/http.ts';
 
 /*
@@ -68,7 +74,9 @@ export function toPublic(p: AdminProject): PublicProject {
     cover: p.cover,
     mark: p.mark,
     stack: p.stack,
-    links: Object.fromEntries(Object.entries(p.links).filter(([, v]) => Boolean(v))) as PublicProject['links'],
+    links: Object.fromEntries(
+      Object.entries(p.links).filter(([, v]) => Boolean(v)),
+    ) as PublicProject['links'],
     featured: p.featured,
     caseStudy: p.caseStudy,
   };
@@ -99,7 +107,9 @@ export async function findProjectBySlug(db: Db, slug: string): Promise<SlugLooku
 }
 
 export async function listAllProjects(db: Db): Promise<AdminProject[]> {
-  const [rows] = await db.execute<RowDataPacket[]>(`SELECT ${COLS} FROM projects ORDER BY sort_order ASC, id ASC`);
+  const [rows] = await db.execute<RowDataPacket[]>(
+    `SELECT ${COLS} FROM projects ORDER BY sort_order ASC, id ASC`,
+  );
   return rows.map(toAdmin);
 }
 
@@ -139,9 +149,14 @@ async function slugTakenByHistory(db: Db, slug: string, exceptId?: number): Prom
   return Boolean(rows[0] && Number(rows[0].project_id) !== exceptId);
 }
 
-export async function createProject(db: Db, input: unknown, source: 'manual' | 'github' = 'manual'): Promise<number> {
+export async function createProject(
+  db: Db,
+  input: unknown,
+  source: 'manual' | 'github' = 'manual',
+): Promise<number> {
   const p = ProjectInputSchema.parse(input);
-  if (await slugTakenByHistory(db, p.slug)) throw conflict('That address was used before by another project.');
+  if (await slugTakenByHistory(db, p.slug))
+    throw conflict('That address was used before by another project.');
   try {
     const [res] = await db.execute<ResultSetHeader>(
       `INSERT INTO projects (slug, title, pillars, summary, cover, mark, stack, links, featured, sort_order, status, hidden, case_study, source)
