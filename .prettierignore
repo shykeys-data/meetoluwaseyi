@@ -1,3 +1,9 @@
 dist
 coverage
+node_modules
 package-lock.json
+public/fonts
+test-results
+playwright-report
+src/web/mockup/*View.tsx
+src/web/mockup/page-css.ts

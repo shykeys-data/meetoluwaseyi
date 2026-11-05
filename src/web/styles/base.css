@@ -1,0 +1,89 @@
+/* Global rules shared by every page. Each page's own design CSS (from the mockup) is inlined by the server. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Skip link: hidden until focused from the keyboard. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: #1b1a2e;
+  color: #fff6e5;
+  font: 600 15px/1 system-ui, sans-serif;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 160ms ease;
+}
+.skip-link:focus {
+  transform: none;
+  outline: 3px solid #ff7a3d;
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 3px solid #ff7a3d;
+  outline-offset: 3px;
+}
+[data-theme='serious'] :focus-visible,
+.mode-serious :focus-visible {
+  outline-color: #f5a524;
+}
+
+/* The intro plays only while <html> has .intro-on (set before first paint, removed when it ends).
+   Without JavaScript it never appears and the homepage shows straight away. */
+html:not(.intro-on) .intro {
+  display: none !important;
+}
+html.intro-on {
+  overflow: hidden;
+}
+html.intro-on #top .drop,
+html.intro-on #top .pop,
+html.intro-on #top .draw,
+html.intro-on #top .enter {
+  animation-play-state: paused;
+}
+
+/* Pinned road: without JavaScript the row simply swipes sideways, so no card is ever out of reach. */
+html:not(.js) .road-pin,
+.road-pin:not(.road-js) {
+  height: auto !important;
+}
+html:not(.js) .road-stick,
+.road-pin:not(.road-js) .road-stick {
+  position: static !important;
+  height: auto !important;
+  overflow-x: auto;
+}
+
+button[disabled] {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

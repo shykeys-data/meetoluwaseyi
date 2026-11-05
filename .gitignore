@@ -1,8 +1,12 @@
 node_modules/
 dist/
 coverage/
+test-results/
+playwright-report/
 .env
 .env.*
 !.env.example
 *.log
 .DS_Store
+tmp/
+e2e/.admin-secret

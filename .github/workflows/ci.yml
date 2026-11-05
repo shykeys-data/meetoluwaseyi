@@ -3,7 +3,9 @@ name: CI
 on:
   push:
     branches: [main, dev]
+    tags: ['v*']
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,62 +17,109 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: meetoluwaseyi_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -proot" --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      TEST_DATABASE_URL: mysql://root:root@127.0.0.1:3306/meetoluwaseyi_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
+      # The lockfile is committed once CI has produced it; until then, install fresh and keep the result.
+      - name: Install
+        run: if [ -f package-lock.json ]; then npm ci; else npm install --no-audit --no-fund; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-lock
+          path: package-lock.json
+          retention-days: 7
+      - name: Create separate databases for the smoke and end-to-end tests
+        run: mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE meetoluwaseyi_smoke; CREATE DATABASE meetoluwaseyi_e2e;"
+      - name: Self-host the fonts
+        run: npm run fonts
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npm audit --audit-level=high
+      - name: Smoke test the built server
+        env:
+          NODE_ENV: production
+          APP_ENV: production
+          PORT: 3100
+          SITE_URL: http://localhost:3100
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/meetoluwaseyi_smoke
+          SESSION_SECRET: ci-only-secret-ci-only-secret-ci-only-secret
+          IP_HASH_SALT: ci-only-salt-123456
+          ADMIN_EMAIL: admin@example.com
+        run: |
+          node dist/jobs/cli.js seed --force
+          node app.cjs & echo $! > server.pid
+          for i in $(seq 1 30); do curl -fsS localhost:3100/healthz && break; sleep 1; done
+          curl -fsS localhost:3100/readyz
+          curl -fsS -o /dev/null -w "home %{http_code}\n" localhost:3100/
+          curl -fsS localhost:3100/ | grep -q "Oluwaseyi"
+          curl -fsS -o /dev/null -w "work %{http_code}\n" localhost:3100/work
+          curl -fsS -o /dev/null -w "case study %{http_code}\n" localhost:3100/work/olist-ecommerce-bi
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3100/nope)" = "404"
+          curl -fsS localhost:3100/sitemap.xml | grep -q olist-ecommerce-bi
+          curl -fsSI localhost:3100/ | grep -qi "content-security-policy"
+          kill $(cat server.pid)
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests
+        env:
+          E2E_DATABASE_URL: mysql://root:root@127.0.0.1:3306/meetoluwaseyi_e2e
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+      - run: npm audit --audit-level=high --omit=dev
       - uses: actions/upload-artifact@v4
         with:
           name: build
-          path: |
-            apps/server/dist
-            apps/web/dist
+          path: dist
           retention-days: 7
 
-  # Every push to `dev` goes to staging, then a smoke test checks it is up.
-  # Turned on by setting the repository variable STAGING_HOST and these secrets:
-  # STAGING_SSH_KEY, STAGING_SSH_USER, STAGING_PATH, STAGING_RESTART_CMD, STAGING_PASSWORD.
-  deploy-staging:
+  # Publishes the tested build to deploy/staging (every push to dev) or deploy/production (tags vX.Y.Z,
+  # after approval in the "production" environment). The server pulls it: see deploy/pull.sh.
+  publish:
     needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev' && vars.STAGING_HOST != ''
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-latest
-    environment: staging
+    environment: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: build
-          path: apps
-      - name: Upload to the host
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: package-lock
+          path: .
+      - name: Push the release to its deploy branch
         env:
-          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
-          HOST: ${{ vars.STAGING_HOST }}
-          USER: ${{ secrets.STAGING_SSH_USER }}
-          DEST: ${{ secrets.STAGING_PATH }}
+          TARGET: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
         run: |
-          install -m 600 /dev/null ~/.ssh_key && echo "$SSH_KEY" > ~/.ssh_key
-          rsync -az --delete --exclude node_modules --exclude .git --exclude .env \
-            -e "ssh -i ~/.ssh_key -o StrictHostKeyChecking=accept-new" ./ "$USER@$HOST:$DEST/"
-      - name: Install and restart
-        env:
-          HOST: ${{ vars.STAGING_HOST }}
-          USER: ${{ secrets.STAGING_SSH_USER }}
-          DEST: ${{ secrets.STAGING_PATH }}
-          RESTART: ${{ secrets.STAGING_RESTART_CMD }}
-        run: ssh -i ~/.ssh_key "$USER@$HOST" "cd '$DEST' && npm ci --omit=dev && $RESTART"
-      - name: Smoke test
-        env:
-          PASS: ${{ secrets.STAGING_PASSWORD }}
-        run: |
-          sleep 5
-          curl -fsS https://staging.meetoluwaseyi.com/healthz
-          curl -fsS -o /dev/null -u "preview:$PASS" https://staging.meetoluwaseyi.com/
+          mkdir release && cp -a dist app.cjs package.json package-lock.json release/
+          echo "${GITHUB_SHA::12}" > release/VERSION
+          cd release
+          git init -q -b "deploy/$TARGET"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "release ${GITHUB_SHA::12} to $TARGET"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "HEAD:deploy/$TARGET"

@@ -1,0 +1,7 @@
+# Copy to $HOME/deploy/staging.conf on the server and fill in the real paths.
+APP_DIR="$HOME/apps/staging"
+# Shown in the control panel's Node.js app screen ("Enter to the virtual environment").
+VENV="$HOME/nodevenv/apps/staging/20/bin/activate"
+HEALTH_URL="https://staging.meetoluwaseyi.com/readyz"
+# The same variables you set in the Node.js app screen, one KEY=value per line (chmod 600).
+ENV_FILE="$HOME/deploy/staging.env"
