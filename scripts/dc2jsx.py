@@ -226,7 +226,6 @@ def convert(path, name, shell=False):
     g = Gen(shell)
     jsx = g.kids(p.root.children, False, False, 2).strip()
     tsx = (
-        '/* eslint-disable @typescript-eslint/no-explicit-any */\n'
         f'// Generated from the approved mockup ({name}.dc.html) by scripts/dc2jsx.py.\n'
         '// Markup only: data and behaviour live in the matching page file. Safe to edit by hand.\n'
         "import { Fragment } from 'react';\n"

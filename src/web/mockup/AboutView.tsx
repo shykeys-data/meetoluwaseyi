@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Generated from the approved mockup (About.dc.html) by scripts/dc2jsx.py.
 // Markup only: data and behaviour live in the matching page file. Safe to edit by hand.
 import { Fragment } from 'react';

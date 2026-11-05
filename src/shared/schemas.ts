@@ -18,6 +18,7 @@ export type AppEnv = z.infer<typeof AppEnvSchema>;
 export function plainText(input: string): string {
   return input
     .replace(/<[^>]*>/g, '')
+    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .replace(/\r\n?/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
