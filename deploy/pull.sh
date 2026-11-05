@@ -1,8 +1,8 @@
 #!/bin/bash
 # Pull-based deploy for the shared host (no SSH needed, no server secrets in GitHub).
 # Run by a cron job every 5 minutes:
-#   bash $HOME/deploy/pull.sh staging   >> $HOME/logs/deploy-staging.log 2>&1
-#   bash $HOME/deploy/pull.sh production >> $HOME/logs/deploy-production.log 2>&1
+#   APP_DIR=$HOME/apps/staging VENV=$HOME/nodevenv/apps/staging/20/bin/activate \
+#   HEALTH_URL=https://staging.meetoluwaseyi.com/readyz bash $HOME/deploy/pull.sh staging >> $HOME/deploy/staging.log 2>&1
 #
 # It downloads the latest built release from the public deploy/<env> branch, and only when the
 # version changed: installs runtime packages, restarts the app (which applies database migrations
@@ -11,9 +11,11 @@ set -euo pipefail
 
 ENVNAME="${1:?usage: pull.sh staging|production}"
 REPO="shykeys-data/meetoluwaseyi"
+# APP_DIR, VENV (the Node.js app's activate script) and HEALTH_URL come from the cron command,
+# or from $HOME/deploy/<env>.conf if it exists. No secrets are needed here.
 CONF="$HOME/deploy/$ENVNAME.conf"
 # shellcheck source=/dev/null
-source "$CONF"   # sets APP_DIR, VENV (the Node.js app's activate script) and HEALTH_URL. No secrets here.
+[ -f "$CONF" ] && source "$CONF"
 : "${APP_DIR:?}" "${VENV:?}" "${HEALTH_URL:?}"
 
 LOCK="$HOME/deploy/.$ENVNAME.lock"
