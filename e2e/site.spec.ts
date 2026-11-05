@@ -19,7 +19,7 @@ test.describe('first visit: intro first, then the playful home', () => {
       await expect(page.locator('html')).toHaveClass(new RegExp(`sky-${look === 'moon' ? 'night' : 'day'}`));
       await expect(page.locator('html')).toHaveClass(/intro-ready/);
       // Intro look follows the visitor's clock: stars only at night.
-      const stars = await page.locator('.intro .star').count();
+      const stars = await page.locator('.intro .twk').count();
       if (look === 'moon') expect(stars).toBeGreaterThan(0);
       else expect(stars).toBe(0);
       await page.waitForTimeout(4000);
