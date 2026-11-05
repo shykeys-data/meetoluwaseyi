@@ -218,7 +218,15 @@ export function ContactForm({ mode, variant, siteKey, initial, email }: ContactF
             <label
               key={id}
               className="chip"
-              style={{ ...(intent === id ? on : off), cursor: 'pointer', position: 'relative' }}
+              style={{
+                ...(intent === id ? on : off),
+                cursor: 'pointer',
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                lineHeight: 1.2,
+              }}
             >
               <input
                 type="radio"
