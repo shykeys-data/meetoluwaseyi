@@ -1,0 +1,7 @@
+# Copy to $HOME/deploy/production.conf on the server and fill in the real paths.
+APP_DIR="$HOME/apps/production"
+# Shown in the control panel's Node.js app screen ("Enter to the virtual environment").
+VENV="$HOME/nodevenv/apps/production/20/bin/activate"
+HEALTH_URL="https://meetoluwaseyi.com/readyz"
+# The same variables you set in the Node.js app screen, one KEY=value per line (chmod 600).
+ENV_FILE="$HOME/deploy/production.env"
