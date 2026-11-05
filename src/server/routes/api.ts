@@ -24,6 +24,7 @@ import {
 } from '../services/messages.ts';
 import {
   login,
+  confirmTotp,
   decodeSession,
   loadAdmin,
   endAllSessions,
