@@ -1,0 +1,18 @@
+/* Playful (day) tokens. Components read these variables and never check the mode themselves. */
+[data-theme='playful'] {
+  --bg: #fff6e5;
+  --ink: #1b1a2e;
+  --muted: #4a4860;
+  --accent: #ff7a3d;
+  --sun: #ffd23f;
+  --mint: #9fe8d0;
+  --sky: #b9e2f7;
+  --pink: #f7b6cc;
+  --display: 'Outfit', system-ui, sans-serif;
+  --display-weight: 900;
+  --body: 'Outfit', system-ui, sans-serif;
+  --hand: 'Caveat', cursive;
+  --radius-shell: 32px;
+  --radius-core: 26px;
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+}
