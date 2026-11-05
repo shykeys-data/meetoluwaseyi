@@ -31,6 +31,8 @@ rm -rf incoming && mkdir incoming && tar -xzf release.tgz -C incoming --strip-co
 NEW="$(cat incoming/VERSION)"
 CUR="$(cat "$APP_DIR/VERSION" 2>/dev/null || echo none)"
 [ "$NEW" = "$CUR" ] && exit 0
+# A release that already failed and was rolled back is skipped until a newer one arrives.
+[ "$NEW" = "$(cat "$WORK/failed" 2>/dev/null)" ] && exit 0
 
 echo "$(date -u +%FT%TZ) deploying $ENVNAME $CUR -> $NEW"
 # Keep the current release so we can roll back.
@@ -40,11 +42,15 @@ for f in dist app.cjs package.json package-lock.json VERSION; do
 done
 
 # Swap in the new files (node_modules is managed by the host's Node.js app and left alone).
+# VERSION is written only after the health check passes, so a failed or interrupted deploy is retried.
 rm -rf "$APP_DIR/dist"
-cp -a incoming/dist incoming/app.cjs incoming/package.json incoming/package-lock.json incoming/VERSION "$APP_DIR/"
+cp -a incoming/dist incoming/app.cjs incoming/package.json incoming/package-lock.json "$APP_DIR/"
 
+# The host's activate script reads variables that may be unset, so relax strict mode while loading it.
+set +u
 # shellcheck source=/dev/null
 source "$VENV"
+set -u
 cd "$APP_DIR"
 # The host links node_modules into the app's virtual environment, so install in place (no npm ci).
 npm install --omit=dev --no-audit --no-fund
@@ -56,13 +62,18 @@ for i in $(seq 1 20); do
   if curl -fsS --max-time 5 "$HEALTH_URL" >/dev/null; then ok=1; break; fi
 done
 if [ "$ok" = 1 ]; then
+  echo "$NEW" > "$APP_DIR/VERSION"
   echo "$(date -u +%FT%TZ) $ENVNAME is healthy on $NEW"
   exit 0
 fi
 
-echo "$(date -u +%FT%TZ) health check failed, rolling back to $CUR"
-rm -rf "$APP_DIR/dist"
-cp -a "$WORK/previous/." "$APP_DIR/"
-npm install --omit=dev --no-audit --no-fund
-touch tmp/restart.txt
+echo "$(date -u +%FT%TZ) health check failed on $NEW"
+if [ -e "$WORK/previous/dist" ]; then
+  echo "$(date -u +%FT%TZ) rolling back to $CUR"
+  rm -rf "$APP_DIR/dist"
+  cp -a "$WORK/previous/." "$APP_DIR/"
+  npm install --omit=dev --no-audit --no-fund
+  touch tmp/restart.txt
+  echo "$NEW" > "$WORK/failed"
+fi
 exit 1
