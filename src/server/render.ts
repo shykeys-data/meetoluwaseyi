@@ -72,8 +72,12 @@ function assetTags(manifest: Record<string, ManifestChunk>, entry: string, nonce
  */
 function bootScript(data: PageData, nonce: string): string {
   // Failsafe: if the page script never takes over (blocked or failed), the intro clears itself after 6 s.
+  // The intro's look follows the visitor's own clock (sun 07:00–17:59, moon otherwise; ?sky=day|night to test),
+  // decided here before first paint so the intro never flashes the wrong sky.
   const intro = data.intro
-    ? `var d=document.documentElement;d.classList.add('intro-on');setTimeout(function(){if(!window.__introOwned)d.classList.remove('intro-on')},6000);`
+    ? `var d=document.documentElement,h=new Date().getHours(),q=(location.search.match(/[?&]sky=(day|night)/)||[])[1];` +
+      `d.classList.add('intro-on','sky-'+(q||(h>=18||h<7?'night':'day')));` +
+      `setTimeout(function(){if(!window.__introOwned)d.classList.remove('intro-on')},6000);`
     : '';
   return `<script nonce="${nonce}">document.documentElement.classList.add('js');${intro}</script>`;
 }

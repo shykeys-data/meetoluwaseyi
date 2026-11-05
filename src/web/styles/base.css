@@ -55,6 +55,20 @@ html:not(.intro-on) .intro {
 html.intro-on {
   overflow: hidden;
 }
+/* Until the page script has picked day or night, a plain sky of the right colour covers the screen. */
+html.intro-on:not(.intro-ready) .intro {
+  visibility: hidden;
+}
+html.intro-on:not(.intro-ready)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: #fff6e5;
+}
+html.intro-on.sky-night:not(.intro-ready)::after {
+  background: #14152b;
+}
 html.intro-on #top .drop,
 html.intro-on #top .pop,
 html.intro-on #top .draw,

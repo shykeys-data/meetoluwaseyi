@@ -107,7 +107,7 @@ export class PlayfulHome extends Component<Props, any> {
   }
 
   endIntro(showToast: boolean) {
-    document.documentElement.classList.remove('intro-on');
+    document.documentElement.classList.remove('intro-on', 'sky-day', 'sky-night');
     markIntroSeen();
     this.setState({ intro: 'off', toast: showToast });
     if (showToast) {
@@ -120,7 +120,9 @@ export class PlayfulHome extends Component<Props, any> {
     const win = window;
     this.reduce = prefersReducedMotion();
     // Clock-based bits are set after mount, so server and browser render the same first frame.
-    this.setState({ sky: skyFromClock(), hour: new Date().getHours() });
+    this.setState({ sky: skyFromClock(), hour: new Date().getHours() }, () =>
+      document.documentElement.classList.add('intro-ready'),
+    );
     (window as unknown as { __introOwned?: boolean }).__introOwned = true;
     if (this.props.data.intro) this.playIntro();
     else document.documentElement.classList.remove('intro-on');
