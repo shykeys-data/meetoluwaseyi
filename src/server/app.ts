@@ -113,6 +113,16 @@ export function createApp({ ctx, renderer, assets = [] }: AppDeps): express.Expr
     res.status(dbOk ? 200 : 503).json({ data: { status: dbOk ? 'ready' : 'database unavailable' } });
   });
 
+  // One address for the live site: anything that isn't SITE_URL's host (e.g. meetoluwaseyi.com without www)
+  // is sent there permanently, keeping the path, so links and search results all point to one place.
+  if (config.isProd) {
+    const canonical = new URL(config.SITE_URL);
+    app.use((req, res, next) => {
+      if (req.hostname === canonical.hostname) return next();
+      res.redirect(301, `${canonical.origin}${req.originalUrl}`);
+    });
+  }
+
   if (config.isStaging) app.use(stagingGate(ctx));
 
   // Every route: 300 requests per minute per IP.

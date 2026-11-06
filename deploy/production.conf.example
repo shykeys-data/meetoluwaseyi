@@ -2,4 +2,4 @@
 APP_DIR="$HOME/apps/production"
 # Shown in the control panel's Node.js app screen ("Enter to the virtual environment").
 VENV="$HOME/nodevenv/apps/production/20/bin/activate"
-HEALTH_URL="https://meetoluwaseyi.com/readyz"
+HEALTH_URL="https://www.meetoluwaseyi.com/readyz"

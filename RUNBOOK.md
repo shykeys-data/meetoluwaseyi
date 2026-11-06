@@ -1,5 +1,10 @@
 # Runbook
 
+## Addresses
+- Live: https://www.meetoluwaseyi.com (the plain meetoluwaseyi.com redirects there permanently)
+- Staging: https://staging.meetoluwaseyi.com (password-protected)
+- Admin: /fixoluwaseyi on either
+
 ## Where things are
 
 - Code: github.com/shykeys-data/meetoluwaseyi (`dev` = staging, version tags = production)

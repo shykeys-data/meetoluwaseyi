@@ -137,6 +137,21 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect((await fetch(`${base}/work/olist-ecommerce-bi`)).status).toBe(200);
   });
 
+  it('on the live site, sends the plain domain to www permanently, keeping the path', async () => {
+    const live = createApp({ ctx: { ...ctx, config: { ...ctx.config, isProd: true, SITE_URL: 'https://www.meetoluwaseyi.com' } }, renderer });
+    const srv = live.listen(0);
+    const url = `http://127.0.0.1:${(srv.address() as AddressInfo).port}`;
+    try {
+      const r = await fetch(`${url}/work?x=1`, { redirect: 'manual', headers: { 'x-forwarded-host': 'meetoluwaseyi.com' } });
+      expect(r.status).toBe(301);
+      expect(r.headers.get('location')).toBe('https://www.meetoluwaseyi.com/work?x=1');
+      const ok = await fetch(`${url}/healthz`, { headers: { 'x-forwarded-host': 'www.meetoluwaseyi.com' } });
+      expect(ok.status).toBe(200);
+    } finally {
+      srv.close();
+    }
+  });
+
   it('sends security headers', async () => {
     const r = await fetch(`${base}/`);
     expect(r.headers.get('x-frame-options')).toBe('DENY');

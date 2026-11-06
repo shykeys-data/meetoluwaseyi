@@ -235,6 +235,6 @@ export interface PublicProject {
 export const SITE = {
   name: 'Oluwaseyi Oshunwusi',
   domain: 'meetoluwaseyi.com',
-  url: 'https://meetoluwaseyi.com',
+  url: 'https://www.meetoluwaseyi.com',
   publicEmail: 'hello@meetoluwaseyi.com',
 } as const;
