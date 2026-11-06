@@ -179,8 +179,8 @@ describe('SEO and exports', () => {
     expect(xml).not.toContain('/work/b');
   });
   it('blocks everything in robots.txt off production', () => {
-    expect(robotsTxt('https://x', false, '/myadm')).toContain('Disallow: /');
-    expect(robotsTxt('https://x', true, '/myadm')).toContain('Disallow: /myadm');
+    expect(robotsTxt('https://x', false, '/fixoluwaseyi')).toContain('Disallow: /');
+    expect(robotsTxt('https://x', true, '/fixoluwaseyi')).toContain('Disallow: /fixoluwaseyi');
   });
   it('neutralises spreadsheet formulas in CSV', () => {
     const csv = toCsv([

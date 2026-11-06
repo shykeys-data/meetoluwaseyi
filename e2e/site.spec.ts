@@ -136,7 +136,7 @@ function totp(secret: string): string {
 
 test('admin: 2FA login, publish a project, and it appears on /work', async ({ page }) => {
   const secret = readFileSync('e2e/.admin-secret', 'utf8').trim();
-  await page.goto('/myadm');
+  await page.goto('/fixoluwaseyi');
   await page.getByLabel('Email').fill('owner@example.com');
   await page.getByLabel('Password').fill('e2e correct horse battery staple');
   await page.getByLabel(/6-digit code/).fill(totp(secret));

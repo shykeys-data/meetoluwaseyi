@@ -30,8 +30,8 @@ const schema = z
     ADMIN_INITIAL_PASSWORD: z.string().min(14, 'must be at least 14 characters').optional(),
     ADMIN_PATH: z
       .string()
-      .regex(/^\/[a-z0-9-]{4,40}$/, 'must look like /myadm')
-      .default('/myadm'),
+      .regex(/^\/[a-z0-9-]{4,40}$/, 'must look like /fixoluwaseyi')
+      .default('/fixoluwaseyi'),
     STAGING_USER: z.string().min(1).default('preview'),
     STAGING_PASSWORD: z.string().min(12, 'must be at least 12 characters').optional(),
     CLOUDINARY_CLOUD: optional,

@@ -14,7 +14,7 @@
    `SESSION_SECRET` (48+ random characters), `IP_HASH_SALT` (24+), `ADMIN_EMAIL`, `ADMIN_INITIAL_PASSWORD`
    (14+), and on staging `STAGING_PASSWORD` (12+). Save, then Run NPM Install once.
 3. On start the app applies migrations, loads the launch content into an empty database, and creates the
-   admin. Sign in at /myadm with the email and initial password: it shows a 2FA key for your
+   admin. Sign in at /fixoluwaseyi with the email and initial password: it shows a 2FA key for your
    authenticator app and asks for one code. After that, delete `ADMIN_INITIAL_PASSWORD`.
 
 ## Deploy
