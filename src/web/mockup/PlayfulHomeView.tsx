@@ -566,7 +566,7 @@ export function PlayfulHomeView({ v }: { v: V }) {
         </section>
         <footer style={css("background:#1B1A2E;color:#FFF6E5;padding:64px 24px 36px;overflow:hidden")}><div style={css("max-width:1240px;margin:0 auto")}><p data-r="" aria-hidden="true" style={css("margin:0;font:900 clamp(72px,17vw,250px)/0.85 'Outfit',sans-serif;letter-spacing:-0.06em;white-space:nowrap;color:#FFD23F;padding-bottom:.12em")}>seyi<span style={css("color:#FF7A3D")}>.</span>{' '}<span className="hand" style={css("font-weight:500;font-size:.22em;letter-spacing:0;color:#FFF6E5")}>thanks for stopping by!</span>
             </p>
-            <div style={css("display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:36px")}><span style={css("font-size:14px;color:#D9D4C7")}>© 2026 Oluwaseyi Oshunwusi · Lagos, Nigeria · built with MongoDB, Express, React & Node</span>
+            <div style={css("display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:36px")}><span style={css("font-size:14px;color:#D9D4C7")}>© 2026 Oluwaseyi Oshunwusi · Lagos, Nigeria · built with React, Express, Node & MySQL</span>
               <span style={css("display:flex;flex-wrap:wrap;gap:20px")}><button type="button" onClick={v.replayIntro} style={css("background:none;border:0;padding:12px 0;min-height:44px;color:#FFF6E5;font:700 15px 'Outfit',sans-serif;text-decoration:underline;cursor:pointer")}>Replay intro</button>
                 <a href="#top" style={css("color:#FFD23F;font-weight:700;padding:12px 0")}>Back to the top ↑</a>
               </span>

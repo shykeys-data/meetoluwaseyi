@@ -253,7 +253,7 @@ export function SeriousHomeView({ v }: { v: V }) {
           <footer style={css("padding:40px 24px 32px;overflow:hidden")}><div style={css("max-width:1200px;margin:0 auto")}><p data-r="" aria-hidden="true" style={css("margin:0;font-family:'Instrument Serif',serif;font-size:clamp(72px,18vw,264px);line-height:.85;letter-spacing:-0.035em;white-space:nowrap;text-align:center")}>Oluwaseyi<span style={css("color:#F5A524")}>.</span>
               </p>
               <div style={css("display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;margin-top:40px;font-size:14px;color:#8C929E")}><span>© 2026 Oluwaseyi Oshunwusi · Lagos, Nigeria</span>
-                <span>Built on MongoDB, Express, React and Node</span>
+                <span>Built with React, Express, Node and MySQL</span>
                 <span style={css("display:flex;gap:6px")}><a className="navlink" href="#top">Back to top</a></span>
               </div>
             </div></footer>

@@ -208,11 +208,13 @@ PATCHES = {
         ('<button type="button" className="pbtn" style={css("background:#1B1A2E;color:#FFF6E5;min-height:56px")}>Send',
          '<button type="button" className="pbtn" onClick={v.sendChat} disabled={v.chatSending} aria-busy={v.chatSending} style={css("background:#1B1A2E;color:#FFF6E5;min-height:56px")}>{v.chatSendLabel}'),
         ('<button type="button" onClick={v.resetChat}', '{v.chatStatus}\n                    <button type="button" onClick={v.resetChat}'),
+        ('built with MongoDB, Express, React & Node', 'built with React, Express, Node & MySQL'),
     ],
     'Work': [
         ('<div className="wrap wgrid">', '{v.empty}<div className="wrap wgrid">'),
     ],
     'SeriousHome': [
+        ('Built on MongoDB, Express, React and Node', 'Built with React, Express, Node and MySQL'),
         ('className="navlink" href="/" style={css("color:#F5A524")}>Playful', 'className="navlink" href="/?mode=playful" style={css("color:#F5A524")}>Playful'),
         ('<a href="/" style={css("flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:#F5A524',
          '<a href="/?mode=playful" style={css("flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:#F5A524'),
