@@ -21,6 +21,7 @@ interface Message {
   status: string;
   notifyEmail: string;
   notifyWhatsapp: string;
+  notifyTelegram: string;
   notifyError: string | null;
   createdAt: string;
 }
@@ -728,7 +729,7 @@ function Messages() {
           </p>
           <p className="pre">{m.body}</p>
           <p className="muted">
-            Alerts: email {m.notifyEmail}, WhatsApp {m.notifyWhatsapp}
+            Alerts: email {m.notifyEmail}, Telegram {m.notifyTelegram}, WhatsApp {m.notifyWhatsapp}
             {m.notifyError && <span className="error"> ({m.notifyError})</span>}
           </p>
           <div className="row">

@@ -194,6 +194,7 @@ describe('SEO and exports', () => {
         status: 'new',
         notifyEmail: 'off',
         notifyWhatsapp: 'off',
+        notifyTelegram: 'off',
         notifyError: null,
         createdAt: '2026-01-01',
       },
@@ -246,5 +247,23 @@ describe('playful homepage content', () => {
       expect(r.org.length).toBeGreaterThan(1);
       expect(r.note.length).toBeGreaterThan(10);
     }
+  });
+});
+
+describe('alerts', () => {
+  it('sends a plain-text Telegram alert and never echoes the token on failure', async () => {
+    const { sendTelegram } = await import('../src/server/services/notify.ts');
+    const calls: { url: string; body: string }[] = [];
+    const ok = (async (url: string, init: RequestInit) => {
+      calls.push({ url, body: String(init.body) });
+      return new Response('{}', { status: 200 });
+    }) as unknown as typeof fetch;
+    const config = { TELEGRAM_BOT_TOKEN: '123456:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef123', TELEGRAM_CHAT_ID: '987654' };
+    await sendTelegram({ config, fetch: ok } as never, 'hello <b>x</b>');
+    expect(calls[0]!.url).toContain('/sendMessage');
+    expect(JSON.parse(calls[0]!.body)).toMatchObject({ chat_id: '987654', text: 'hello <b>x</b>' });
+    expect(JSON.parse(calls[0]!.body)).not.toHaveProperty('parse_mode');
+    const bad = (async () => new Response('token 123456:ABC… invalid', { status: 401 })) as unknown as typeof fetch;
+    await expect(sendTelegram({ config, fetch: bad } as never, 'x')).rejects.toThrow(/^Telegram 401$/);
   });
 });

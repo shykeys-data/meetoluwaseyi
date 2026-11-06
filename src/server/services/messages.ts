@@ -16,6 +16,7 @@ export interface MessageRow {
   status: 'new' | 'replied' | 'archived';
   notifyEmail: string;
   notifyWhatsapp: string;
+  notifyTelegram: string;
   notifyError: string | null;
   createdAt: string;
 }
@@ -75,8 +76,8 @@ export async function submitContact(ctx: Ctx, raw: unknown, ip: string): Promise
   if (Number(count[0]?.n ?? 0) >= LIMITS.perDay) throw tooMany();
 
   const [res] = await ctx.db.execute<ResultSetHeader>(
-    `INSERT INTO messages (name, email, intent, body, source, ip_hash, notify_email, notify_whatsapp)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO messages (name, email, intent, body, source, ip_hash, notify_email, notify_whatsapp, notify_telegram)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       input.name,
       input.email,
@@ -86,6 +87,7 @@ export async function submitContact(ctx: Ctx, raw: unknown, ip: string): Promise
       ipHash,
       ctx.config.RESEND_API_KEY ? 'pending' : 'off',
       ctx.config.WHATSAPP_TOKEN ? 'pending' : 'off',
+      ctx.config.TELEGRAM_BOT_TOKEN && ctx.config.TELEGRAM_CHAT_ID ? 'pending' : 'off',
     ],
   );
   const id = res.insertId;
@@ -107,6 +109,7 @@ function toRow(r: RowDataPacket): MessageRow {
     status: r.status,
     notifyEmail: String(r.notify_email),
     notifyWhatsapp: String(r.notify_whatsapp),
+    notifyTelegram: String(r.notify_telegram ?? 'off'),
     notifyError: r.notify_error ? String(r.notify_error) : null,
     createdAt: new Date(r.created_at as string).toISOString(),
   };

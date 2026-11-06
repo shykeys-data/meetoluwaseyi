@@ -33,7 +33,7 @@ async function main() {
   const log = createLogger(config.isDev ? 'debug' : 'info');
   const db = createDb(config.DATABASE_URL);
   if (!config.isDev) {
-    const off = (['TURNSTILE_SECRET', 'RESEND_API_KEY', 'WHATSAPP_TOKEN', 'CLOUDINARY_KEY'] as const).filter(
+    const off = (['TURNSTILE_SECRET', 'RESEND_API_KEY', 'TELEGRAM_BOT_TOKEN', 'CLOUDINARY_KEY'] as const).filter(
       (k) => !config[k],
     );
     if (off.length) log.warn('features off until their keys are set', { missing: off });

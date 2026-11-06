@@ -89,6 +89,12 @@ export const MIGRATIONS: { id: string; statements: string[] }[] = [
        WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.links.email')) = 'shykeys@gmail.com'`,
     ],
   },
+  {
+    id: '003_telegram_alerts',
+    statements: [
+      `ALTER TABLE messages ADD COLUMN notify_telegram ENUM('pending','sent','failed','off') NOT NULL DEFAULT 'off' AFTER notify_whatsapp`,
+    ],
+  },
 ];
 
 export async function migrate(db: Db, log: (msg: string) => void = console.log): Promise<string[]> {
