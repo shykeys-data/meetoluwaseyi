@@ -229,7 +229,7 @@ export function SeriousHomeView({ v }: { v: V }) {
               </div>
               <div className="shell" data-r="" style={css("--i:3;margin-top:64px")}><div className="core" style={css("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:48px;padding:clamp(24px,4vw,48px)")}>{v.form_0}
                   <div><p style={css("margin:0 0 8px;font:500 11px 'Geist',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#A9AEB9")}>Or find me</p>
-                    <a className="lrow" href="mailto:shykeys@gmail.com"><span className="lr">shykeys@gmail.com</span>
+                    <a className="lrow" href="mailto:hello@meetoluwaseyi.com"><span className="lr">hello@meetoluwaseyi.com</span>
                       <span className="ic" aria-hidden="true">↗</span>
                     </a>
                     <a className="lrow" href="https://www.linkedin.com/in/oluwaseyi-o-601915b5"><span className="lr">LinkedIn</span>

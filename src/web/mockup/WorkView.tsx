@@ -58,7 +58,7 @@ export function WorkView({ v }: { v: V }) {
                 <a className="flink" href="https://github.com/shykeys-data">GitHub</a>
                 <a className="flink" href="https://x.com/shykeys101">X</a>
                 <a className="flink" href="https://t.me/oluwamichael">Telegram</a>
-                <a className="flink" href="mailto:shykeys@gmail.com">Email</a>
+                <a className="flink" href="mailto:hello@meetoluwaseyi.com">Email</a>
               </div>
             </div>
           </div>

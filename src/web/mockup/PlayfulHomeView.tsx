@@ -528,7 +528,7 @@ export function PlayfulHomeView({ v }: { v: V }) {
               </a>
               <a className="pbtn" href="https://github.com/shykeys-data" style={css("background:#9FE8D0;color:#1B1A2E;min-height:54px;font-size:15px")}>GitHub<span className="ic" style={css("width:42px;height:42px;background:rgba(255,255,255,.55)")}>↗</span>
               </a>
-              <a className="pbtn" href="mailto:shykeys@gmail.com" style={css("background:#FFB38A;color:#1B1A2E;min-height:54px;font-size:15px")}>Email me<span className="ic" style={css("width:42px;height:42px;background:rgba(255,255,255,.55)")}>↗</span>
+              <a className="pbtn" href="mailto:hello@meetoluwaseyi.com" style={css("background:#FFB38A;color:#1B1A2E;min-height:54px;font-size:15px")}>Email me<span className="ic" style={css("width:42px;height:42px;background:rgba(255,255,255,.55)")}>↗</span>
               </a>
               <a className="pbtn" href="https://x.com/shykeys101" style={css("background:#FFD23F;color:#1B1A2E;min-height:54px;font-size:15px")}>X @shykeys101<span className="ic" style={css("width:42px;height:42px;background:rgba(255,255,255,.55)")}>↗</span>
               </a>

@@ -81,6 +81,14 @@ export const MIGRATIONS: { id: string; statements: string[] }[] = [
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
     ],
   },
+  {
+    // Public contact address moves to the domain. Only changes it if it is still the old one.
+    id: '002_public_email',
+    statements: [
+      `UPDATE profile SET data = JSON_SET(data, '$.links.email', 'hello@meetoluwaseyi.com')
+       WHERE JSON_UNQUOTE(JSON_EXTRACT(data, '$.links.email')) = 'shykeys@gmail.com'`,
+    ],
+  },
 ];
 
 export async function migrate(db: Db, log: (msg: string) => void = console.log): Promise<string[]> {

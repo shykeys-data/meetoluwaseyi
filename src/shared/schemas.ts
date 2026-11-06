@@ -236,5 +236,5 @@ export const SITE = {
   name: 'Oluwaseyi Oshunwusi',
   domain: 'meetoluwaseyi.com',
   url: 'https://meetoluwaseyi.com',
-  publicEmail: 'shykeys@gmail.com',
+  publicEmail: 'hello@meetoluwaseyi.com',
 } as const;

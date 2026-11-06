@@ -15,7 +15,7 @@ export const PROFILE: Profile = {
   bio: 'I run the WEEX Africa community, and before that I grew Gate.io’s Nigeria and Africa community. I’ve built websites since 2014, I analyse data in public, and I’m building Korrect Cars, a car marketplace for Lagos.',
   photo: { id: '/img/headshot.webp', alt: 'Oluwaseyi Oshunwusi smiling, in a white shirt' },
   links: {
-    email: 'shykeys@gmail.com',
+    email: 'hello@meetoluwaseyi.com',
     linkedin: 'https://www.linkedin.com/in/oluwaseyi-o-601915b5',
     github: 'https://github.com/shykeys-data',
     x: 'https://x.com/shykeys101',

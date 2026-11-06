@@ -10,7 +10,7 @@ export type ContactResult = { ok: true } | { ok: false; error: ApiError };
 
 export const NETWORK_ERROR: ApiError = {
   code: 'network',
-  message: 'That didn’t go through. Try again, or email shykeys@gmail.com.',
+  message: 'That didn’t go through. Try again, or email hello@meetoluwaseyi.com.',
 };
 
 /** The browser only ever calls the API for the contact form and the playful chat. */

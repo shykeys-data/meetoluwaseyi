@@ -238,6 +238,8 @@ def convert(path, name, shell=False):
         'export type V = Record<string, any>;\n\n'
         f'export function {name}View({{ v }}: {{ v: V }}) {{\n  return (\n    <>{jsx}</>\n  );\n}}\n'
     )
+    # The public contact address on every page (your login and alert email stay in ADMIN_EMAIL).
+    tsx = tsx.replace('shykeys@gmail.com', 'hello@meetoluwaseyi.com')
     for old, new in PATCHES.get(name, []):
         if old not in tsx:
             raise SystemExit(f'{name}: patch target not found: {old[:60]}')
