@@ -136,13 +136,62 @@ export const NUMS = [
 ];
 
 export const ROAD = [
-  { y: '2014', role: 'Web Developer', org: 'HCS Properties', note: 'Built the site, ran customer service and social media.', bg: '#B9E2F7', t: '-2deg' },
-  { y: '2015', role: 'Senior Web Developer', org: 'Lantern Books', note: 'An e-commerce web app plus its mobile apps.', bg: '#D7C3F5', t: '2deg' },
-  { y: '2016', role: 'Web Dev & Marketing', org: 'TechnocratNG', note: 'Ran the shop, built client sites and ran the ads.', bg: '#9FE8D0', t: '-1.5deg' },
-  { y: '2020', role: 'Web & Digital Marketing', org: 'Amaget Online Store', note: 'Built it, then grew it with ads, SEO and A/B tests.', bg: '#FFB38A', t: '1.5deg' },
-  { y: '2021', role: 'Community Manager & BD', org: 'Gate.io', note: 'My crypto chapter starts: 20,000+ members, a P2P launch and Nigeria’s first Gate.io meetup.', bg: '#F7B6CC', t: '-2deg' },
-  { y: '2024', role: 'Community Manager (Africa)', org: 'WEEX', note: 'Zero to 25,000+ members in under a year. Every morning at 7.', bg: '#FFD23F', t: '2deg' },
-  { y: '2025', role: 'Data analyst in the making', org: 'IBM', note: 'Eight IBM data certificates, from Python and SQL to the Data Analyst Capstone.', bg: '#C9F2E2', t: '-1deg' },
+  {
+    y: '2014',
+    role: 'Web Developer',
+    org: 'HCS Properties',
+    note: 'Built the site, ran customer service and social media.',
+    bg: '#B9E2F7',
+    t: '-2deg',
+  },
+  {
+    y: '2015',
+    role: 'Senior Web Developer',
+    org: 'Lantern Books',
+    note: 'An e-commerce web app plus its mobile apps.',
+    bg: '#D7C3F5',
+    t: '2deg',
+  },
+  {
+    y: '2016',
+    role: 'Web Dev & Marketing',
+    org: 'TechnocratNG',
+    note: 'Ran the shop, built client sites and ran the ads.',
+    bg: '#9FE8D0',
+    t: '-1.5deg',
+  },
+  {
+    y: '2020',
+    role: 'Web & Digital Marketing',
+    org: 'Amaget Online Store',
+    note: 'Built it, then grew it with ads, SEO and A/B tests.',
+    bg: '#FFB38A',
+    t: '1.5deg',
+  },
+  {
+    y: '2021',
+    role: 'Community Manager & BD',
+    org: 'Gate.io',
+    note: 'My crypto chapter starts: 20,000+ members, a P2P launch and Nigeria’s first Gate.io meetup.',
+    bg: '#F7B6CC',
+    t: '-2deg',
+  },
+  {
+    y: '2024',
+    role: 'Community Manager (Africa)',
+    org: 'WEEX',
+    note: 'Zero to 25,000+ members in under a year. Every morning at 7.',
+    bg: '#FFD23F',
+    t: '2deg',
+  },
+  {
+    y: '2025',
+    role: 'Data analyst in the making',
+    org: 'IBM',
+    note: 'Eight IBM data certificates, from Python and SQL to the Data Analyst Capstone.',
+    bg: '#C9F2E2',
+    t: '-1deg',
+  },
 ];
 
 export const NOTES = [
