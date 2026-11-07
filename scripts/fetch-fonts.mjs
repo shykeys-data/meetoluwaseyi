@@ -29,13 +29,21 @@ async function main() {
     if (!res.ok) throw new Error(`Google Fonts answered ${res.status} for ${fam}`);
     const css = await res.text();
     // Keep only the /* latin */ blocks.
-    for (const m of css.matchAll(/\/\* latin \*\/\s*@font-face\s*\{([^}]+)\}/g)) {
+    const blocks = [...css.matchAll(/\/\* latin \*\/\s*@font-face\s*\{([^}]+)\}/g)];
+    if (blocks.length === 0) throw new Error(`No latin block for ${fam}:\n${css.slice(0, 600)}`);
+    for (const m of blocks) {
       const block = m[1];
-      const family = /font-family:\s*'([^']+)'/.exec(block)[1];
-      const style = /font-style:\s*(\w+)/.exec(block)[1];
-      const weight = /font-weight:\s*([\d ]+)/.exec(block)[1].trim();
-      const url = /url\((https:[^)]+\.woff2)\)/.exec(block)[1];
-      const range = /unicode-range:\s*([^;]+);/.exec(block)[1];
+      const pick = (name, re, fallback) => {
+        const hit = re.exec(block)?.[1];
+        if (hit !== undefined) return hit.trim();
+        if (fallback !== undefined) return fallback;
+        throw new Error(`No ${name} in the ${fam} block:\n${block}`);
+      };
+      const family = pick('font-family', /font-family:\s*['"]?([^;'"]+)['"]?;/);
+      const style = pick('font-style', /font-style:\s*(\w+)/, 'normal');
+      const weight = pick('font-weight', /font-weight:\s*([\d ]+)/, '400');
+      const url = pick('font url', /src:\s*url\(['"]?(https:[^)'"]+)['"]?\)/);
+      const range = pick('unicode-range', /unicode-range:\s*([^;]+);/);
       const file = `${slug(family)}-${weight.replace(/\s+/g, '-')}-${style}.woff2`;
       const font = await fetch(url, { headers: { 'User-Agent': UA } });
       if (!font.ok) throw new Error(`Font download failed for ${family}`);
