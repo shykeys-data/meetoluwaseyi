@@ -1,0 +1,1 @@
+import{r as s}from"./client-CnH2W4IR.js";var t=s();const o=["playful","serious"];function e(r){return r==="playful"||r==="serious"?r:null}const n=["partner","hire","collab","hi"],i=["data","community","bd","ventures","building"];export{n as I,o as M,i as P,e as p,t as r};
