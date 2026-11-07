@@ -103,3 +103,9 @@ button[disabled] {
     scroll-behavior: auto !important;
   }
 }
+
+/* Playful headings: the accent word is large text and needs 3:1 on white.
+   The accent (#FF7A3D) is 2.6:1, so the word uses the deeper orange (3.6:1). */
+html.mode-playful .h2 .em {
+  color: #e0601f;
+}

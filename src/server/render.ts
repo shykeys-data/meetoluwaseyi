@@ -55,15 +55,24 @@ ${opts.scripts}
 </html>`;
 }
 
-function assetTags(manifest: Record<string, ManifestChunk>, entry: string, nonce: string): string {
+/**
+ * Stylesheets go in <head> so they block the first paint: painted without them, hidden blocks such as the
+ * intro take up a full screen and the page then jumps (Lighthouse measured a layout shift of 1.0).
+ * The module script goes at the end of <body>.
+ */
+export function assetTags(
+  manifest: Record<string, ManifestChunk>,
+  entry: string,
+  nonce: string,
+): { css: string; js: string } {
   const chunk = manifest[entry];
   if (!chunk) throw new Error(`Entry ${entry} missing from the client manifest. Run npm run build.`);
   const css = new Set<string>(chunk.css ?? []);
   for (const imp of chunk.imports ?? []) for (const c of manifest[imp]?.css ?? []) css.add(c);
-  return [
-    ...[...css].map((c) => `<link rel="stylesheet" href="/${c}">`),
-    `<script type="module" src="/${chunk.file}" nonce="${nonce}"></script>`,
-  ].join('\n');
+  return {
+    css: [...css].map((c) => `<link rel="stylesheet" href="/${c}">`).join('\n'),
+    js: `<script type="module" src="/${chunk.file}" nonce="${nonce}"></script>`,
+  };
 }
 
 /**
@@ -97,16 +106,17 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
     return manifest;
   };
 
-  const scriptsFor = async (entry: string, nonce: string, url: string) => {
+  const scriptsFor = async (entry: string, nonce: string, url: string): Promise<{ css: string; js: string }> => {
     if (opts.vite) {
       // Development: let Vite inject its client and the React refresh preamble.
       const html = await opts.vite.transformIndexHtml(
         url,
         `<html><head></head><body><script type="module" src="/${entry}"></script></body></html>`,
       );
-      return (html.match(/<script[\s\S]*?<\/script>/g) ?? [])
+      const js = (html.match(/<script[\s\S]*?<\/script>/g) ?? [])
         .map((s) => s.replace('<script', `<script nonce="${nonce}"`))
         .join('\n');
+      return { css: '', js };
     }
     return assetTags(getManifest(), entry, nonce);
   };
@@ -115,22 +125,24 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
     async page(data, nonce, site, extraHead = '') {
       const body = renderApp(data);
       const pageCss = PAGE_CSS[cssKeyFor(data)] ?? '';
+      const assets = await scriptsFor('src/web/entry-client.tsx', nonce, data.path);
       const head = [
         headHtml(headFor(data, site), nonce),
         preloads(data.mode),
         `<style>${pageCss.replace(/<\/style/gi, '<\\/style')}</style>`,
+        // After the page styles, as before, so the cascade order is unchanged.
+        assets.css,
         extraHead,
         bootScript(data, nonce),
       ].join('\n');
-      const scripts = [dataScript(data), await scriptsFor('src/web/entry-client.tsx', nonce, data.path)].join(
-        '\n',
-      );
+      const scripts = [dataScript(data), assets.js].join('\n');
       const htmlClass = `mode-${data.mode}`;
       return doc({ theme: data.mode, htmlClass, head, body, scripts });
     },
     async admin(nonce) {
-      const head = `<title>Admin · meetoluwaseyi.com</title>\n<meta name="robots" content="noindex, nofollow">`;
-      const scripts = await scriptsFor('src/web/admin/entry-admin.tsx', nonce, '/admin');
+      const assets = await scriptsFor('src/web/admin/entry-admin.tsx', nonce, '/admin');
+      const head = `<title>Admin · meetoluwaseyi.com</title>\n<meta name="robots" content="noindex, nofollow">\n${assets.css}`;
+      const scripts = assets.js;
       return doc({
         theme: 'admin',
         htmlClass: 'admin',
