@@ -14,11 +14,20 @@ export const ModeSchema = z.enum(MODES);
 export const AppEnvSchema = z.enum(['development', 'test', 'staging', 'production']);
 export type AppEnv = z.infer<typeof AppEnvSchema>;
 
+/** Removes tags until none are left, so nested tricks like `<scr<b>ipt>` can't rebuild one. */
+function stripTags(input: string): string {
+  let out = input;
+  for (let prev = ''; prev !== out; ) {
+    prev = out;
+    out = out.replace(/<[^>]*>/g, '');
+  }
+  return out;
+}
+
 /** Strips tags and control characters, collapses runs of blank lines. Text fields are stored as plain text. */
 export function plainText(input: string): string {
   return (
-    input
-      .replace(/<[^>]*>/g, '')
+    stripTags(input)
       // eslint-disable-next-line no-control-regex -- stripping control characters is the point
       .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
       .replace(/\r\n?/g, '\n')

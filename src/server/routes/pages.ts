@@ -51,15 +51,14 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
     }),
   );
 
-  // ---------- URL hygiene: lowercase, no trailing slash ----------
+  // ---------- URL hygiene: lowercase, no trailing slash, one leading slash ----------
   r.use((req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') return next();
     const path = req.path;
-    let clean = path.length > 1 ? path.replace(/\/+$/, '') : path;
-    clean = clean.toLowerCase();
+    const clean = localPath(path.length > 1 ? path.replace(/\/+$/, '') : path).toLowerCase();
     if (clean !== path) {
       const q = req.originalUrl.slice(req.path.length);
-      return res.redirect(301, (clean || '/') + q);
+      return res.redirect(301, clean + (q.startsWith('?') ? q : ''));
     }
     next();
   });
@@ -75,7 +74,7 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
     const params = new URLSearchParams(req.originalUrl.split('?')[1] ?? '');
     params.delete('mode');
     const rest = params.toString();
-    res.redirect(302, req.path + (rest ? `?${rest}` : ''));
+    res.redirect(302, localPath(req.path) + (rest ? `?${rest}` : ''));
   });
 
   async function base(req: Request, route: RouteName): Promise<PageData> {
@@ -168,4 +167,12 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
   );
 
   return r;
+}
+
+/**
+ * A path that can only point at this site. Browsers read `//evil.com` and `/\\evil.com` as another
+ * website, so a redirect built from the request path must start with exactly one slash.
+ */
+export function localPath(path: string): string {
+  return '/' + path.replace(/^[\\/]+/, '');
 }

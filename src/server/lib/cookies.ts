@@ -2,12 +2,13 @@ import type { Request, Response } from 'express';
 
 /** Minimal cookie parsing, so we don't need another dependency. */
 export function readCookies(req: Request): Record<string, string> {
-  const out: Record<string, string> = {};
+  // No prototype, so a cookie named __proto__ or constructor is just a key, never an object property.
+  const out: Record<string, string> = Object.create(null) as Record<string, string>;
   for (const part of (req.headers.cookie ?? '').split(';')) {
     const i = part.indexOf('=');
     if (i < 0) continue;
     const k = part.slice(0, i).trim();
-    if (!k || k in out) continue;
+    if (!k || Object.hasOwn(out, k)) continue;
     try {
       out[k] = decodeURIComponent(part.slice(i + 1).trim());
     } catch {

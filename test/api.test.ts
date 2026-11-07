@@ -128,6 +128,23 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect(page).toContain('data-mode="serious"');
   });
 
+  it('never redirects to another website, whatever the path looks like', async () => {
+    const { request } = await import('node:http');
+    const raw = (path: string) =>
+      new Promise<{ status: number; location: string }>((done, fail) => {
+        const req = request(`${base}/`, { path, headers: browserUA }, (res) => {
+          res.resume();
+          done({ status: res.statusCode ?? 0, location: String(res.headers.location ?? '') });
+        });
+        req.on('error', fail);
+        req.end();
+      });
+    for (const path of ['//evil.com/', '//Evil.com', '/\\evil.com/', '//evil.com/?mode=serious', '///evil.com']) {
+      const r = await raw(path);
+      if (r.location) expect(r.location, path).toMatch(/^\/[^/\\]/);
+    }
+  });
+
   it('treats SQL in a URL as an ordinary unknown address', async () => {
     for (const slug of ["x' OR '1'='1", '1; DROP TABLE projects', "korrect-cars'--"]) {
       const api = await fetch(`${base}/api/v1/projects/${encodeURIComponent(slug)}`);

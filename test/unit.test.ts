@@ -5,6 +5,8 @@ import { ContactInputSchema, ProjectInputSchema, plainText, parseMode } from '..
 import { loadConfig, ConfigError } from '../src/server/config.ts';
 import { safeJson, sitemapXml, robotsTxt } from '../src/server/seo.ts';
 import { toCsv } from '../src/server/services/messages.ts';
+import { readCookies } from '../src/server/lib/cookies.ts';
+import { localPath } from '../src/server/routes/pages.ts';
 import { encodeSession, decodeSession } from '../src/server/services/auth.ts';
 import { repoToSlug, shouldSkip, signCloudinaryUpload } from '../src/server/services/integrations.ts';
 import { PROFILE, PROJECTS } from '../src/server/db/seed-data.ts';
@@ -269,5 +271,23 @@ describe('alerts', () => {
     const bad = (async () =>
       new Response('token 123456:ABC… invalid', { status: 401 })) as unknown as typeof fetch;
     await expect(sendTelegram({ config, fetch: bad } as never, 'x')).rejects.toThrow(/^Telegram 401$/);
+  });
+});
+
+describe('input that tries to be clever', () => {
+  it('strips nested tags that would rebuild a tag after one pass', () => {
+    expect(plainText('<scr<b>ipt>alert(1)</scr</b>ipt>')).not.toMatch(/<[a-z/]/i);
+    expect(plainText('<<script>script>x')).not.toContain('<script');
+  });
+  it('treats a cookie called __proto__ as a plain key, not an object property', () => {
+    const c = readCookies({ headers: { cookie: '__proto__=x; constructor=y; mo_sess=abc' } } as never);
+    expect(c.mo_sess).toBe('abc');
+    expect(Object.getPrototypeOf(c)).toBeNull();
+    expect(({} as Record<string, unknown>).x).toBeUndefined();
+  });
+  it('keeps redirect targets on this site', () => {
+    for (const p of ['//evil.com', '/\\evil.com', '///a']) expect(localPath(p)).toMatch(/^\/[^/\\]/);
+    expect(localPath('/work')).toBe('/work');
+    expect(localPath('/')).toBe('/');
   });
 });

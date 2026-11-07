@@ -748,7 +748,11 @@ function Messages() {
             <option value="hi">Hi</option>
           </select>
         </label>
-        <a href={`/api/v1/admin/messages?format=csv${status ? `&status=${status}` : ''}`}>Export CSV</a>
+        <a
+          href={`/api/v1/admin/messages?${new URLSearchParams({ format: 'csv', ...(status ? { status } : {}) })}`}
+        >
+          Export CSV
+        </a>
       </div>
       {rows.length === 0 && <p className="muted">No messages here.</p>}
       {rows.map((m) => (
