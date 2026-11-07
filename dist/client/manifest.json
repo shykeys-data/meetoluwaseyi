@@ -1,0 +1,116 @@
+{
+  "_ContactForm-3b0V3p17.js": {
+    "file": "assets/ContactForm-3b0V3p17.js",
+    "name": "ContactForm",
+    "imports": [
+      "src/web/entry-client.tsx",
+      "_client-CnH2W4IR.js",
+      "_constants-D8QpnS-2.js",
+      "_turnstile-1SuoEZMI.js"
+    ],
+    "dynamicImports": [
+      "src/shared/schemas.ts"
+    ]
+  },
+  "_client-CnH2W4IR.js": {
+    "file": "assets/client-CnH2W4IR.js",
+    "name": "client"
+  },
+  "_constants-D8QpnS-2.js": {
+    "file": "assets/constants-D8QpnS-2.js",
+    "name": "constants",
+    "imports": [
+      "_client-CnH2W4IR.js"
+    ]
+  },
+  "_turnstile-1SuoEZMI.js": {
+    "file": "assets/turnstile-1SuoEZMI.js",
+    "name": "turnstile",
+    "imports": [
+      "_constants-D8QpnS-2.js"
+    ]
+  },
+  "src/shared/schemas.ts": {
+    "file": "assets/schemas-qEDJpQ7n.js",
+    "name": "schemas",
+    "src": "src/shared/schemas.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "_constants-D8QpnS-2.js",
+      "_client-CnH2W4IR.js"
+    ]
+  },
+  "src/web/admin/entry-admin.tsx": {
+    "file": "assets/admin-BHCyurz7.js",
+    "name": "admin",
+    "src": "src/web/admin/entry-admin.tsx",
+    "isEntry": true,
+    "imports": [
+      "_client-CnH2W4IR.js",
+      "_constants-D8QpnS-2.js",
+      "src/shared/schemas.ts"
+    ],
+    "css": [
+      "assets/admin-C7kUBEjK.css"
+    ]
+  },
+  "src/web/entry-client.tsx": {
+    "file": "assets/main-CxtRo2c_.js",
+    "name": "main",
+    "src": "src/web/entry-client.tsx",
+    "isEntry": true,
+    "imports": [
+      "_client-CnH2W4IR.js"
+    ],
+    "dynamicImports": [
+      "src/web/pages/PlayfulHome.tsx",
+      "src/web/pages/SeriousHome.tsx",
+      "src/web/pages/Inner.tsx",
+      "src/web/pages/Inner.tsx",
+      "src/web/pages/Inner.tsx",
+      "src/web/pages/Inner.tsx",
+      "src/web/pages/Inner.tsx",
+      "src/web/pages/Inner.tsx"
+    ],
+    "css": [
+      "assets/main-Z8ESXSIX.css"
+    ]
+  },
+  "src/web/pages/Inner.tsx": {
+    "file": "assets/Inner-Ce5S-Y-T.js",
+    "name": "Inner",
+    "src": "src/web/pages/Inner.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_client-CnH2W4IR.js",
+      "_constants-D8QpnS-2.js",
+      "_turnstile-1SuoEZMI.js",
+      "_ContactForm-3b0V3p17.js",
+      "src/web/entry-client.tsx"
+    ]
+  },
+  "src/web/pages/PlayfulHome.tsx": {
+    "file": "assets/PlayfulHome-C37SBNcQ.js",
+    "name": "PlayfulHome",
+    "src": "src/web/pages/PlayfulHome.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_client-CnH2W4IR.js",
+      "_constants-D8QpnS-2.js",
+      "_turnstile-1SuoEZMI.js"
+    ]
+  },
+  "src/web/pages/SeriousHome.tsx": {
+    "file": "assets/SeriousHome-RGiNbkU8.js",
+    "name": "SeriousHome",
+    "src": "src/web/pages/SeriousHome.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_client-CnH2W4IR.js",
+      "_constants-D8QpnS-2.js",
+      "_turnstile-1SuoEZMI.js",
+      "_ContactForm-3b0V3p17.js",
+      "src/web/entry-client.tsx"
+    ]
+  }
+}
