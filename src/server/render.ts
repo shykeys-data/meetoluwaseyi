@@ -117,10 +117,15 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
         url,
         `<html><head></head><body><script type="module" src="/${entry}"></script></body></html>`,
       );
-      const js = (html.match(/<script[\s\S]*?<\/script>/g) ?? [])
-        .map((s) => s.replace('<script', `<script nonce="${nonce}"`))
-        .join('\n');
-      return { css: '', js };
+      // Vite's own output (only its script tags), so take what it put in <head> and <body> as is,
+      // adding this response's nonce to every script.
+      const tagged = html.replaceAll('<script', `<script nonce="${nonce}"`);
+      const inner = (open: string, close: string) => {
+        const a = tagged.indexOf(open);
+        const b = tagged.indexOf(close);
+        return a < 0 || b < a ? '' : tagged.slice(a + open.length, b).trim();
+      };
+      return { css: '', js: [inner('<head>', '</head>'), inner('<body>', '</body>')].join('\n') };
     }
     return assetTags(getManifest(), entry, nonce);
   };
