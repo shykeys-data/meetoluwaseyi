@@ -1,3 +1,4 @@
+import { cacheControlFor } from './lib/cache.ts';
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,14 +60,10 @@ async function main() {
     vite = await createServer({ root, server: { middlewareMode: true }, appType: 'custom' });
     assets.push(vite.middlewares);
   } else {
-    // Hashed bundles never change, so they are cached for a year; other public files for an hour.
     const files = express.static(clientDir, {
       index: false,
       setHeaders(res, path) {
-        res.setHeader(
-          'Cache-Control',
-          /[\\/]assets[\\/]/.test(path) ? 'public, max-age=31536000, immutable' : 'public, max-age=3600',
-        );
+        res.setHeader('Cache-Control', cacheControlFor(path));
       },
     });
     assets.push((req, res, next) => (req.path === '/manifest.json' ? next() : files(req, res, next)));

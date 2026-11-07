@@ -154,6 +154,12 @@ test('admin: 2FA login, publish a project, and it appears on /work', async ({ pa
   await expect(page.locator('meta[name=robots]')).toHaveCount(0);
 });
 
+test('stylesheets load in <head> so the first paint is already styled', async ({ page }) => {
+  await page.goto('/about');
+  expect(await page.locator('head link[rel=stylesheet]').count()).toBeGreaterThan(0);
+  expect(await page.locator('body link[rel=stylesheet]').count()).toBe(0);
+});
+
 test('404 page links home and to work, in both modes', async ({ page, context }) => {
   const r = await page.goto('/no-such-page');
   expect(r?.status()).toBe(404);

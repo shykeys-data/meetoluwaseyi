@@ -209,12 +209,17 @@ PATCHES = {
          '<button type="button" className="pbtn" onClick={v.sendChat} disabled={v.chatSending} aria-busy={v.chatSending} style={css("background:#1B1A2E;color:#FFF6E5;min-height:56px")}>{v.chatSendLabel}'),
         ('<button type="button" onClick={v.resetChat}', '{v.chatStatus}\n                    <button type="button" onClick={v.resetChat}'),
         ('built with MongoDB, Express, React & Node', 'built with React, Express, Node & MySQL'),
+        # Small orange text needs 4.5:1 on white: #E0601F is 3.6:1, #C2410C is 5.2:1 (two places).
+        ("font:800 15px 'Outfit',sans-serif;color:#E0601F", "font:800 15px 'Outfit',sans-serif;color:#C2410C"),
+        ("font:800 15px 'Outfit',sans-serif;color:#E0601F", "font:800 15px 'Outfit',sans-serif;color:#C2410C"),
     ],
     'Work': [
         ('<div className="wrap wgrid">', '{v.empty}<div className="wrap wgrid">'),
     ],
     'SeriousHome': [
         ('Built on MongoDB, Express, React and Node', 'Built with React, Express, Node and MySQL'),
+        # Marquee words are large text, so they need 3:1 on #07080B: #4A505C is 2.5:1, #5F6675 is 3.5:1.
+        ("'Instrument Serif',serif;color:#4A505C;white-space:nowrap", "'Instrument Serif',serif;color:#5F6675;white-space:nowrap"),
         ('className="navlink" href="/" style={css("color:#F5A524")}>Playful', 'className="navlink" href="/?mode=playful" style={css("color:#F5A524")}>Playful'),
         ('<a href="/" style={css("flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:#F5A524',
          '<a href="/?mode=playful" style={css("flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:#F5A524'),

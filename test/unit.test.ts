@@ -291,3 +291,32 @@ describe('input that tries to be clever', () => {
     expect(localPath('/')).toBe('/');
   });
 });
+
+describe('page speed', () => {
+  it('puts stylesheets in <head> separately from the module script', async () => {
+    const { assetTags } = await import('../src/server/render.ts');
+    const t = assetTags(
+      {
+        'src/web/entry-client.tsx': {
+          file: 'assets/main-abc.js',
+          css: ['assets/main-abc.css'],
+          imports: ['_shared'],
+        },
+        _shared: { file: 'assets/shared.js', css: ['assets/shared.css'] },
+      } as never,
+      'src/web/entry-client.tsx',
+      'n0nce',
+    );
+    expect(t.css).toBe(
+      '<link rel="stylesheet" href="/assets/main-abc.css">\n<link rel="stylesheet" href="/assets/shared.css">',
+    );
+    expect(t.js).toBe('<script type="module" src="/assets/main-abc.js" nonce="n0nce"></script>');
+  });
+  it('caches bundles and fonts for a year, images for 30 days, the rest for an hour', async () => {
+    const { cacheControlFor } = await import('../src/server/lib/cache.ts');
+    expect(cacheControlFor('/app/dist/client/assets/main-abc.js')).toContain('max-age=31536000');
+    expect(cacheControlFor('/app/dist/client/fonts/outfit.woff2')).toContain('immutable');
+    expect(cacheControlFor('/app/dist/client/img/headshot.webp')).toContain('max-age=2592000');
+    expect(cacheControlFor('/app/dist/client/favicon.svg')).toBe('public, max-age=3600');
+  });
+});

@@ -468,7 +468,7 @@ export function PlayfulHomeView({ v }: { v: V }) {
             <p className="hand" style={css("margin:0;font-size:24px;color:#5C5A70")}>(roughly! tweak to your real day)</p>
           </div>
           <div className="sky-life shell"><div className="core sky" style={css(`background-color:${v.dayNow.sky ?? ''};min-height:460px`)}><span aria-hidden="true" className="sun" style={css(`position:absolute;transform:translate(${v.dayNow.x ?? ''},${v.dayNow.y ?? ''});width:84px;height:84px;border-radius:50%;background-color:${v.dayNow.orb ?? ''};box-shadow:0 0 0 16px ${v.dayNow.glow ?? ''},0 0 80px 20px ${v.dayNow.glow ?? ''}`)} />
-              <div style={css("position:relative;display:flex;flex-direction:column;gap:28px;padding:clamp(24px,4vw,48px);min-height:460px;box-sizing:border-box;justify-content:flex-end")}><div className="shell" style={css("max-width:580px;background:rgba(255,255,255,.4)")}><div className="core" style={css("background:#fff;padding:28px")}><p style={css("margin:0;font:800 15px 'Outfit',sans-serif;color:#E0601F")}>{v.dayNow.t} · {v.dayNow.label}</p>
+              <div style={css("position:relative;display:flex;flex-direction:column;gap:28px;padding:clamp(24px,4vw,48px);min-height:460px;box-sizing:border-box;justify-content:flex-end")}><div className="shell" style={css("max-width:580px;background:rgba(255,255,255,.4)")}><div className="core" style={css("background:#fff;padding:28px")}><p style={css("margin:0;font:800 15px 'Outfit',sans-serif;color:#C2410C")}>{v.dayNow.t} · {v.dayNow.label}</p>
                     <h3 style={css("margin:8px 0;font:900 38px/1.02 'Outfit',sans-serif;letter-spacing:-0.03em")}>{v.dayNow.title}</h3>
                     <p style={css("margin:0;font-size:17px;line-height:1.55;color:#3E3C55")}>{v.dayNow.body}</p>
                   </div></div>
@@ -485,7 +485,7 @@ export function PlayfulHomeView({ v }: { v: V }) {
                     </div>
                     <div style={css("padding:28px;display:flex;flex-direction:column;gap:12px")}><h3 style={css("margin:0;font:900 30px/1.02 'Outfit',sans-serif;letter-spacing:-0.03em")}>{p.title}</h3>
                       <p style={css("margin:0;font-size:16px;line-height:1.55;color:#3E3C55")}>{p.blurb}</p>
-                      <span style={css("margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;font:800 15px 'Outfit',sans-serif;color:#E0601F")}>{p.cta}<span className="ic" style={css("width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FFF1C2;transition:transform 700ms var(--spring)")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B1A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7" />
+                      <span style={css("margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;font:800 15px 'Outfit',sans-serif;color:#C2410C")}>{p.cta}<span className="ic" style={css("width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#FFF1C2;transition:transform 700ms var(--spring)")}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B1A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7" />
                             <path d="M8 7h9v9" />
                           </svg></span>
                       </span>
