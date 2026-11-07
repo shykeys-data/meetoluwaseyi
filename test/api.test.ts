@@ -139,7 +139,13 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
         req.on('error', fail);
         req.end();
       });
-    for (const path of ['//evil.com/', '//Evil.com', '/\\evil.com/', '//evil.com/?mode=serious', '///evil.com']) {
+    for (const path of [
+      '//evil.com/',
+      '//Evil.com',
+      '/\\evil.com/',
+      '//evil.com/?mode=serious',
+      '///evil.com',
+    ]) {
       const r = await raw(path);
       if (r.location) expect(r.location, path).toMatch(/^\/[^/\\]/);
     }

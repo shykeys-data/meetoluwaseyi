@@ -17,7 +17,7 @@ export type AppEnv = z.infer<typeof AppEnvSchema>;
 /** Removes tags until none are left, so nested tricks like `<scr<b>ipt>` can't rebuild one. */
 function stripTags(input: string): string {
   let out = input;
-  for (let prev = ''; prev !== out; ) {
+  for (let prev = ''; prev !== out;) {
     prev = out;
     out = out.replace(/<[^>]*>/g, '');
   }
