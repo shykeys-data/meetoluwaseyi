@@ -113,6 +113,8 @@ jobs:
           path: playwright-report
           retention-days: 7
       - run: npm audit --audit-level=high --omit=dev
+      - name: API contract (OpenAPI 3.1)
+        run: npx --yes @redocly/cli@1.25.0 lint docs/openapi.yaml
       - uses: actions/upload-artifact@v4
         with:
           name: build

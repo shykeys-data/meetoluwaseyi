@@ -1,0 +1,832 @@
+openapi: 3.1.0
+info:
+  title: meetoluwaseyi.com API
+  version: 1.1.0
+  summary: Content, contact and admin API behind www.meetoluwaseyi.com.
+  description: |
+    One version, mounted at `/api/v1`. Breaking changes get `/api/v2`; `/api/v1` then keeps working
+    for at least 6 months and answers with a `Deprecation` header (see docs/adr/0006-api-conventions.md).
+
+    Every success is `{ "data": ... }`. Paged lists add `{ "page": { "next": <cursor or null> } }`.
+    Every error is `{ "error": { "code", "message", "fields"? } }`, where `code` is stable and
+    `message` is written for a person. Field names are camelCase everywhere.
+
+    Rate limits (per IP): 300 requests/minute overall; contact 5 per 15 minutes and 20 per day;
+    sign-in and 2FA confirm 5 per 15 minutes; GitHub sync 3 per minute. Limited requests get 429
+    with a `RateLimit` header.
+  license:
+    name: All rights reserved
+    identifier: LicenseRef-Proprietary
+  contact:
+    email: hello@meetoluwaseyi.com
+servers:
+  - url: https://www.meetoluwaseyi.com/api/v1
+    description: Live
+  - url: https://staging.meetoluwaseyi.com/api/v1
+    description: Staging (HTTP basic auth in front)
+security:
+  - session: []
+tags:
+  - name: Public
+    description: Read-only content and the contact form. No sign-in.
+  - name: Auth
+    description: Owner sign-in with password and a 6-digit authenticator code.
+  - name: Admin
+    description: Owner-only. Needs the session cookie; writes also need the X-CSRF-Token header.
+
+paths:
+  /profile:
+    get:
+      tags: [Public]
+      operationId: getProfile
+      summary: The site owner's public profile
+      security: []
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Profile' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /projects:
+    get:
+      tags: [Public]
+      operationId: listProjects
+      summary: Published projects, in display order
+      description: Not paged on purpose; the site shows a small, curated list (under 50).
+      security: []
+      responses:
+        '200':
+          description: Projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/PublicProject' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /projects/{slug}:
+    get:
+      tags: [Public]
+      operationId: getProject
+      summary: One published project
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { $ref: '#/components/schemas/Slug' }
+      responses:
+        '200':
+          description: Project
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/PublicProject' }
+        '301':
+          description: The project was renamed; `Location` has its new address.
+          headers:
+            Location:
+              schema: { type: string }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /contact:
+    post:
+      tags: [Public]
+      operationId: sendMessage
+      summary: Send the owner a message
+      description: |
+        Saved first, then the owner is alerted by email and Telegram. A filled honeypot (`website`)
+        gets the same 202 but is dropped.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ContactInput' }
+            example:
+              name: Ada Lovelace
+              email: ada@example.com
+              intent: hire
+              message: I would love to talk about a community role.
+      responses:
+        '202':
+          description: Received
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      received: { type: boolean, const: true }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '413': { $ref: '#/components/responses/TooLarge' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      operationId: signIn
+      summary: Sign in with password and authenticator code
+      description: |
+        A wrong email, password or code all get the same 401. Five failures lock the account for
+        15 minutes (423). On the very first sign-in, with no 2FA yet, the answer is a `setup`
+        object instead of a session; finish with `/auth/totp/confirm`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginInput' }
+      responses:
+        '200':
+          description: Signed in (sets the `mo_sess` cookie), or 2FA setup needed
+          headers:
+            Set-Cookie:
+              description: '`mo_sess`: HttpOnly, Secure, SameSite=Strict, 7 days.'
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/SessionStarted'
+                      - $ref: '#/components/schemas/TotpSetup'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '423': { $ref: '#/components/responses/Locked' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/totp/confirm:
+    post:
+      tags: [Auth]
+      operationId: confirmTotp
+      summary: Finish first sign-in by confirming the authenticator app
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, totp]
+              properties:
+                token: { type: string, minLength: 10, maxLength: 500 }
+                totp: { type: string, pattern: '^\d{6}$' }
+      responses:
+        '200':
+          description: Signed in (sets the `mo_sess` cookie)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/SessionStarted' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      operationId: whoAmI
+      summary: The signed-in owner, and the CSRF token for writes
+      responses:
+        '200':
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/SessionInfo' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: signOut
+      summary: Sign out everywhere
+      description: Bumps the session version, so every existing session cookie stops working.
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '200':
+          description: Signed out
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      signedOut: { type: boolean, const: true }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/dashboard:
+    get:
+      tags: [Admin]
+      operationId: getDashboard
+      summary: Counts and health for the admin home
+      responses:
+        '200':
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      newMessages: { type: integer, minimum: 0 }
+                      githubLastOk: { type: [string, 'null'] }
+                      githubLastError: { type: [string, 'null'] }
+                      dbOk: { type: boolean }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /admin/profile:
+    get:
+      tags: [Admin]
+      operationId: adminGetProfile
+      summary: The profile, for editing
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Profile' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    patch:
+      tags: [Admin]
+      operationId: adminSaveProfile
+      summary: Replace the profile
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Profile' }
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/Profile' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/projects:
+    get:
+      tags: [Admin]
+      operationId: adminListProjects
+      summary: All projects, including drafts and hidden ones
+      responses:
+        '200':
+          description: Projects
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/AdminProject' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [Admin]
+      operationId: adminCreateProject
+      summary: Create a project
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProjectInput' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/AdminProject' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /admin/projects/reorder:
+    post:
+      tags: [Admin]
+      operationId: adminReorderProjects
+      summary: Set the display order
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ids]
+              properties:
+                ids:
+                  type: array
+                  items: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Reordered
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reordered: { type: integer }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/projects/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Admin]
+      operationId: adminUpdateProject
+      summary: Update a project
+      description: Changing the slug keeps the old address working with a 301.
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProjectInput' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: '#/components/schemas/AdminProject' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      tags: [Admin]
+      operationId: adminDeleteProject
+      summary: Delete a project
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      deleted: { type: integer }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/messages:
+    get:
+      tags: [Admin]
+      operationId: adminListMessages
+      summary: Inbox, newest first, one page at a time
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [new, replied, archived] }
+        - name: intent
+          in: query
+          schema: { $ref: '#/components/schemas/Intent' }
+        - name: before
+          in: query
+          description: Cursor from `page.next` of the previous page.
+          schema: { type: integer, minimum: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - name: format
+          in: query
+          description: '`csv` downloads the newest 1000 matching messages as a spreadsheet file.'
+          schema: { type: string, enum: [json, csv], default: json }
+      responses:
+        '200':
+          description: One page of messages, or a CSV file
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, page]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Message' }
+                  page: { $ref: '#/components/schemas/Page' }
+            text/csv:
+              schema: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /admin/messages/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    patch:
+      tags: [Admin]
+      operationId: adminSetMessageStatus
+      summary: Mark a message new, replied or archived
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [new, replied, archived] }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      status: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/upload:
+    post:
+      tags: [Admin]
+      operationId: adminSignUpload
+      summary: Signed parameters for a direct image upload to Cloudinary
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '200':
+          description: Upload signature
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { type: object }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/github/sync:
+    post:
+      tags: [Admin]
+      operationId: adminSyncGithub
+      summary: Pull public repos from GitHub into draft projects
+      parameters:
+        - $ref: '#/components/parameters/Csrf'
+      responses:
+        '200':
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      created: { type: integer }
+                      updated: { type: integer }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: mo_sess
+      description: HMAC-signed session cookie set by sign-in. HttpOnly, Secure, SameSite=Strict.
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    Csrf:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      description: The `csrf` value from sign-in or `/auth/me`. Required on every admin write.
+      schema: { type: string }
+
+  schemas:
+    Slug:
+      type: string
+      minLength: 2
+      maxLength: 80
+      pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+    Intent:
+      type: string
+      enum: [partner, hire, collab, hi]
+    Page:
+      type: object
+      required: [next]
+      properties:
+        next:
+          type: [integer, 'null']
+          description: Pass as `before` for the next page; null when there are no more.
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Stable, machine-readable.
+              enum:
+                [validation_failed, captcha_failed, invalid_login, setup_expired, unauthorized, forbidden,
+                 not_found, conflict, locked, rate_limited, too_large, bad_request, not_ready, server_error]
+            message:
+              type: string
+              description: Plain words a person can act on.
+            fields:
+              type: object
+              description: Field name to the problem with it, for form errors.
+              additionalProperties: { type: string }
+      example:
+        error:
+          code: validation_failed
+          message: Some fields need another look.
+          fields:
+            email: That email address doesn’t look right.
+    ContactInput:
+      type: object
+      required: [name, email, intent, message]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        email: { type: string, format: email, maxLength: 254 }
+        intent: { $ref: '#/components/schemas/Intent' }
+        message: { type: string, minLength: 10, maxLength: 2000 }
+        source: { type: string, enum: [form, chat], default: form }
+        turnstileToken: { type: string, maxLength: 4096 }
+        website:
+          type: string
+          maxLength: 0
+          description: Honeypot. Must be empty.
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+        password: { type: string, minLength: 12, maxLength: 200 }
+        totp: { type: string, pattern: '^\d{6}$' }
+    SessionStarted:
+      type: object
+      required: [csrf]
+      properties:
+        csrf: { type: string }
+    TotpSetup:
+      type: object
+      required: [setup]
+      properties:
+        setup:
+          type: object
+          required: [token, secret, uri]
+          properties:
+            token: { type: string }
+            secret: { type: string, description: Base32 secret for the authenticator app. }
+            uri: { type: string, description: 'otpauth:// link for the QR code.' }
+    SessionInfo:
+      type: object
+      required: [email, csrf]
+      properties:
+        email: { type: string, format: email }
+        csrf: { type: string }
+    Image:
+      type: object
+      required: [id, alt]
+      properties:
+        id: { type: string, maxLength: 300 }
+        alt: { type: string, minLength: 3, maxLength: 200 }
+    PublicProject:
+      type: object
+      required: [slug, title, pillars, summary, cover, mark, stack, links, featured, caseStudy]
+      properties:
+        slug: { $ref: '#/components/schemas/Slug' }
+        title: { type: string, maxLength: 120 }
+        pillars:
+          type: array
+          items: { type: string }
+        summary: { type: string, maxLength: 280 }
+        cover:
+          oneOf:
+            - $ref: '#/components/schemas/Image'
+            - type: 'null'
+        mark: { type: string, maxLength: 40 }
+        stack:
+          type: array
+          items: { type: string, maxLength: 40 }
+        links:
+          type: object
+          properties:
+            live: { type: string, format: uri }
+            repo: { type: string, format: uri }
+            book: { type: string, format: uri }
+        featured: { type: boolean }
+        caseStudy:
+          type: [object, 'null']
+          description: Case study sections (meta, kpis, ratings, steps, revised, recommendations).
+    ProjectInput:
+      type: object
+      required: [slug, title, pillars, summary]
+      properties:
+        slug: { $ref: '#/components/schemas/Slug' }
+        title: { type: string, minLength: 2, maxLength: 120 }
+        pillars:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items: { type: string }
+        summary: { type: string, minLength: 10, maxLength: 280 }
+        cover:
+          oneOf:
+            - $ref: '#/components/schemas/Image'
+            - type: 'null'
+        mark: { type: string, maxLength: 40 }
+        stack:
+          type: array
+          maxItems: 12
+          items: { type: string, maxLength: 40 }
+        links:
+          type: object
+          properties:
+            live: { type: string, format: uri }
+            repo: { type: string, format: uri }
+            book: { type: string, format: uri }
+        featured: { type: boolean }
+        sortOrder: { type: integer, minimum: 0, maximum: 10000 }
+        status: { type: string, enum: [draft, published] }
+        hidden: { type: boolean }
+        caseStudy: { type: [object, 'null'] }
+    AdminProject:
+      allOf:
+        - $ref: '#/components/schemas/ProjectInput'
+        - type: object
+          required: [id, source, updatedAt]
+          properties:
+            id: { type: integer }
+            source: { type: string, enum: [manual, github] }
+            repo: { type: [object, 'null'] }
+            updatedAt: { type: string, format: date-time }
+    Message:
+      type: object
+      required: [id, name, email, intent, body, source, status, createdAt]
+      description: The visitor's IP is never stored or sent; only a salted hash is kept, server-side.
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        intent: { $ref: '#/components/schemas/Intent' }
+        body: { type: string }
+        source: { type: string, enum: [form, chat] }
+        status: { type: string, enum: [new, replied, archived] }
+        notifyEmail: { type: string, enum: [pending, sent, failed, off] }
+        notifyWhatsapp: { type: string, enum: [pending, sent, failed, off] }
+        notifyTelegram: { type: string, enum: [pending, sent, failed, off] }
+        notifyError: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+    Profile:
+      type: object
+      description: Full shape in src/shared/schemas.ts (ProfileSchema), which the server validates against.
+      required: [name, headline, bio, links]
+      properties:
+        name: { type: string, maxLength: 80 }
+        headline: { type: string, maxLength: 160 }
+        bio: { type: string, maxLength: 2000 }
+        links:
+          type: object
+          properties:
+            email: { type: string, format: email }
+            linkedin: { type: string, format: uri }
+            github: { type: string, format: uri }
+            x: { type: string, format: uri }
+            telegram: { type: string, format: uri }
+
+  responses:
+    BadRequest:
+      description: The request or one of its fields is not valid.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Not signed in, or the email, password or code is wrong (same answer for all three).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Missing or wrong X-CSRF-Token on an admin write.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: No such resource.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: The slug is already taken.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Locked:
+      description: Too many failed sign-ins; try again in 15 minutes.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooLarge:
+      description: Body over 50 KB.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    TooManyRequests:
+      description: Rate limit reached.
+      headers:
+        RateLimit:
+          description: Remaining quota and reset time (IETF draft 8).
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }

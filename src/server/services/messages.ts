@@ -115,10 +115,23 @@ function toRow(r: RowDataPacket): MessageRow {
   };
 }
 
+const MESSAGE_COLS =
+  'id, name, email, intent, body, source, status, notify_email, notify_whatsapp, notify_telegram, notify_error, created_at';
+
+export interface MessagePage {
+  rows: MessageRow[];
+  /** Pass as `before` to get the next (older) page; null when there are no more. */
+  next: number | null;
+}
+
+/**
+ * Newest first, one page at a time (keyset pagination on id, which grows with created_at).
+ * Uses the primary key, or messages_by_status (status, id) when filtering by status.
+ */
 export async function listMessages(
   ctx: Ctx,
-  opts: { status?: string; intent?: string; limit?: number } = {},
-): Promise<MessageRow[]> {
+  opts: { status?: string; intent?: string; limit?: number; before?: number } = {},
+): Promise<MessagePage> {
   const where: string[] = [];
   const params: (string | number)[] = [];
   if (opts.status && ['new', 'replied', 'archived'].includes(opts.status)) {
@@ -129,12 +142,19 @@ export async function listMessages(
     where.push('intent = ?');
     params.push(opts.intent);
   }
-  const limit = Math.min(Math.max(Math.trunc(opts.limit ?? 200), 1), 1000);
+  if (opts.before && Number.isInteger(opts.before) && opts.before > 0) {
+    where.push('id < ?');
+    params.push(opts.before);
+  }
+  // A whole number between 1 and 1000, so it is safe to place in the SQL (mysql2 can't bind LIMIT in execute).
+  const limit = Math.min(Math.max(Math.trunc(opts.limit ?? 50), 1), 1000);
   const [rows] = await ctx.db.execute<RowDataPacket[]>(
-    `SELECT * FROM messages ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY created_at DESC, id DESC LIMIT ${limit}`,
+    `SELECT ${MESSAGE_COLS} FROM messages ${where.length ? 'WHERE ' + where.join(' AND ') : ''} ORDER BY id DESC LIMIT ${limit + 1}`,
     params,
   );
-  return rows.map(toRow);
+  const more = rows.length > limit;
+  const page = (more ? rows.slice(0, limit) : rows).map(toRow);
+  return { rows: page, next: more ? page[page.length - 1]!.id : null };
 }
 
 export async function setMessageStatus(ctx: Ctx, id: number, status: string): Promise<void> {

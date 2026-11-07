@@ -36,7 +36,7 @@ import { ping } from '../db/pool.ts';
 import { forbidden, handler, notFound, parse, tooMany, unauthorized } from '../lib/http.ts';
 import { readCookies, setCookie } from '../lib/cookies.ts';
 import { safeEqual } from '../lib/crypto.ts';
-import { ProfileSchema } from '../../shared/schemas.ts';
+import { INTENTS, ProfileSchema } from '../../shared/schemas.ts';
 
 const ok = (res: Response, data: unknown, status = 200) => res.status(status).json({ data });
 const limiter = (windowMs: number, limit: number) =>
@@ -216,19 +216,26 @@ export function apiRouter(ctx: Ctx): express.Router {
     }),
   );
 
+  const MessagesQuery = z.object({
+    status: z.enum(['new', 'replied', 'archived']).optional(),
+    intent: z.enum(INTENTS).optional(),
+    before: z.coerce.number().int().positive().optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(50),
+    format: z.enum(['json', 'csv']).default('json'),
+  });
   a.get(
     '/messages',
     handler(async (req, res) => {
-      const rows = await listMessages(ctx, {
-        status: req.query.status as string | undefined,
-        intent: req.query.intent as string | undefined,
-      });
-      if (req.query.format === 'csv') {
+      const q = parse(MessagesQuery, req.query);
+      if (q.format === 'csv') {
+        // The export is one file of the newest 1000 matching messages.
+        const { rows } = await listMessages(ctx, { status: q.status, intent: q.intent, limit: 1000 });
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
         res.setHeader('Content-Disposition', 'attachment; filename="messages.csv"');
         return res.send(toCsv(rows));
       }
-      ok(res, rows);
+      const page = await listMessages(ctx, q);
+      res.json({ data: page.rows, page: { next: page.next } });
     }),
   );
   a.patch(

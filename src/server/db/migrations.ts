@@ -95,6 +95,14 @@ export const MIGRATIONS: { id: string; statements: string[] }[] = [
       `ALTER TABLE messages ADD COLUMN notify_telegram ENUM('pending','sent','failed','off') NOT NULL DEFAULT 'off' AFTER notify_whatsapp`,
     ],
   },
+  {
+    // The inbox pages newest-first by id, filtered by status: index (status, id) matches that exactly.
+    id: '004_inbox_index',
+    statements: [
+      'ALTER TABLE messages ADD KEY messages_by_status (status, id)',
+      'ALTER TABLE messages DROP KEY messages_inbox',
+    ],
+  },
 ];
 
 export async function migrate(db: Db, log: (msg: string) => void = console.log): Promise<string[]> {

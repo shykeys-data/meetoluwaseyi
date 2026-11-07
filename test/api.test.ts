@@ -128,6 +128,16 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect(page).toContain('data-mode="serious"');
   });
 
+  it('treats SQL in a URL as an ordinary unknown address', async () => {
+    for (const slug of ["x' OR '1'='1", '1; DROP TABLE projects', "korrect-cars'--"]) {
+      const api = await fetch(`${base}/api/v1/projects/${encodeURIComponent(slug)}`);
+      expect(api.status).toBe(404);
+      const page = await fetch(`${base}/work/${encodeURIComponent(slug)}`, { headers: browserUA });
+      expect(page.status).toBe(404);
+    }
+    expect((await fetch(`${base}/api/v1/projects`)).status).toBe(200);
+  });
+
   it('normalises URLs and 404s unknown pages', async () => {
     const slash = await fetch(`${base}/work/`, { redirect: 'manual' });
     expect(slash.status).toBe(301);
@@ -219,6 +229,20 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
       });
       expect(bad.status).toBe(400);
       expect(await bad.text()).toContain('email');
+    });
+
+    it('stores hostile input as plain text: tags stripped, SQL left as harmless words', async () => {
+      const hostile = `<script>alert(1)</script>Robert'); DROP TABLE messages;-- please reply`;
+      const r = await post({ ...good, name: `<b>Bobby</b> Tables`, message: hostile }, '203.0.113.5');
+      expect(r.status).toBe(202);
+      const [rows] = await db.query('SELECT name, body FROM messages ORDER BY id DESC LIMIT 1');
+      const row = (rows as { name: string; body: string }[])[0]!;
+      expect(row.name).toBe('Bobby Tables');
+      expect(row.body).not.toContain('<script>');
+      expect(row.body).toContain('DROP TABLE messages;--');
+      // The table is still there.
+      const [count] = await db.query('SELECT COUNT(*) AS n FROM messages');
+      expect(Number((count as { n: number }[])[0]!.n)).toBeGreaterThan(0);
     });
 
     it('rate-limits after 5 posts in 15 minutes', async () => {
@@ -331,6 +355,35 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
       });
       expect(out.status).toBe(200);
       expect((await fetch(`${base}/api/v1/admin/projects`, { headers: { cookie } })).status).toBe(401);
+    });
+
+    it('pages the inbox newest-first and never sends IP hashes to the browser', async () => {
+      const r = await login({ email, password, totp: code() }, '192.0.2.11');
+      expect(r.status).toBe(200);
+      const cookie = r.headers
+        .getSetCookie()
+        .find((c) => c.startsWith('mo_sess='))!
+        .split(';')[0]!;
+      await db.query('DELETE FROM messages');
+      for (const n of ['one', 'two', 'three'])
+        await db.execute(
+          "INSERT INTO messages (name, email, intent, body, ip_hash) VALUES (?, 'p@example.com', 'hi', 'paging test message', ?)",
+          [n, 'a'.repeat(64)],
+        );
+      const get = (q: string) => fetch(`${base}/api/v1/admin/messages?${q}`, { headers: { cookie } });
+
+      const first = await (await get('limit=2')).json();
+      expect(first.data.map((m: { name: string }) => m.name)).toEqual(['three', 'two']);
+      expect(first.page.next).toEqual(expect.any(Number));
+      expect(JSON.stringify(first)).not.toMatch(/ip_?hash|aaaaaaaa/i);
+
+      const second = await (await get(`limit=2&before=${first.page.next}`)).json();
+      expect(second.data.map((m: { name: string }) => m.name)).toEqual(['one']);
+      expect(second.page.next).toBeNull();
+
+      expect((await get('limit=5000')).status).toBe(400);
+      expect((await get('status=deleted')).status).toBe(400);
+      expect((await get("before=1%20OR%201%3D1")).status).toBe(400);
     });
 
     it('gives the same answer for a wrong password, wrong code or unknown email', async () => {

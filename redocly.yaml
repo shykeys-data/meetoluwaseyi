@@ -1,0 +1,6 @@
+extends:
+  - recommended
+rules:
+  # Paging lives in `page.next`; the public lists are small and curated on purpose (see ADR 0006).
+  operation-4xx-response: error
+  no-server-example.com: error

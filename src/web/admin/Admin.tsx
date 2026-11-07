@@ -29,6 +29,14 @@ interface Message {
 let csrf = '';
 
 async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  return (await request<T>(path, init)).data as T;
+}
+
+/** The whole response body: `data`, plus `page.next` on paged lists. */
+async function request<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<{ data?: T; page?: { next: number | null } }> {
   const res = await fetch(`/api/v1${path}`, {
     ...init,
     credentials: 'same-origin',
@@ -40,6 +48,7 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   });
   const body = (await res.json().catch(() => ({}))) as {
     data?: T;
+    page?: { next: number | null };
     error?: { message: string; fields?: Record<string, string> };
   };
   if (!res.ok)
@@ -47,7 +56,7 @@ async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
       status: res.status,
       fields: body.error?.fields,
     });
-  return body.data as T;
+  return body;
 }
 
 export function Admin() {
@@ -682,13 +691,34 @@ function ProfileEditor() {
 
 function Messages() {
   const [rows, setRows] = useState<Message[]>([]);
+  const [next, setNext] = useState<number | null>(null);
   const [status, setStatus] = useState('new');
   const [intent, setIntent] = useState('');
+  const fetchPage = useCallback(
+    (before?: number) => {
+      const q = new URLSearchParams({
+        ...(status ? { status } : {}),
+        ...(intent ? { intent } : {}),
+        ...(before ? { before: String(before) } : {}),
+      });
+      return request<Message[]>(`/admin/messages?${q}`);
+    },
+    [status, intent],
+  );
   const load = useCallback(() => {
-    const q = new URLSearchParams({ ...(status ? { status } : {}), ...(intent ? { intent } : {}) });
-    void api<Message[]>(`/admin/messages?${q}`).then(setRows);
-  }, [status, intent]);
+    void fetchPage().then((b) => {
+      setRows(b.data ?? []);
+      setNext(b.page?.next ?? null);
+    });
+  }, [fetchPage]);
   useEffect(load, [load]);
+  function older() {
+    if (next === null) return;
+    void fetchPage(next).then((b) => {
+      setRows((r) => [...r, ...(b.data ?? [])]);
+      setNext(b.page?.next ?? null);
+    });
+  }
 
   async function mark(id: number, s: string) {
     await api(`/admin/messages/${id}`, { method: 'PATCH', body: JSON.stringify({ status: s }) });
@@ -751,6 +781,11 @@ function Messages() {
           </div>
         </article>
       ))}
+      {next !== null && (
+        <button type="button" onClick={older}>
+          Show older messages
+        </button>
+      )}
     </section>
   );
 }
