@@ -25,9 +25,16 @@
 
 ## Deploy
 
-Push to `dev` → CI → `deploy/staging` → the server pulls within 5 minutes.
-Production: tag a commit that passed on staging (`git tag v1.0.0 && git push --tags`), approve it in
-GitHub → Environments → production.
+Every change reaches `dev` through a pull request, squash-merged on GitHub. GitHub signs the merge
+commit, so every commit on `dev` shows **Verified**; a ruleset on `dev` rejects unsigned pushes.
+
+1. Push the change to a `work/<topic>` branch and open a pull request into `dev`. CI runs the full
+   checks on it; nothing is published.
+2. When CI is green, **Squash and merge**.
+3. The merge to `dev` → CI → `deploy/staging` → the server pulls within 5 minutes.
+
+Production: once staging looks right, publish a GitHub release with a new tag (`v1.2.0`) targeting
+`dev`. CI publishes `deploy/production` and the live server pulls it within 5 minutes.
 
 ## Roll back
 
