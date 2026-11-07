@@ -42,8 +42,14 @@ const schema = z
     NOTIFY_EMAIL: z.email().optional(),
     /** Optional copy of every new-message alert email (e.g. hello@meetoluwaseyi.com). */
     NOTIFY_CC: z.email().optional(),
-    TELEGRAM_BOT_TOKEN: z.string().regex(/^\d+:[A-Za-z0-9_-]{30,}$/, 'must look like 123456:ABC… from @BotFather').optional(),
-    TELEGRAM_CHAT_ID: z.string().regex(/^-?\d+$/, 'must be a number').optional(),
+    TELEGRAM_BOT_TOKEN: z
+      .string()
+      .regex(/^\d+:[A-Za-z0-9_-]{30,}$/, 'must look like 123456:ABC… from @BotFather')
+      .optional(),
+    TELEGRAM_CHAT_ID: z
+      .string()
+      .regex(/^-?\d+$/, 'must be a number')
+      .optional(),
     WHATSAPP_TOKEN: optional,
     WHATSAPP_PHONE_ID: optional,
     WHATSAPP_TO: optional,

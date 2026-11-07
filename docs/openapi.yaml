@@ -617,8 +617,22 @@ components:
               type: string
               description: Stable, machine-readable.
               enum:
-                [validation_failed, captcha_failed, invalid_login, setup_expired, unauthorized, forbidden,
-                 not_found, conflict, locked, rate_limited, too_large, bad_request, not_ready, server_error]
+                [
+                  validation_failed,
+                  captcha_failed,
+                  invalid_login,
+                  setup_expired,
+                  unauthorized,
+                  forbidden,
+                  not_found,
+                  conflict,
+                  locked,
+                  rate_limited,
+                  too_large,
+                  bad_request,
+                  not_ready,
+                  server_error,
+                ]
             message:
               type: string
               description: Plain words a person can act on.

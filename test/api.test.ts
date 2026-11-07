@@ -148,11 +148,17 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
   });
 
   it('on the live site, sends the plain domain to www permanently, keeping the path', async () => {
-    const live = createApp({ ctx: { ...ctx, config: { ...ctx.config, isProd: true, SITE_URL: 'https://www.meetoluwaseyi.com' } }, renderer });
+    const live = createApp({
+      ctx: { ...ctx, config: { ...ctx.config, isProd: true, SITE_URL: 'https://www.meetoluwaseyi.com' } },
+      renderer,
+    });
     const srv = live.listen(0);
     const url = `http://127.0.0.1:${(srv.address() as AddressInfo).port}`;
     try {
-      const r = await fetch(`${url}/work?x=1`, { redirect: 'manual', headers: { 'x-forwarded-host': 'meetoluwaseyi.com' } });
+      const r = await fetch(`${url}/work?x=1`, {
+        redirect: 'manual',
+        headers: { 'x-forwarded-host': 'meetoluwaseyi.com' },
+      });
       expect(r.status).toBe(301);
       expect(r.headers.get('location')).toBe('https://www.meetoluwaseyi.com/work?x=1');
       const ok = await fetch(`${url}/healthz`, { headers: { 'x-forwarded-host': 'www.meetoluwaseyi.com' } });
@@ -383,7 +389,7 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
 
       expect((await get('limit=5000')).status).toBe(400);
       expect((await get('status=deleted')).status).toBe(400);
-      expect((await get("before=1%20OR%201%3D1")).status).toBe(400);
+      expect((await get('before=1%20OR%201%3D1')).status).toBe(400);
     });
 
     it('gives the same answer for a wrong password, wrong code or unknown email', async () => {

@@ -138,7 +138,10 @@ export async function notifyNewMessage(ctx: Ctx, m: ContactInput & { id: number 
   if (ctx.config.TELEGRAM_BOT_TOKEN) {
     try {
       await withRetry(() =>
-        sendTelegram(ctx, `New message on meetoluwaseyi.com\n\nFrom: ${m.name} (${m.email})\nPicked: ${label}\nVia: ${m.source}\n\n${preview}\n\nReply by email, or see it in the admin inbox.`),
+        sendTelegram(
+          ctx,
+          `New message on meetoluwaseyi.com\n\nFrom: ${m.name} (${m.email})\nPicked: ${label}\nVia: ${m.source}\n\n${preview}\n\nReply by email, or see it in the admin inbox.`,
+        ),
       );
       results.telegram = 'sent';
     } catch (err) {
