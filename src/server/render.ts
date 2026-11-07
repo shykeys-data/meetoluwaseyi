@@ -106,7 +106,11 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
     return manifest;
   };
 
-  const scriptsFor = async (entry: string, nonce: string, url: string): Promise<{ css: string; js: string }> => {
+  const scriptsFor = async (
+    entry: string,
+    nonce: string,
+    url: string,
+  ): Promise<{ css: string; js: string }> => {
     if (opts.vite) {
       // Development: let Vite inject its client and the React refresh preamble.
       const html = await opts.vite.transformIndexHtml(

@@ -297,13 +297,19 @@ describe('page speed', () => {
     const { assetTags } = await import('../src/server/render.ts');
     const t = assetTags(
       {
-        'src/web/entry-client.tsx': { file: 'assets/main-abc.js', css: ['assets/main-abc.css'], imports: ['_shared'] },
+        'src/web/entry-client.tsx': {
+          file: 'assets/main-abc.js',
+          css: ['assets/main-abc.css'],
+          imports: ['_shared'],
+        },
         _shared: { file: 'assets/shared.js', css: ['assets/shared.css'] },
       } as never,
       'src/web/entry-client.tsx',
       'n0nce',
     );
-    expect(t.css).toBe('<link rel="stylesheet" href="/assets/main-abc.css">\n<link rel="stylesheet" href="/assets/shared.css">');
+    expect(t.css).toBe(
+      '<link rel="stylesheet" href="/assets/main-abc.css">\n<link rel="stylesheet" href="/assets/shared.css">',
+    );
     expect(t.js).toBe('<script type="module" src="/assets/main-abc.js" nonce="n0nce"></script>');
   });
   it('caches bundles and fonts for a year, images for 30 days, the rest for an hour', async () => {
