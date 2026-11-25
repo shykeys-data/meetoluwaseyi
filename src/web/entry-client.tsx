@@ -13,6 +13,7 @@ const LOADERS: Record<PageKey, () => Promise<PageComponent>> = {
   About: () => import('./pages/Inner.tsx').then((m) => m.AboutPage),
   Writing: () => import('./pages/Inner.tsx').then((m) => m.WritingPage),
   Contact: () => import('./pages/Inner.tsx').then((m) => m.ContactPage),
+  Doc: () => import('./pages/Inner.tsx').then((m) => m.DocPage),
   Simple: () => import('./pages/Inner.tsx').then((m) => m.SimplePage),
 };
 

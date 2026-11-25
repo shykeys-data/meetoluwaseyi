@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from 'react';
 import { SeriousHomeView } from '../mockup/SeriousHomeView.tsx';
+import { HIRE_LINKS } from '../content/hire.ts';
 import type { PageData } from '../../shared/page.ts';
 import type { PublicProject } from '../../shared/schemas.ts';
 import { prefersReducedMotion } from '../lib/mode.ts';
@@ -386,6 +387,7 @@ export class SeriousHome extends Component<Props, any> {
         this.stats = el;
       },
       firstName: first,
+      hireLinks: HIRE_LINKS,
     };
     return <SeriousHomeView v={v} />;
   }

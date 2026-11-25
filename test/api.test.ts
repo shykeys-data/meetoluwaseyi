@@ -170,6 +170,24 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect((await fetch(`${base}/work/olist-ecommerce-bi`)).status).toBe(200);
   });
 
+  it('serves the skill pages and articles, lists them in the sitemap, and 404s unknown articles', async () => {
+    for (const path of [
+      '/full-stack-developer',
+      '/data-analyst',
+      '/writing/late-deliveries-and-repeat-customers',
+    ]) {
+      const r = await fetch(base + path);
+      expect(r.status).toBe(200);
+      expect(await r.text()).toMatch(/data-route="(skill|article)"/);
+    }
+    expect((await fetch(`${base}/writing/not-an-article`)).status).toBe(404);
+    const map = await (await fetch(`${base}/sitemap.xml`)).text();
+    expect(map).toContain('/web3-community-manager</loc><lastmod>');
+    expect(map).toContain('/writing/growing-a-crypto-community-in-africa</loc>');
+    const llms = await (await fetch(`${base}/llms.txt`)).text();
+    expect(llms).toContain('/web3-business-development');
+  });
+
   it('on the live site, sends the plain domain to www permanently, keeping the path', async () => {
     const live = createApp({
       ctx: { ...ctx, config: { ...ctx.config, isProd: true, SITE_URL: 'https://www.meetoluwaseyi.com' } },

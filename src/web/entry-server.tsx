@@ -2,7 +2,15 @@ import { renderToString } from 'react-dom/server';
 import { App, cssKeyFor, pageKeyFor, type PageComponent, type PageKey } from './App.tsx';
 import { PlayfulHome } from './pages/PlayfulHome.tsx';
 import { SeriousHome } from './pages/SeriousHome.tsx';
-import { AboutPage, CaseStudyPage, ContactPage, SimplePage, WorkPage, WritingPage } from './pages/Inner.tsx';
+import {
+  AboutPage,
+  CaseStudyPage,
+  ContactPage,
+  DocPage,
+  SimplePage,
+  WorkPage,
+  WritingPage,
+} from './pages/Inner.tsx';
 import type { PageData } from '../shared/page.ts';
 
 const PAGES: Record<PageKey, PageComponent> = {
@@ -13,6 +21,7 @@ const PAGES: Record<PageKey, PageComponent> = {
   About: AboutPage,
   Writing: WritingPage,
   Contact: ContactPage,
+  Doc: DocPage,
   Simple: SimplePage,
 };
 
