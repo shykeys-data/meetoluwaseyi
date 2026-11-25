@@ -1,4 +1,5 @@
-import type { PageData } from '../shared/page.ts';
+import type { Doc, PageData } from '../shared/page.ts';
+import { DOCS, SKILLS } from './content/docs.ts';
 import type { Profile, PublicProject } from '../shared/schemas.ts';
 
 export interface Head {
@@ -7,6 +8,7 @@ export interface Head {
   canonical: string;
   ogImage: string;
   noindex?: boolean;
+  ogType?: 'website' | 'article';
   jsonLd: object[];
 }
 
@@ -25,19 +27,93 @@ export const safeJson = (v: unknown) =>
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029');
 
+/** Last content change, for the sitemap. Bump it when the pages' copy changes. */
+export const CONTENT_UPDATED = '2026-11-25';
+
+const ROLES = ['Full-Stack Developer', 'Web3 Community Manager', 'Web3 Business Developer', 'Data Analyst'];
+
+/** One Person node, referenced by @id from every other node, so search engines tie the pages to one name. */
 function person(p: Profile, site: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    '@id': `${site}/#person`,
     name: p.name,
+    givenName: 'Oluwaseyi',
+    familyName: 'Oshunwusi',
     url: site,
     image: site + p.photo.id,
-    jobTitle: 'Community Manager (Africa)',
+    jobTitle: ROLES,
     description: p.headline,
+    address: { '@type': 'PostalAddress', addressLocality: 'Lagos', addressCountry: 'NG' },
+    knowsAbout: [
+      'Full-stack web development',
+      'React',
+      'Node.js',
+      'Express',
+      'MySQL',
+      'Web3 community management',
+      'Crypto business development',
+      'Data analysis',
+      'Python',
+      'SQL',
+      'Power BI',
+    ],
     knowsLanguage: p.languages.map((l) => l.name),
     sameAs: [p.links.linkedin, p.links.github, p.links.x, p.links.telegram],
   };
 }
+
+const ref = (site: string) => ({ '@id': `${site}/#person` });
+
+function service(d: Doc, site: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: d.name,
+    serviceType: d.name,
+    description: d.description,
+    url: site + d.path,
+    provider: ref(site),
+    areaServed: [
+      { '@type': 'Country', name: 'Nigeria' },
+      { '@type': 'Place', name: 'Africa' },
+      { '@type': 'Place', name: 'Worldwide (remote)' },
+    ],
+  };
+}
+
+function faqPage(d: Doc) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: (d.faq ?? []).map(([q, a]) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  };
+}
+
+function blogPosting(d: Doc, site: string, image: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: d.h1,
+    description: d.description,
+    url: site + d.path,
+    mainEntityOfPage: site + d.path,
+    image,
+    datePublished: d.published,
+    dateModified: d.updated,
+    inLanguage: 'en',
+    author: { ...ref(site), '@type': 'Person', name: 'Oluwaseyi Oshunwusi', url: `${site}/about` },
+    publisher: ref(site),
+  };
+}
+
+/** "Title | Oluwaseyi" when it fits in a search result, else the title alone. */
+const withName = (t: string) => (t.length <= 50 ? `${t} | Oluwaseyi` : t);
 
 function crumbs(site: string, items: [string, string][]) {
   return {
@@ -78,15 +154,19 @@ export function headFor(page: PageData, site: string): Head {
       return {
         ...base,
         canonical: site + '/',
-        title: `${p.name}: community, business development and data`,
+        title: `${p.name} | Full-Stack Developer & Web3 Lead, Lagos`,
         description:
-          `${p.tagline} ${first} grows crypto communities in Africa, builds Korrect Cars and analyses data in public.`.slice(
-            0,
-            160,
-          ),
+          'Full-stack developer, Web3 community manager, crypto BD lead and data analyst in Lagos, Nigeria. I build for the web, grow communities and close partnerships.',
         jsonLd: [
           person(p, site),
-          { '@context': 'https://schema.org', '@type': 'WebSite', name: p.name, url: site },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            '@id': `${site}/#website`,
+            name: p.name,
+            url: site,
+            publisher: ref(site),
+          },
         ],
       };
     case 'work':
@@ -126,7 +206,7 @@ export function headFor(page: PageData, site: string): Head {
         ...base,
         title: `Writing · ${p.name}`,
         description:
-          'Notes from the work: the Olist BI series built in public, and Growth Without Reach on five African economies.',
+          'Articles on full-stack development, crypto communities, business development in Nigeria and data analysis, plus the Olist BI series built in public.',
         jsonLd: [],
       };
     case 'contact':
@@ -151,6 +231,34 @@ export function headFor(page: PageData, site: string): Head {
         description: 'What this site collects, why, and how long it keeps it.',
         jsonLd: [],
       };
+    case 'skill':
+    case 'article': {
+      const d = page.doc;
+      if (!d) break;
+      const image = `${site}/og/${d.slug}.png`;
+      const trail: [string, string][] =
+        d.kind === 'article'
+          ? [
+              ['Home', '/'],
+              ['Writing', '/writing'],
+              [d.name, d.path],
+            ]
+          : [
+              ['Home', '/'],
+              [d.name, d.path],
+            ];
+      return {
+        ...base,
+        title: withName(d.title),
+        description: d.description,
+        ogImage: image,
+        ogType: d.kind === 'article' ? 'article' : 'website',
+        jsonLd:
+          d.kind === 'article'
+            ? [blogPosting(d, site, image), crumbs(site, trail)]
+            : [person(p, site), service(d, site), faqPage(d), crumbs(site, trail)],
+      };
+    }
     default:
       break;
   }
@@ -169,7 +277,8 @@ export function headHtml(h: Head, nonce: string): string {
     `<meta name="description" content="${esc(h.description)}">`,
     `<link rel="canonical" href="${esc(h.canonical)}">`,
     h.noindex ? '<meta name="robots" content="noindex">' : '',
-    `<meta property="og:type" content="website">`,
+    `<meta property="og:type" content="${h.ogType ?? 'website'}">`,
+    `<meta property="og:site_name" content="Oluwaseyi Oshunwusi">`,
     `<meta property="og:title" content="${esc(h.title)}">`,
     `<meta property="og:description" content="${esc(h.description)}">`,
     `<meta property="og:url" content="${esc(h.canonical)}">`,
@@ -183,16 +292,19 @@ export function headHtml(h: Head, nonce: string): string {
 }
 
 export function sitemapXml(site: string, projects: PublicProject[]): string {
-  const paths = [
-    '/',
-    '/work',
-    '/about',
-    '/writing',
-    '/contact',
-    '/privacy',
-    ...projects.filter((p) => p.caseStudy).map((p) => `/work/${p.slug}`),
+  const entries: [string, string][] = [
+    ...['/', '/work', '/about', '/writing', '/contact', '/privacy'].map((p): [string, string] => [
+      p,
+      CONTENT_UPDATED,
+    ]),
+    ...DOCS.map((d): [string, string] => [d.path, d.updated]),
+    ...projects
+      .filter((p) => p.caseStudy)
+      .map((p): [string, string] => [`/work/${p.slug}`, CONTENT_UPDATED]),
   ];
-  const urls = paths.map((p) => `  <url><loc>${esc(site + p)}</loc></url>`).join('\n');
+  const urls = entries
+    .map(([p, d]) => `  <url><loc>${esc(site + p)}</loc><lastmod>${d}</lastmod></url>`)
+    .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
@@ -206,7 +318,7 @@ export function llmsTxt(site: string, p: Profile, projects: PublicProject[]): st
   const lines = [
     `# ${p.name}`,
     '',
-    `> ${p.headline}`,
+    `> ${p.name} is a full-stack developer, Web3 community manager, Web3 business developer and data analyst based in Lagos, Nigeria. ${p.headline}`,
     '',
     p.bio,
     '',
@@ -215,6 +327,12 @@ export function llmsTxt(site: string, p: Profile, projects: PublicProject[]): st
     '',
     '## Projects',
     ...projects.map((pr) => `- [${pr.title}](${site}/work/${pr.slug}): ${pr.summary}`),
+    '',
+    '## What I do',
+    ...SKILLS.map((d) => `- [${d.name}](${site}${d.path}): ${d.description}`),
+    '',
+    '## Articles',
+    ...DOCS.filter((d) => d.kind === 'article').map((d) => `- [${d.h1}](${site}${d.path}): ${d.description}`),
     '',
     '## Pages',
     `- [Work](${site}/work)`,

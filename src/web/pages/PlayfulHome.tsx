@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, type ReactNode } from 'react';
 import { PlayfulHomeView } from '../mockup/PlayfulHomeView.tsx';
+import { HIRE_LINKS } from '../content/hire.ts';
 import type { PageData } from '../../shared/page.ts';
 import type { PublicProject } from '../../shared/schemas.ts';
 import { markIntroSeen, prefersReducedMotion } from '../lib/mode.ts';
@@ -778,6 +779,6 @@ export class PlayfulHome extends Component<Props, any> {
   }
 
   override render() {
-    return <PlayfulHomeView v={this.renderVals()} />;
+    return <PlayfulHomeView v={{ ...this.renderVals(), hireLinks: HIRE_LINKS }} />;
   }
 }

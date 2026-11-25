@@ -7,6 +7,7 @@ import { submitContact } from '../services/messages.ts';
 import { HttpError, handler } from '../lib/http.ts';
 import { readCookies, setCookie, isBot } from '../lib/cookies.ts';
 import { sitemapXml, robotsTxt, llmsTxt } from '../seo.ts';
+import { ARTICLES, docForPath } from '../content/docs.ts';
 import { COOKIES, ONE_YEAR, type PageData, type RouteName } from '../../shared/page.ts';
 import { parseMode, type Mode } from '../../shared/schemas.ts';
 
@@ -94,6 +95,7 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
       profile,
       projects,
       ...(ctx.config.TURNSTILE_SITE_KEY ? { turnstileSiteKey: ctx.config.TURNSTILE_SITE_KEY } : {}),
+      ...(ctx.config.GA_MEASUREMENT_ID ? { analyticsId: ctx.config.GA_MEASUREMENT_ID } : {}),
     };
   }
 
@@ -161,8 +163,12 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
   r.get(
     '/{*path}',
     handler(async (req, res) => {
-      const route = STATIC[req.path] ?? 'notfound';
-      await send(res, await base(req, route), route === 'notfound' ? 404 : 200);
+      const doc = STATIC[req.path] ? undefined : docForPath(req.path);
+      const route = STATIC[req.path] ?? doc?.kind ?? 'notfound';
+      const data = await base(req, route);
+      if (doc) data.doc = doc;
+      if (route === 'writing') data.articles = ARTICLES.map(({ path, title, description, eyebrow, published, h1 }) => ({ path, title, description, eyebrow, published, h1 }));
+      await send(res, data, route === 'notfound' ? 404 : 200);
     }),
   );
 

@@ -61,6 +61,11 @@ const schema = z
     CLOUDFLARE_ZONE_ID: optional,
     CLOUDFLARE_API_TOKEN: optional,
     PLAUSIBLE_DOMAIN: optional,
+    /** Google Analytics 4. Production uses the site's own ID unless this overrides it; staging sends nothing. */
+    GA_MEASUREMENT_ID: z
+      .string()
+      .regex(/^G-[A-Z0-9]{4,20}$/, 'must look like G-XXXXXXXXXX')
+      .optional(),
   })
   .transform((env) => ({
     ...env,
@@ -104,6 +109,9 @@ const DEV_DEFAULTS = {
   ADMIN_EMAIL: 'admin@localhost.test',
 } as const;
 
+/** The site's Google Analytics 4 property (public: it appears in every page). */
+const SITE_GA_ID = 'G-G6JWK7XX3G';
+
 type Parsed = z.infer<typeof schema>;
 export type Config = Omit<Parsed, keyof typeof DEV_DEFAULTS> & {
   [K in keyof typeof DEV_DEFAULTS]: string;
@@ -140,6 +148,7 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     SESSION_SECRET: pick('SESSION_SECRET'),
     IP_HASH_SALT: pick('IP_HASH_SALT'),
     ADMIN_EMAIL: pick('ADMIN_EMAIL'),
+    GA_MEASUREMENT_ID: c.GA_MEASUREMENT_ID ?? (c.APP_ENV === 'production' ? SITE_GA_ID : undefined),
     isDev: c.APP_ENV === 'development',
     isStaging: c.APP_ENV === 'staging',
     isProd: c.APP_ENV === 'production',

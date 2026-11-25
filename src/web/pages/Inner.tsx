@@ -10,6 +10,7 @@ import { WritingView } from '../mockup/WritingView.tsx';
 import { ContactView } from '../mockup/ContactView.tsx';
 import { CaseStudyView } from '../mockup/CaseStudyView.tsx';
 import { ShellView } from '../mockup/ShellView.tsx';
+import { inline, markdown } from '../lib/markdown.tsx';
 
 /**
  * Every page except the two homes. One layout per page; the mode only changes the theme tokens
@@ -17,6 +18,15 @@ import { ShellView } from '../mockup/ShellView.tsx';
  */
 type Props = { data: PageData };
 type Cur = 'work' | 'about' | 'writing' | 'contact' | 'none';
+
+/** "25 November 2026", the same on the server and in the browser. */
+const longDate = (iso: string) =>
+  new Date(iso + 'T12:00:00Z').toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 
 abstract class InnerPage extends Component<Props, any> {
   [key: string]: any;
@@ -287,7 +297,29 @@ export class WritingPage extends InnerPage {
   override render() {
     const base = this.shell('writing');
     const p = base.isPlayful;
-    const series = this.props.data.profile.writing.map((x) => {
+    const articles = this.props.data.articles ?? [];
+    const onSite = articles.length
+      ? [
+          {
+            kicker: `On this site · ${articles.length} articles`,
+            title: 'Articles',
+            project: undefined,
+            projectLabel: undefined,
+            hasProject: false,
+            cols: 'repeat(2,minmax(0,1fr))',
+            posts: articles.map((a) => ({
+              kicker: a.eyebrow,
+              date: longDate(a.published),
+              t: a.h1,
+              d: a.description,
+              url: a.path,
+              cls: '',
+              more: 'Read the article →',
+            })),
+          },
+        ]
+      : [];
+    const fromLinkedIn = this.props.data.profile.writing.map((x) => {
       const n = x.posts.length;
       const cols = n % 3 === 0 || n >= 5 ? 3 : 2;
       const posts = x.posts.map((po, i) => ({
@@ -308,7 +340,80 @@ export class WritingPage extends InnerPage {
         cols: `repeat(${cols},minmax(0,1fr))`,
       };
     });
+    const series = [...onSite, ...fromLinkedIn];
     return <WritingView v={{ ...base, series, wrEyebrow: p ? 'stuff I wrote' : 'Notes from the work' }} />;
+  }
+}
+
+// ---------- Skill pages and articles ----------
+export class DocPage extends InnerPage {
+  override render() {
+    const d = this.props.data.doc;
+    const base = this.shell(d?.kind === 'article' ? 'writing' : 'none');
+    if (!d) return <ShellView v={{ ...base, main: null }} />;
+    const article = d.kind === 'article';
+    const crumbs = article
+      ? [
+          { href: '/', label: 'Home' },
+          { href: '/writing', label: 'Writing' },
+        ]
+      : [{ href: '/', label: 'Home' }];
+    const main: ReactNode = (
+      <article id="main-content" className="doc">
+        <div className="doc-wrap">
+          <nav aria-label="Breadcrumb" className="doc-crumbs enter">
+            {crumbs.map((c) => (
+              <span key={c.href}>
+                <a href={c.href}>{c.label}</a> /{' '}
+              </span>
+            ))}
+            <span aria-current="page">{d.name}</span>
+          </nav>
+          <p className="enter" style={{ margin: '24px 0 0' }}>
+            <span className="eyebrow">{d.eyebrow}</span>
+          </p>
+          <h1 className="h1 doc-h1 enter" style={{ animationDelay: '.08s' }}>
+            {d.h1}
+          </h1>
+          {article ? (
+            <p className="doc-meta">
+              By <a href="/about">Oluwaseyi Oshunwusi</a> · <time dateTime={d.published}>{longDate(d.published)}</time>
+            </p>
+          ) : null}
+          <div className="doc-body">{markdown(d.body)}</div>
+          {d.faq?.length ? (
+            <section className="doc-body doc-faq" aria-labelledby="faq">
+              <h2 id="faq">Common questions</h2>
+              {d.faq.map(([q, a]) => (
+                <div key={q}>
+                  <h3>{q}</h3>
+                  <p>{inline(a)}</p>
+                </div>
+              ))}
+            </section>
+          ) : null}
+          <aside className="doc-cta" aria-label="Get in touch">
+            <h2>{d.cta.title}</h2>
+            <p>{d.cta.body}</p>
+            <a className="pbtn solid" href={d.cta.href}>
+              {d.cta.label}
+            </a>
+          </aside>
+          {d.related.length ? (
+            <p className="doc-related">
+              Also read:{' '}
+              {d.related.map((r, i) => (
+                <span key={r.href}>
+                  {i > 0 ? ' · ' : null}
+                  <a href={r.href}>{r.label}</a>
+                </span>
+              ))}
+            </p>
+          ) : null}
+        </div>
+      </article>
+    );
+    return <ShellView v={{ ...base, main }} />;
   }
 }
 
@@ -461,8 +566,13 @@ export class SimplePage extends InnerPage {
           </p>
           <p>
             <strong>Cookies:</strong> two small ones remember whether you’ve seen the intro and which mode
-            (playful or serious) you prefer. There are no advertising or tracking cookies, and any visit
-            statistics are cookie-free.
+            (playful or serious) you prefer. There are no advertising cookies.
+          </p>
+          <p>
+            <strong>Visit statistics</strong> come from Google Analytics. It sets its cookies only if you
+            click Allow on the small banner; until then it sends Google cookie-free counts of page views.
+            Your choice is saved in your browser. To change it, clear this site’s data in your browser and
+            the banner will ask again.
           </p>
           <p>
             <strong>Spam protection</strong> uses Cloudflare Turnstile when you send a message. Cloudflare

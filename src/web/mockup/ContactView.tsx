@@ -43,6 +43,12 @@ export function ContactView({ v }: { v: V }) {
                 <a className="flink" href="/writing">Writing</a>
                 <a className="flink" href="/contact">Contact</a>
               </div>
+              <div style={css("display:flex;flex-direction:column")}><p style={css("margin:0 0 6px;font:500 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)")}>Hire me</p>
+                <a className="flink" href="/full-stack-developer">Full-stack developer</a>
+                <a className="flink" href="/web3-community-manager">Web3 community manager</a>
+                <a className="flink" href="/web3-business-development">Web3 business development</a>
+                <a className="flink" href="/data-analyst">Data analyst</a>
+              </div>
               <div style={css("display:flex;flex-direction:column")}><p style={css("margin:0 0 6px;font:500 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)")}>Elsewhere</p>
                 <a className="flink" href="https://www.linkedin.com/in/oluwaseyi-o-601915b5/">LinkedIn</a>
                 <a className="flink" href="https://github.com/shykeys-data">GitHub</a>

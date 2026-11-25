@@ -47,7 +47,7 @@ export function WritingView({ v }: { v: V }) {
                       </div>
                       <h3 style={css("margin:0;font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dls);font-size:26px;line-height:1.1")}>{po.t}</h3>
                       <p style={css("margin:0;font-size:14px;line-height:1.55;color:var(--muted)")}>{po.d}</p>
-                      <span style={css("margin-top:auto;font-size:14px;color:var(--ink)")}>Read on LinkedIn ↗</span>
+                      <span style={css("margin-top:auto;font-size:14px;color:var(--ink)")}>{po.more ?? 'Read on LinkedIn ↗'}</span>
                     </div></a></Fragment>))}</div>
             </div></section></Fragment>))}
         <section style={css("padding:32px 24px 104px")}><div className="wrap"><a className="pbtn ghost" href="https://www.linkedin.com/in/oluwaseyi-o-601915b5/recent-activity/all/">Everything on LinkedIn<span className="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7" />
@@ -63,6 +63,12 @@ export function WritingView({ v }: { v: V }) {
                 <a className="flink" href="/about">About</a>
                 <a className="flink" href="/writing">Writing</a>
                 <a className="flink" href="/contact">Contact</a>
+              </div>
+              <div style={css("display:flex;flex-direction:column")}><p style={css("margin:0 0 6px;font:500 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)")}>Hire me</p>
+                <a className="flink" href="/full-stack-developer">Full-stack developer</a>
+                <a className="flink" href="/web3-community-manager">Web3 community manager</a>
+                <a className="flink" href="/web3-business-development">Web3 business development</a>
+                <a className="flink" href="/data-analyst">Data analyst</a>
               </div>
               <div style={css("display:flex;flex-direction:column")}><p style={css("margin:0 0 6px;font:500 11px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)")}>Elsewhere</p>
                 <a className="flink" href="https://www.linkedin.com/in/oluwaseyi-o-601915b5/">LinkedIn</a>

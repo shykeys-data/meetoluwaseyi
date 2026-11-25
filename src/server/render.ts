@@ -91,6 +91,29 @@ function bootScript(data: PageData, nonce: string): string {
   return `<script nonce="${nonce}">document.documentElement.classList.add('js');${intro}</script>`;
 }
 
+/**
+ * Google Analytics 4 with Consent Mode: until the visitor clicks Allow, analytics cookies stay off and Google
+ * receives only cookie-free pings. The choice is kept in localStorage; a small banner (outside the React root,
+ * so hydration never sees it) asks once.
+ */
+export function analyticsScripts(id: string | undefined, nonce: string): string {
+  if (!id || !/^G-[A-Z0-9]{4,20}$/.test(id)) return '';
+  const init =
+    `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;` +
+    `var c=null;try{c=localStorage.getItem('mo_consent')}catch(e){}` +
+    `gtag('consent','default',{analytics_storage:c==='granted'?'granted':'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});` +
+    `gtag('js',new Date());gtag('config','${id}');` +
+    `if(!c){var b=document.createElement('div');b.className='consent';b.setAttribute('role','region');b.setAttribute('aria-label','Analytics cookies');` +
+    `b.innerHTML='<p>Can I use Google Analytics cookies to count visits? <a href="/privacy">Privacy</a></p><div><button type="button" data-v="granted">Allow</button><button type="button" data-v="denied">No thanks</button></div>';` +
+    `b.addEventListener('click',function(e){var v=e.target&&e.target.getAttribute&&e.target.getAttribute('data-v');if(!v)return;` +
+    `try{localStorage.setItem('mo_consent',v)}catch(x){}gtag('consent','update',{analytics_storage:v});b.remove()});` +
+    `document.body.appendChild(b)}`;
+  return [
+    `<script nonce="${nonce}">${init}</script>`,
+    `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}" nonce="${nonce}"></script>`,
+  ].join('\n');
+}
+
 function dataScript(data: PageData): string {
   return `<script id="__DATA__" type="application/json">${safeJson(data)}</script>`;
 }
@@ -144,7 +167,7 @@ export function createRenderer(opts: { vite?: ViteDevServer; clientDir: string }
         extraHead,
         bootScript(data, nonce),
       ].join('\n');
-      const scripts = [dataScript(data), assets.js].join('\n');
+      const scripts = [dataScript(data), assets.js, analyticsScripts(data.analyticsId, nonce)].join('\n');
       const htmlClass = `mode-${data.mode}`;
       return doc({ theme: data.mode, htmlClass, head, body, scripts });
     },
