@@ -230,9 +230,6 @@ html.mode-playful .h2 .em {
     padding: 24px;
   }
 }
-.doc-cta .pbtn {
-  padding: 0 24px;
-}
 
 /* Analytics consent: one small card, bottom left, outside the React root. */
 .consent {
@@ -283,4 +280,10 @@ html.mode-playful .h2 .em {
   background: transparent;
   color: #fff6e5;
   box-shadow: inset 0 0 0 1px rgba(255, 246, 229, 0.4);
+}
+
+/* The mockup's pill buttons leave room on the right for an arrow icon. Without one, centre the label. */
+.pbtn:not(:has(.ic)) {
+  justify-content: center;
+  padding: 0 24px;
 }
