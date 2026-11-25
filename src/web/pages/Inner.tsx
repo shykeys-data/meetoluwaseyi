@@ -377,7 +377,8 @@ export class DocPage extends InnerPage {
           </h1>
           {article ? (
             <p className="doc-meta">
-              By <a href="/about">Oluwaseyi Oshunwusi</a> · <time dateTime={d.published}>{longDate(d.published)}</time>
+              By <a href="/about">Oluwaseyi Oshunwusi</a> ·{' '}
+              <time dateTime={d.published}>{longDate(d.published)}</time>
             </p>
           ) : null}
           <div className="doc-body">{markdown(d.body)}</div>
@@ -570,9 +571,9 @@ export class SimplePage extends InnerPage {
           </p>
           <p>
             <strong>Visit statistics</strong> come from Google Analytics. It sets its cookies only if you
-            click Allow on the small banner; until then it sends Google cookie-free counts of page views.
-            Your choice is saved in your browser. To change it, clear this site’s data in your browser and
-            the banner will ask again.
+            click Allow on the small banner; until then it sends Google cookie-free counts of page views. Your
+            choice is saved in your browser. To change it, clear this site’s data in your browser and the
+            banner will ask again.
           </p>
           <p>
             <strong>Spam protection</strong> uses Cloudflare Turnstile when you send a message. Cloudflare

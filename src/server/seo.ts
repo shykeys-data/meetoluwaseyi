@@ -298,9 +298,7 @@ export function sitemapXml(site: string, projects: PublicProject[]): string {
       CONTENT_UPDATED,
     ]),
     ...DOCS.map((d): [string, string] => [d.path, d.updated]),
-    ...projects
-      .filter((p) => p.caseStudy)
-      .map((p): [string, string] => [`/work/${p.slug}`, CONTENT_UPDATED]),
+    ...projects.filter((p) => p.caseStudy).map((p): [string, string] => [`/work/${p.slug}`, CONTENT_UPDATED]),
   ];
   const urls = entries
     .map(([p, d]) => `  <url><loc>${esc(site + p)}</loc><lastmod>${d}</lastmod></url>`)

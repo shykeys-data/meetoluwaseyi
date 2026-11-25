@@ -90,7 +90,14 @@ describe('safeHref', () => {
   it('allows site paths and https addresses only', () => {
     expect(safeHref('/writing/late-deliveries-and-repeat-customers')).toBeDefined();
     expect(safeHref('https://www.korrectcars.com')).toBeDefined();
-    for (const bad of ['//evil.com', '/\\evil.com', 'javascript:alert(1)', 'http://x.com', 'data:text/html,x', '/a"b'])
+    for (const bad of [
+      '//evil.com',
+      '/\\evil.com',
+      'javascript:alert(1)',
+      'http://x.com',
+      'data:text/html,x',
+      '/a"b',
+    ])
       expect(safeHref(bad), bad).toBeUndefined();
   });
 });

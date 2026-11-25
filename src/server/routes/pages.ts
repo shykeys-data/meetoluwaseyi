@@ -167,7 +167,15 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
       const route = STATIC[req.path] ?? doc?.kind ?? 'notfound';
       const data = await base(req, route);
       if (doc) data.doc = doc;
-      if (route === 'writing') data.articles = ARTICLES.map(({ path, title, description, eyebrow, published, h1 }) => ({ path, title, description, eyebrow, published, h1 }));
+      if (route === 'writing')
+        data.articles = ARTICLES.map(({ path, title, description, eyebrow, published, h1 }) => ({
+          path,
+          title,
+          description,
+          eyebrow,
+          published,
+          h1,
+        }));
       await send(res, data, route === 'notfound' ? 404 : 200);
     }),
   );

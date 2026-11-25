@@ -171,7 +171,11 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
   });
 
   it('serves the skill pages and articles, lists them in the sitemap, and 404s unknown articles', async () => {
-    for (const path of ['/full-stack-developer', '/data-analyst', '/writing/late-deliveries-and-repeat-customers']) {
+    for (const path of [
+      '/full-stack-developer',
+      '/data-analyst',
+      '/writing/late-deliveries-and-repeat-customers',
+    ]) {
       const r = await fetch(base + path);
       expect(r.status).toBe(200);
       expect(await r.text()).toMatch(/data-route="(skill|article)"/);

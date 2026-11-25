@@ -170,7 +170,10 @@ Telegram, X (Twitter) and X Spaces, Discord, TweetDeck, Instagram, Facebook, Tik
     },
     related: [
       { href: '/web3-business-development', label: 'Web3 business development' },
-      { href: '/writing/growing-a-crypto-community-in-africa', label: 'How I grew a crypto community to 25,000+' },
+      {
+        href: '/writing/growing-a-crypto-community-in-africa',
+        label: 'How I grew a crypto community to 25,000+',
+      },
     ],
   },
   {
@@ -248,7 +251,10 @@ Telegram, X and X Spaces, LinkedIn, email outreach, partner calls, campus networ
     },
     related: [
       { href: '/web3-community-manager', label: 'Web3 community management' },
-      { href: '/writing/launching-a-crypto-exchange-in-nigeria', label: 'Taking a crypto exchange into Nigeria' },
+      {
+        href: '/writing/launching-a-crypto-exchange-in-nigeria',
+        label: 'Taking a crypto exchange into Nigeria',
+      },
     ],
   },
   {
