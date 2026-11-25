@@ -54,7 +54,7 @@ export function SeriousHomeView({ v }: { v: V }) {
               <p className="enter" style={css("animation-delay:.95s;margin:34px auto 0;font-family:'Instrument Serif',serif;font-size:clamp(28px,3.2vw,42px);line-height:1.15;display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em;align-items:baseline")}><span>I</span>
                 <span style={css("display:inline-grid;overflow:hidden;padding:0 .04em .1em 0;text-align:left")}>{(v.words ?? []).map((wd: any, wd_i: number) => (<Fragment key={wd_i}><span aria-hidden={wd.hid} style={css(`grid-area:1/1;font-style:italic;color:${v.accent ?? ''};white-space:nowrap;transition:opacity 700ms var(--spring),transform 800ms var(--spring),filter 700ms var(--spring);${wd.st ?? ''}`)}>{wd.t}</span></Fragment>))}</span>
               </p>
-              <p className="enter" style={css("animation-delay:1.1s;margin:20px auto 0;max-width:620px;font-size:18px;line-height:1.65;color:#A9AEB9")}>I help exchanges and Web3 projects win in Africa. At WEEX I grew the community from zero to 25,000+ in under a year and turned 7,000+ members into active futures traders. Before that, I helped launch Gate.io P2P in Nigeria.</p>
+              <p className="enter" style={css("animation-delay:1.1s;margin:20px auto 0;max-width:620px;font-size:18px;line-height:1.65;color:#A9AEB9")}>I help exchanges and Web3 projects win in Africa. At a global crypto exchange I grew the community from zero to 25,000+ in under a year and turned 7,000+ members into active futures traders. Before that, I helped launch Gate.io P2P in Nigeria.</p>
               <div className="enter" style={css("animation-delay:1.25s;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:40px")}><a className="pbtn solid" href="#work" onPointerMove={v.magnet} onPointerLeave={v.unmagnet}><span className="mag">See the proof<span className="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17L17 7" />
                         <path d="M8 7h9v9" />
                       </svg></span>
@@ -152,7 +152,7 @@ export function SeriousHomeView({ v }: { v: V }) {
                   <h2 id="h-rhythm" style={css("margin:20px 0 0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,5.5vw,80px);line-height:1;letter-spacing:-0.02em")}>A community that runs <span style={css("font-style:italic;color:#8C929E")}>on rhythm.</span>
                   </h2>
                 </div>
-                <p data-r="" style={css("--i:1;margin:0;max-width:400px;font-size:17px;line-height:1.65;color:#A9AEB9")}>WEEX Africa (Official) on Telegram. Today is marked in WAT; tap any day.</p>
+                <p data-r="" style={css("--i:1;margin:0;max-width:400px;font-size:17px;line-height:1.65;color:#A9AEB9")}>An exchange community on Telegram. Today is marked in WAT; tap any day.</p>
               </div>
               <div className="bento" ref={v.setStats}><div className="b-a shell" data-r=""><div className="core" style={css("display:flex;flex-direction:column")}><div role="group" aria-label="Day of the week" style={css("position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:8px;box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)")}><span aria-hidden="true" style={css(`position:absolute;top:8px;bottom:8px;left:8px;width:calc((100% - 16px) / 7);border-radius:14px;background:rgba(255,255,255,.07);transform:translateX(${v.selX ?? ''});transition:transform 700ms var(--spring)`)} />
                       {(v.days ?? []).map((dy: any, dy_i: number) => (<Fragment key={dy_i}><button type="button" className="daybtn" onClick={dy.pick} aria-pressed={dy.pressed} style={css(`color:${dy.col ?? ''}`)}>{dy.short}{dy.today ? (<><span aria-label="today" style={css("display:block;width:5px;height:5px;margin:3px auto 0;border-radius:50%;background:#3DDC97")} /></>) : null}
@@ -176,7 +176,7 @@ export function SeriousHomeView({ v }: { v: V }) {
                 <div className="b-s shell stat" data-r="" style={css("--i:2")}><div className="core" style={css("padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:24px;min-height:200px")}><span className="eyebrow" style={css("align-self:flex-start")}>Community</span>
                     <div><p className="num" style={css("margin:0;font:400 clamp(64px,6vw,92px)/1 'Instrument Serif',serif;font-variant-numeric:tabular-nums")}>{v.n2}<span style={css("color:#F5A524")}>k+</span>
                       </p>
-                      <p style={css("margin:10px 0 0;font-size:15px;color:#A9AEB9")}>WEEX members, from zero in under 12 months</p>
+                      <p style={css("margin:10px 0 0;font-size:15px;color:#A9AEB9")}>exchange members, from zero in under 12 months</p>
                     </div>
                   </div></div>
                 <div className="b-s shell stat" data-r=""><div className="core" style={css("padding:28px;display:flex;flex-direction:column;justify-content:space-between;gap:24px;min-height:200px")}><span className="eyebrow" style={css("align-self:flex-start")}>Activation</span>

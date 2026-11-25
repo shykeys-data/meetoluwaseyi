@@ -28,7 +28,7 @@ export const PILLARS = [
     t: 'Community',
     c: AMBER,
     bg: 'linear-gradient(160deg,rgba(245,165,36,.14) 0%,rgba(16,19,25,.25) 60%)',
-    b: 'Members who trade, not just lurk. WEEX: zero to 25,000+ in under a year, with 7,000+ activated through live classes. Gate.io: 20,000+ members, 30+ X Spaces and Nigeria’s first Gate.io meetup.',
+    b: 'Members who trade, not just lurk. At a global exchange: zero to 25,000+ in under a year, with 7,000+ activated through live classes. Gate.io: 20,000+ members, 30+ X Spaces and Nigeria’s first Gate.io meetup.',
     tags: ['Growth', 'Education', 'AMAs'],
   },
   {
@@ -36,7 +36,7 @@ export const PILLARS = [
     t: 'Business Development',
     c: AMBER,
     bg: 'linear-gradient(160deg,rgba(245,165,36,.11) 0%,rgba(16,19,25,.25) 60%)',
-    b: 'Doors opened in Africa. I helped launch Gate.io P2P for Nigeria, built campus programmes with LASU and Yabatech, and run KOL partnerships for WEEX. Plus dealer and financier deals for Korrect Cars.',
+    b: 'Doors opened in Africa. I helped launch Gate.io P2P for Nigeria, built campus programmes with LASU and Yabatech, and run KOL partnerships for a global exchange. Plus dealer and financier deals for Korrect Cars.',
     tags: ['KOLs', 'P2P launch', 'Campus'],
   },
   {

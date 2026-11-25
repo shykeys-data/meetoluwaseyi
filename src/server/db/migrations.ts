@@ -103,7 +103,41 @@ export const MIGRATIONS: { id: string; statements: string[] }[] = [
       'ALTER TABLE messages DROP KEY messages_inbox',
     ],
   },
+  {
+    // Oluwaseyi keeps his current employer off the public site. The launch copy is rewritten in place;
+    // the final two replacements catch any mention added later in admin. Text REPLACE keeps the JSON
+    // valid (the new words have no quotes) and works on MySQL 8 and MariaDB alike.
+    id: '005_employer_private',
+    statements: [
+      `UPDATE profile SET data = ${replaceAll('data', [
+        ['I run the WEEX Africa community,', 'I run the Africa community for a global crypto exchange,'],
+        ['WEEX · Remote', 'Global crypto exchange · Remote'],
+        ['WEEX members, from zero in under a year', 'exchange community members, from zero in under a year'],
+        ['Opens the WEEX Africa chat every morning.', 'Opens the community chat every morning.'],
+        ['Running the WEEX Africa community', 'Running a crypto exchange’s Africa community'],
+        ['weex-community', 'exchange-community'],
+        ['weex-safety-bot', 'telegram-safety-bot'],
+        ['WEEX Africa', 'the exchange community'],
+        ['WEEX', 'a global crypto exchange'],
+      ])} WHERE id = 1`,
+      `UPDATE projects SET slug = 'exchange-community', title = 'Crypto communities in Africa',
+         summary = 'Zero to 25,000+ at a global exchange in under a year, 20,000+ at Gate.io, and over 9,000 members turned into active traders through live classes.'
+       WHERE slug = 'weex-community'`,
+      `UPDATE projects SET slug = 'telegram-safety-bot', title = 'Telegram Safety Bot',
+         summary = 'Replaced paid moderation tools with a free custom bot that keeps a 25,000-member exchange community clear of spam and fake followers.'
+       WHERE slug = 'weex-safety-bot'`,
+      `UPDATE projects SET title = ${replaceAll('title', [['WEEX', 'a global exchange']])},
+         summary = ${replaceAll('summary', [['WEEX', 'a global exchange']])}
+       WHERE title LIKE '%WEEX%' OR summary LIKE '%WEEX%'`,
+    ],
+  },
 ];
+
+/** Nested REPLACE() calls for a text migration. Values are fixed strings written here, never user input. */
+function replaceAll(column: string, pairs: [string, string][]): string {
+  const q = (s: string) => `'${s.replace(/'/g, "''")}'`;
+  return pairs.reduce((expr, [from, to]) => `REPLACE(${expr}, ${q(from)}, ${q(to)})`, column);
+}
 
 export async function migrate(db: Db, log: (msg: string) => void = console.log): Promise<string[]> {
   await db.query(
