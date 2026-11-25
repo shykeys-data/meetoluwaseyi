@@ -5,7 +5,7 @@ import { headFor, headHtml, sitemapXml } from '../src/server/seo.ts';
 import { analyticsScripts } from '../src/server/render.ts';
 import { ARTICLES, DOCS, SKILLS, docForPath } from '../src/server/content/docs.ts';
 import { PROFILE } from '../src/server/db/seed-data.ts';
-import { markdown } from '../src/web/lib/markdown.tsx';
+import { markdown, safeHref } from '../src/web/lib/markdown.tsx';
 import type { Doc, PageData } from '../src/shared/page.ts';
 
 const SITE = 'https://www.meetoluwaseyi.com';
@@ -83,6 +83,15 @@ describe('markdown', () => {
     expect(html).not.toContain('javascript:');
     expect(html).toContain('<li>two</li>');
     expect(html).toContain('<th scope="col">a</th>');
+  });
+});
+
+describe('safeHref', () => {
+  it('allows site paths and https addresses only', () => {
+    expect(safeHref('/writing/late-deliveries-and-repeat-customers')).toBeDefined();
+    expect(safeHref('https://www.korrectcars.com')).toBeDefined();
+    for (const bad of ['//evil.com', '/\\evil.com', 'javascript:alert(1)', 'http://x.com', 'data:text/html,x', '/a"b'])
+      expect(safeHref(bad), bad).toBeUndefined();
   });
 });
 

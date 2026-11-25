@@ -10,7 +10,7 @@ import { WritingView } from '../mockup/WritingView.tsx';
 import { ContactView } from '../mockup/ContactView.tsx';
 import { CaseStudyView } from '../mockup/CaseStudyView.tsx';
 import { ShellView } from '../mockup/ShellView.tsx';
-import { inline, markdown } from '../lib/markdown.tsx';
+import { inline, markdown, safeHref } from '../lib/markdown.tsx';
 
 /**
  * Every page except the two homes. One layout per page; the mode only changes the theme tokens
@@ -395,7 +395,7 @@ export class DocPage extends InnerPage {
           <aside className="doc-cta" aria-label="Get in touch">
             <h2>{d.cta.title}</h2>
             <p>{d.cta.body}</p>
-            <a className="pbtn solid" href={d.cta.href}>
+            <a className="pbtn solid" href={safeHref(d.cta.href) ?? '/contact'}>
               {d.cta.label}
             </a>
           </aside>
@@ -405,7 +405,7 @@ export class DocPage extends InnerPage {
               {d.related.map((r, i) => (
                 <span key={r.href}>
                   {i > 0 ? ' · ' : null}
-                  <a href={r.href}>{r.label}</a>
+                  <a href={safeHref(r.href) ?? '/'}>{r.label}</a>
                 </span>
               ))}
             </p>

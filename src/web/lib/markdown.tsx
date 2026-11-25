@@ -20,15 +20,25 @@ export function inline(text: string): ReactNode[] {
   return out;
 }
 
+/**
+ * A link target that can only be a path on this site or an https address. Anything else
+ * (javascript:, data:, //other-site) comes back as undefined, so it is never rendered as a link.
+ */
+export function safeHref(href: string): string | undefined {
+  if (/^\/(?![/\\])[\w\-./#?=&%]*$/.test(href)) return href;
+  if (/^https:\/\/[\w-]+(\.[\w-]+)+(\/[\w\-./#?=&%~]*)?$/.test(href)) return href;
+  return undefined;
+}
+
 function link(label: string, href: string, key: number): ReactNode {
-  const external = /^https?:\/\//.test(href);
-  if (!external && !href.startsWith('/')) return label; // only site paths and web links
-  return external ? (
-    <a key={key} href={href} target="_blank" rel="noopener noreferrer">
+  const safe = safeHref(href);
+  if (!safe) return label;
+  return safe.startsWith('https://') ? (
+    <a key={key} href={safe} target="_blank" rel="noopener noreferrer">
       {label}
     </a>
   ) : (
-    <a key={key} href={href}>
+    <a key={key} href={safe}>
       {label}
     </a>
   );
