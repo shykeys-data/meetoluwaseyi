@@ -7,7 +7,11 @@ import type { PublicProject } from '../src/shared/schemas.ts';
 
 /** Oluwaseyi keeps his current employer off the public site, in the copy and in the search data. */
 describe('the public pages never name the current employer', () => {
-  const projects = PROJECTS.map((p) => ({ ...p, cover: null, caseStudy: null })) as unknown as PublicProject[];
+  const projects = PROJECTS.map((p) => ({
+    ...p,
+    cover: null,
+    caseStudy: null,
+  })) as unknown as PublicProject[];
   for (const route of ['home', 'about', 'work'] as const)
     for (const mode of ['playful', 'serious'] as const)
       it(`${route} (${mode})`, () => {

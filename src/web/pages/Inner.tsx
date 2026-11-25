@@ -249,16 +249,16 @@ export class AboutPage extends InnerPage {
     const jobs = prof.experience.map((j, i) => {
       const lead = i === leadAt;
       return {
-      when: j.when,
-      role: j.role,
-      org: j.org,
-      note: j.note,
-      now: lead,
-      hasProof: !!j.projectSlug,
-      proof: j.projectSlug ? '/work' : undefined,
-      proofLabel: 'See the community work',
-      dot: lead ? g : p ? '#C9C3B4' : '#2A2F3A',
-      c: lead ? g : 'var(--faint)',
+        when: j.when,
+        role: j.role,
+        org: j.org,
+        note: j.note,
+        now: lead,
+        hasProof: !!j.projectSlug,
+        proof: j.projectSlug ? '/work' : undefined,
+        proofLabel: 'See the community work',
+        dot: lead ? g : p ? '#C9C3B4' : '#2A2F3A',
+        c: lead ? g : 'var(--faint)',
       };
     });
     const stats = prof.stats.map((x) => ({ v: x.value, l: x.label }));

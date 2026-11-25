@@ -123,7 +123,14 @@ export const DAYS = [
 /** Counters: `live` numbers count up from 0 when the section scrolls into view. */
 export const NUMS = [
   { v: 'k', live: true, l: 'orders analysed', bg: '#FFD23F', sh: 'rgba(255,176,32,.8)', t: '-3deg' },
-  { v: 'k+', live: true, l: 'exchange members, from zero', bg: '#9FE8D0', sh: 'rgba(46,196,160,.8)', t: '2deg' },
+  {
+    v: 'k+',
+    live: true,
+    l: 'exchange members, from zero',
+    bg: '#9FE8D0',
+    sh: 'rgba(46,196,160,.8)',
+    t: '2deg',
+  },
   { v: ' yrs', live: true, l: 'building websites', bg: '#B9E2F7', sh: 'rgba(91,192,235,.8)', t: '-1deg' },
   {
     v: '7k+',
