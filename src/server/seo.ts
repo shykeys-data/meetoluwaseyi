@@ -33,7 +33,6 @@ function person(p: Profile, site: string) {
     url: site,
     image: site + p.photo.id,
     jobTitle: 'Community Manager (Africa)',
-    worksFor: { '@type': 'Organization', name: 'WEEX' },
     description: p.headline,
     knowsLanguage: p.languages.map((l) => l.name),
     sameAs: [p.links.linkedin, p.links.github, p.links.x, p.links.telegram],
@@ -81,7 +80,7 @@ export function headFor(page: PageData, site: string): Head {
         canonical: site + '/',
         title: `${p.name}: community, business development and data`,
         description:
-          `${p.tagline} ${first} runs the WEEX Africa community, builds Korrect Cars and analyses data in public.`.slice(
+          `${p.tagline} ${first} grows crypto communities in Africa, builds Korrect Cars and analyses data in public.`.slice(
             0,
             160,
           ),

@@ -244,18 +244,23 @@ export class AboutPage extends InnerPage {
     const p = base.isPlayful;
     const prof = this.props.data.profile;
     const g = p ? '#147A63' : '#3DDC97';
-    const jobs = prof.experience.map((j) => ({
+    // The main current role (the one with work to show) gets the highlight.
+    const leadAt = prof.experience.findIndex((j) => j.current && !!j.projectSlug);
+    const jobs = prof.experience.map((j, i) => {
+      const lead = i === leadAt;
+      return {
       when: j.when,
       role: j.role,
       org: j.org,
       note: j.note,
-      now: j.current && j.year >= 2024 && j.org.startsWith('WEEX'),
+      now: lead,
       hasProof: !!j.projectSlug,
       proof: j.projectSlug ? '/work' : undefined,
       proofLabel: 'See the community work',
-      dot: j.current && j.org.startsWith('WEEX') ? g : p ? '#C9C3B4' : '#2A2F3A',
-      c: j.current && j.org.startsWith('WEEX') ? g : 'var(--faint)',
-    }));
+      dot: lead ? g : p ? '#C9C3B4' : '#2A2F3A',
+      c: lead ? g : 'var(--faint)',
+      };
+    });
     const stats = prof.stats.map((x) => ({ v: x.value, l: x.label }));
     const edu = prof.education.map((e) => ({ t: e.title, s: [e.org, e.year].filter(Boolean).join(' · ') }));
     const certs = prof.certificates.map((c) => ({ t: c.title }));

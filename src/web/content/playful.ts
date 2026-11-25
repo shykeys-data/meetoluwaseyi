@@ -34,7 +34,7 @@ export const LOVES = [
     bg: '#FFD23F',
     t: '-4deg',
     z: 1,
-    body: 'I grew WEEX from zero to 25,000+ members in under a year, and Gate.io Nigeria to 20,000+ before that. Briefs, games, live classes and AMAs people show up for.',
+    body: 'I grew an exchange community from zero to 25,000+ members in under a year, and Gate.io Nigeria to 20,000+ before that. Briefs, games, live classes and AMAs people show up for.',
   },
   {
     k: 'D',
@@ -67,7 +67,7 @@ export const DAYS = [
     t: '07:00',
     label: 'Morning',
     title: 'Market brief, live',
-    body: 'I open the WEEX Africa chat with the 7AM market brief so the community starts the day informed.',
+    body: 'I open the community chat with the 7AM market brief so the community starts the day informed.',
     sky: '#FFD9B8',
     orb: '#FFD23F',
     glow: 'rgba(255,210,63,.35)',
@@ -123,7 +123,7 @@ export const DAYS = [
 /** Counters: `live` numbers count up from 0 when the section scrolls into view. */
 export const NUMS = [
   { v: 'k', live: true, l: 'orders analysed', bg: '#FFD23F', sh: 'rgba(255,176,32,.8)', t: '-3deg' },
-  { v: 'k+', live: true, l: 'WEEX members, from zero', bg: '#9FE8D0', sh: 'rgba(46,196,160,.8)', t: '2deg' },
+  { v: 'k+', live: true, l: 'exchange members, from zero', bg: '#9FE8D0', sh: 'rgba(46,196,160,.8)', t: '2deg' },
   { v: ' yrs', live: true, l: 'building websites', bg: '#B9E2F7', sh: 'rgba(91,192,235,.8)', t: '-1deg' },
   {
     v: '7k+',
@@ -179,7 +179,7 @@ export const ROAD = [
   {
     y: '2024',
     role: 'Community Manager (Africa)',
-    org: 'WEEX',
+    org: 'Global crypto exchange',
     note: 'Zero to 25,000+ members in under a year. Every morning at 7.',
     bg: '#FFD23F',
     t: '2deg',
@@ -197,7 +197,7 @@ export const ROAD = [
 export const NOTES = [
   { txt: 'filming short crypto lessons for TikTok & Reels', bg: '#FFF39A', pin: '#FF7A3D', t: '-4deg' },
   { txt: 'building Korrect Swap so you can trade car for car', bg: '#FFD1E0', pin: '#5BC0EB', t: '3deg' },
-  { txt: 'getting my Safety Bot live in the WEEX Africa group', bg: '#C9F2E2', pin: '#FFD23F', t: '-2deg' },
+  { txt: 'getting my Safety Bot live in the exchange community', bg: '#C9F2E2', pin: '#FFD23F', t: '-2deg' },
   {
     txt: 'telling data stories on LinkedIn, like Growth Without Reach',
     bg: '#D6ECFA',
@@ -257,7 +257,7 @@ export const PLAYFUL_CARDS: Record<
     href: 'https://www.korrectcars.com',
     cta: 'Take it for a spin',
   },
-  'weex-safety-bot': {
+  'telegram-safety-bot': {
     label: 'Bot',
     mark: 'beep, no spam',
     bg: '#F7B6CC',
@@ -281,7 +281,7 @@ export const PLAYFUL_CARDS: Record<
     href: 'https://github.com/shykeys-data/ibm-data-analyst-capstone',
     cta: 'See the analysis',
   },
-  'weex-community': {
+  'exchange-community': {
     label: 'Community',
     mark: 'gm, fam!',
     bg: '#FFD23F',

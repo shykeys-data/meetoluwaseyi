@@ -12,7 +12,7 @@ export const PROFILE: Profile = {
   name: 'Oluwaseyi Oshunwusi',
   headline: 'Community manager, business developer and data analyst. Building for the web since 2014.',
   tagline: 'I grow communities, close partnerships, and turn data into decisions.',
-  bio: 'I run the WEEX Africa community, and before that I grew Gate.io’s Nigeria and Africa community. I’ve built websites since 2014, I analyse data in public, and I’m building Korrect Cars, a car marketplace for Lagos.',
+  bio: 'I run the Africa community for a global crypto exchange, and before that I grew Gate.io’s Nigeria and Africa community. I’ve built websites since 2014, I analyse data in public, and I’m building Korrect Cars, a car marketplace for Lagos.',
   photo: { id: '/img/headshot.webp', alt: 'Oluwaseyi Oshunwusi smiling, in a white shirt' },
   links: {
     email: 'hello@meetoluwaseyi.com',
@@ -28,9 +28,9 @@ export const PROFILE: Profile = {
       when: 'Dec 2024 – now',
       year: 2024,
       role: 'Community Manager (Africa)',
-      org: 'WEEX · Remote',
+      org: 'Global crypto exchange · Remote',
       current: true,
-      projectSlug: 'weex-community',
+      projectSlug: 'exchange-community',
       note: 'Zero to 25,000+ members in under 12 months; 7,000+ turned into active futures traders through live lectures. AMAs on X Spaces and Telegram, KOL partnerships, newsletters and campaign visuals.',
     },
     {
@@ -47,7 +47,7 @@ export const PROFILE: Profile = {
       role: 'Web3 Community Manager & BD',
       org: 'Gate.io · Remote',
       current: false,
-      projectSlug: 'weex-community',
+      projectSlug: 'exchange-community',
       note: 'Grew a 20,000+ Nigeria/Africa community and helped launch Gate.io P2P there. First Nigerian meetup (2022), 30+ X Spaces with 1,000+ live listeners, monthly classes that turned 2,000–3,000+ members into traders, campus programmes with LASU and Yabatech.',
     },
     {
@@ -124,17 +124,17 @@ export const PROFILE: Profile = {
     { name: 'Hausa', level: 'Conversational' },
   ],
   stats: [
-    { value: '25k+', label: 'WEEX members, from zero in under a year' },
+    { value: '25k+', label: 'exchange community members, from zero in under a year' },
     { value: '7k+', label: 'members turned futures traders' },
     { value: '20k+', label: 'Gate.io Nigeria/Africa community' },
     { value: '12 yrs', label: 'building for the web, since 2014' },
   ],
   programs: [
-    { name: '7AM market brief', cadence: 'Daily', note: 'Opens the WEEX Africa chat every morning.' },
+    { name: '7AM market brief', cadence: 'Daily', note: 'Opens the community chat every morning.' },
     { name: 'Live trading classes', cadence: 'Weekly', note: 'Futures basics to risk management.' },
     { name: 'Community games', cadence: 'Weekly', note: 'Quiz polls, Last Commenter, Predict-to-Win.' },
   ],
-  now: ['Running the WEEX Africa community', 'Building Korrect Cars', 'Analysing data in public'],
+  now: ['Running a crypto exchange’s Africa community', 'Building Korrect Cars', 'Analysing data in public'],
   writing: [
     {
       kicker: 'Series · 5 posts',
@@ -361,11 +361,11 @@ export const PROJECTS: Seed[] = [
     caseStudy: null,
   },
   {
-    slug: 'weex-community',
-    title: 'WEEX Africa & Gate.io Nigeria',
+    slug: 'exchange-community',
+    title: 'Crypto communities in Africa',
     pillars: ['community', 'bd'],
     summary:
-      'Zero to 25,000+ at WEEX in under a year, 20,000+ at Gate.io, and over 9,000 members turned into active traders through live classes.',
+      'Zero to 25,000+ at a global exchange in under a year, 20,000+ at Gate.io, and over 9,000 members turned into active traders through live classes.',
     cover: null,
     mark: '45,000+',
     stack: ['Telegram', 'X Spaces', 'KOLs'],
@@ -377,11 +377,11 @@ export const PROJECTS: Seed[] = [
     caseStudy: null,
   },
   {
-    slug: 'weex-safety-bot',
-    title: 'WEEX Africa Safety Bot',
+    slug: 'telegram-safety-bot',
+    title: 'Telegram Safety Bot',
     pillars: ['community', 'ventures'],
     summary:
-      'Replaced paid moderation tools with a free custom bot that keeps the WEEX Africa group clear of spam and fake followers.',
+      'Replaced paid moderation tools with a free custom bot that keeps a 25,000-member exchange community clear of spam and fake followers.',
     cover: null,
     mark: 'Safety Bot',
     stack: ['Python', 'Telegram'],
