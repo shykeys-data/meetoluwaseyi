@@ -11,6 +11,7 @@ import { getProfile } from './services/content.ts';
 import { createLogger } from './lib/log.ts';
 import { createApp } from './app.ts';
 import { createRenderer } from './render.ts';
+import { pingIndexNow } from './jobs/indexnow.ts';
 import type { Ctx } from './services/context.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -75,6 +76,14 @@ async function main() {
   const server = app.listen(config.PORT, () =>
     log.info('listening', { port: config.PORT, env: config.APP_ENV }),
   );
+
+  // Live site only: a minute after start, tell Bing about new or changed pages (IndexNow).
+  if (config.APP_ENV === 'production')
+    setTimeout(() => {
+      pingIndexNow(ctx, resolve(root, 'tmp/indexnow-sent.json')).catch((err) =>
+        log.warn('indexnow ping failed', { err }),
+      );
+    }, 60_000).unref();
 
   // Graceful shutdown: stop taking requests, finish the ones in flight, close the database.
   let closing = false;

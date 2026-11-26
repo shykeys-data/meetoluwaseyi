@@ -291,8 +291,9 @@ export function headHtml(h: Head, nonce: string): string {
     .join('\n');
 }
 
-export function sitemapXml(site: string, projects: PublicProject[]): string {
-  const entries: [string, string][] = [
+/** Every public page with its last-changed date: the sitemap and IndexNow both use this list. */
+export function sitemapEntries(projects: PublicProject[]): [string, string][] {
+  return [
     ...['/', '/work', '/about', '/writing', '/contact', '/privacy'].map((p): [string, string] => [
       p,
       CONTENT_UPDATED,
@@ -300,7 +301,10 @@ export function sitemapXml(site: string, projects: PublicProject[]): string {
     ...DOCS.map((d): [string, string] => [d.path, d.updated]),
     ...projects.filter((p) => p.caseStudy).map((p): [string, string] => [`/work/${p.slug}`, CONTENT_UPDATED]),
   ];
-  const urls = entries
+}
+
+export function sitemapXml(site: string, projects: PublicProject[]): string {
+  const urls = sitemapEntries(projects)
     .map(([p, d]) => `  <url><loc>${esc(site + p)}</loc><lastmod>${d}</lastmod></url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
