@@ -33,19 +33,19 @@ s += [Paragraph('OLUWASEYI OSHUNWUSI', name),
                 '<link href="https://www.linkedin.com/in/oluwaseyi-o-601915b5">linkedin.com/in/oluwaseyi-o-601915b5</link> · '
                 'Dashboard: <link href="https://olist-bi-shykeys.streamlit.app">olist-bi-shykeys.streamlit.app</link>', contact)]
 
-s += [section('Summary'), Paragraph(
-    'Full-stack developer with 10+ years on the web, working in JavaScript, React, Node.js, Express, MySQL and Python. '
-    'I rebuilt a car marketplace from WordPress into a full-stack web app, built a Telegram moderation bot that replaced a paid service, '
-    'and ship server-rendered sites with tests and automatic rollback. '
-    'As a data analyst, I built an end-to-end BI project on 99,441 e-commerce orders, from data modelling to a live dashboard. '
-    'In Web3, I grew a global crypto exchange\'s African community from zero to 25,000+ members in under a year, and before that '
-    'Gate.io\'s Nigeria and Africa community to 20,000+. Open to remote full-stack roles and freelance projects.', body)]
+s += [section('Professional summary'), Paragraph(
+    'Full-stack developer building for the web since 2014, working in JavaScript, React, Node.js, Express, MySQL and Python. '
+    'Rebuilt a car marketplace from WordPress into a full-stack web app, built a Telegram moderation bot that replaced a paid service, '
+    'and ships server-rendered sites with automated tests and automatic rollback. '
+    'Data analyst with an end-to-end business intelligence (BI) project on 99,441 e-commerce orders, from data modelling to a live dashboard. '
+    'Web3 community and growth lead: grew a global crypto exchange\'s African community from zero to 25,000+ members in under a year, '
+    'and Gate.io\'s Nigeria and Africa community to 20,000+. Open to remote full-stack roles and freelance projects.', body)]
 
 s += [section('Selected projects')]
 s += [job('Korrect Cars web app', 'car marketplace for Lagos', '2026 · Node.js, Express, React, MySQL · github.com/shykeys-data/korrectcars-app', [
     'Rebuilt a WordPress car marketplace as a full-stack JavaScript web app on MySQL.',
     'Email-verified sign-up, an admin dashboard, vehicle listings, a peer-to-peer car swap module and an instalment calculator (6 to 48 months).',
-    'I wrote the code; Uwem designed the UI/UX.']),
+    'Wrote all the code; UI/UX design by Uwem.']),
       job('meetoluwaseyi.com', 'personal site, live', '2026 · React 19, TypeScript, Express 5, MySQL, Vite, Zod', [
     'Server-rendered React with an Express API on shared hosting; two modes (playful and serious) on one URL.',
     'Admin with two-factor sign-in, lockout, CSRF protection, rate-limited forms and a strict content security policy.',
@@ -54,7 +54,7 @@ s += [job('Korrect Cars web app', 'car marketplace for Lagos', '2026 · Node.js,
     'End-to-end pipeline on 99,441 orders: 9 raw tables into a star schema, with 14 automated checks so revenue reconciles to the cent.',
     'SQL KPI layer, cohort retention and RFM segmentation into 7 groups; only 2.2% of customers buy again once split orders are corrected.',
     'Hypothesis tests: late deliveries average 2.27 stars against 4.29 on time; slower regions rate worse (Spearman r = -0.84, p < 0.001).',
-    'Live Streamlit dashboard and a four-page Power BI report; I dropped two of my own findings that failed the checks.']),
+    'Live Streamlit dashboard and a four-page Power BI report; dropped two early findings that failed validation.']),
       job('Telegram Safety Bot', 'moderation bot, in production', '2026 · Python, Node.js, Telegram Bot API', [
     'Wrote the product requirements and built a bot that removes spam and fake accounts in a 25,000+ member group, replacing a paid service.']),
       job('RateDesk', 'in development', 'MERN', [
@@ -67,7 +67,7 @@ s += [section('Skills'),
                 '<b>Growth:</b> community growth, KOL partnerships, AMAs and X Spaces, trading education, Google Analytics, Google Ads, SEO, A/B testing · '
                 '<b>Also:</b> WordPress, Search Console, communication, stakeholder reporting', body)]
 
-s += [job('Community Manager (Africa)', 'Global crypto exchange', 'December 2024 to present', heading='Experience', bullets=[
+s += [job('Community Manager (Africa)', 'Global crypto exchange', 'December 2024 to present', heading='Professional experience', bullets=[
     'Grew the African community from zero to 25,000+ members in under 12 months; live trading lectures turned 7,000+ members into active futures traders.',
     'Run daily engagement and moderation across channels, and escalate user issues to support before they become complaints.',
     'Built a Telegram moderation bot in Python and Node.js that replaced paid tools; track community KPIs and present weekly reports to management.',
@@ -92,7 +92,7 @@ s += [job('Community Manager (Africa)', 'Global crypto exchange', 'December 2024
       job('Web Developer', 'HCS Properties', '2014', [
     'Built the company site and ran customer service and social media.'])]
 
-s += [section('Education and certificates'),
+s += [section('Education and certifications'),
       Paragraph('IBM Data Analyst Capstone Project (2026) · MERN Stack Professional Course, Udemy (2024) · Diploma in Software Development, British Computer Society (coursework completed) · '
                 'OND, Computer Science, Lagos City Polytechnic (2010) · IBM Data Analyst certificates: Data Visualization with Python, '
                 'Data Analysis with Python, Databases and SQL, Python for Data Science and AI, Dashboards with Excel and Cognos', body),
