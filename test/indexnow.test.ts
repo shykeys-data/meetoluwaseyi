@@ -60,3 +60,14 @@ describe('IndexNow', () => {
     expect(retry.calls).toHaveLength(1);
   });
 });
+
+describe('the CV shipped with the site', () => {
+  it('is a PDF that never carries a phone number or the employer name', async () => {
+    const raw = readFileSync('public/cv/Oluwaseyi-Oshunwusi-CV.pdf');
+    expect(raw.subarray(0, 5).toString()).toBe('%PDF-');
+    const text = raw.toString('latin1');
+    expect(text).toContain('Gate.io'); // the text is readable, so the checks below mean something
+    expect(text).not.toMatch(/weex/i);
+    expect(text).not.toMatch(/\+?234\s?\d{3}|0[789][01]\d{8}/);
+  });
+});
