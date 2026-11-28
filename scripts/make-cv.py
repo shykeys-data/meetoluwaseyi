@@ -1,5 +1,5 @@
-# Builds public/cv/Oluwaseyi-Oshunwusi-CV.pdf (no phone number; employer kept anonymous).
-# Run: python3 scripts/make-cv.py public/cv/Oluwaseyi-Oshunwusi-CV.pdf   (needs reportlab)
+# Builds public/Oluwaseyi-Oshunwusi-CV.pdf (no phone number; employer kept anonymous).
+# Run: python3 scripts/make-cv.py public/Oluwaseyi-Oshunwusi-CV.pdf   (needs reportlab)
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, KeepTogether
 from reportlab.lib.styles import ParagraphStyle

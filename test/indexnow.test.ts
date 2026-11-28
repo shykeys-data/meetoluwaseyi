@@ -63,7 +63,7 @@ describe('IndexNow', () => {
 
 describe('the CV shipped with the site', () => {
   it('is a PDF that never carries a phone number or the employer name', async () => {
-    const raw = readFileSync('public/cv/Oluwaseyi-Oshunwusi-CV.pdf');
+    const raw = readFileSync('public/Oluwaseyi-Oshunwusi-CV.pdf');
     expect(raw.subarray(0, 5).toString()).toBe('%PDF-');
     const text = raw.toString('latin1');
     expect(text).toContain('Gate.io'); // the text is readable, so the checks below mean something
