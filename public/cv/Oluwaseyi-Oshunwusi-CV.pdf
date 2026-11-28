@@ -1,0 +1,549 @@
+%PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
+1 0 obj
+<<
+/F1 2 0 R /F2 3 0 R
+>>
+endobj
+2 0 obj
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
+endobj
+3 0 obj
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
+endobj
+4 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://www.meetoluwaseyi.com)
+>> /Border [ 0 0 0 ] /Rect [ 335.3655 747.6447 412.6295 758.2047 ] /Subtype /Link /Type /Annot
+>>
+endobj
+5 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://github.com/shykeys-data)
+>> /Border [ 0 0 0 ] /Rect [ 419.9687 747.6447 517.2967 758.2047 ] /Subtype /Link /Type /Annot
+>>
+endobj
+6 0 obj
+<<
+/A <<
+/S /URI /Type /Action /URI (https://www.linkedin.com/in/oluwaseyi-o-601915b5)
+>> /Border [ 0 0 0 ] /Rect [ 51.35433 735.6447 200.5231 746.2047 ] /Subtype /Link /Type /Annot
+>>
+endobj
+7 0 obj
+<<
+/Annots [ 4 0 R 5 0 R 6 0 R ] /Contents 12 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 11 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 
+  /Trans <<
+
+>> /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/Contents 13 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 11 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+9 0 obj
+<<
+/PageMode /UseNone /Pages 11 0 R /Type /Catalog
+>>
+endobj
+10 0 obj
+<<
+/Author (Oluwaseyi Oshunwusi) /CreationDate (D:20261128113928+01'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20261128113928+01'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (Full-stack developer \(MERN\), Web3 community and business development, data analysis. Lagos, Nigeria.) /Title (Oluwaseyi Oshunwusi: CV) /Trapped /False
+>>
+endobj
+11 0 obj
+<<
+/Count 2 /Kids [ 7 0 R 8 0 R ] /Type /Pages
+>>
+endobj
+12 0 obj
+<<
+/Length 9093
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 51.35433 772.2047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 4 Tm /F2 20 Tf 24 TL (OLUWASEYI OSHUNWUSI) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 758.2047 cm
+q
+BT 1 0 0 1 0 3.5 Tm 14 TL /F1 10.5 Tf .760784 .254902 .047059 rg (Full-Stack Developer \(MERN\) \267 Web3 Community & Business Development \267 Data Analysis) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 734.2047 cm
+q
+BT 1 0 0 1 0 15.2 Tm 12 TL /F1 8.8 Tf .290196 .282353 .376471 rg (Lagos, Nigeria \(UTC+1\), working remotely \267 hello@meetoluwaseyi.com \267 ) Tj (meetoluwaseyi.com) Tj ( \267 ) Tj (github.com/shykeys-data) Tj ( \267) Tj T* (linkedin.com/in/oluwaseyi-o-601915b5) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 712.2047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (SUMMARY) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 660.4047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 39.8 Tm /F1 9 Tf 12.2 TL (Full-stack developer building for the web since 2014, now working in React, TypeScript, Node.js, Express and MySQL. I) Tj T* (ship server-rendered sites with tests, security scanning and automatic rollback, and I build marketplaces and bots that real) Tj T* (users depend on. Alongside the code, I run the African community for a global crypto exchange \(zero to 25,000+ members) Tj T* (in under a year\) and analyse data in Python and SQL. Open to remote full-stack roles and freelance projects.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 638.4047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (SELECTED PROJECTS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 620.9047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (meetoluwaseyi.com ) Tj .290196 .282353 .376471 rg (| personal site, live) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 609.9047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (2026 \267 React 19, TypeScript, Express 5, MySQL, Vite, Zod) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 584.5047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Server-rendered React with an Express API on DirectAdmin shared hosting; two modes \(playful and serious\) on one) Tj T* -0.5 0 Td (URL.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 559.1047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Admin panel with two-factor sign-in, account lockout, CSRF protection, rate-limited forms and a strict content security) Tj T* -0.5 0 Td (policy.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 533.7047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (CI on GitHub Actions: Vitest and Playwright tests, CodeQL security scanning, OpenAPI linting; pull-based deploys with) Tj T* -0.5 0 Td (health checks and automatic rollback.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 520.5047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Technical SEO: structured data, dated sitemap, IndexNow; Lighthouse SEO and Best Practices both 100.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 503.0047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Korrect Cars ) Tj .290196 .282353 .376471 rg (| car marketplace for Lagos) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 492.0047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (Node.js, React, MySQL \267 code by me, UI/UX by Uwem) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 478.8047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Inspected-car listings, Pay Small Small instalment plans from 6 to 48 months, and car-for-car swaps.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 461.3047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Telegram Safety Bot ) Tj .290196 .282353 .376471 rg (| moderation bot, in production) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 450.3047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (Python) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 437.1047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Replaced paid moderation tools in a 25,000-member Telegram group; removes spam and fake accounts automatically.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 419.6047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Olist E-commerce BI ) Tj .290196 .282353 .376471 rg (| data case study) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 408.6047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (Python, SQL, Streamlit, Power BI) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 395.4047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (99,441 orders modelled into a star schema with 14 automated data checks; cohort retention and RFM segmentation.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 370.0047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Live Streamlit dashboard, four-page Power BI report and four recommendations; tested and dropped two of my own) Tj T* -0.5 0 Td (findings that failed the checks.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 352.5047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (RateDesk ) Tj .290196 .282353 .376471 rg (| in development) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 341.5047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (MERN) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 328.3047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Bureau de change rate-comparison and booking platform for Nigerians, with clearly labelled indicative rates.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 306.3047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (SKILLS) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 254.5047 cm
+q
+BT 1 0 0 1 0 39.8 Tm 12.2 TL /F2 9 Tf .105882 .101961 .180392 rg (Frontend:) Tj /F1 9 Tf ( React, TypeScript, JavaScript, HTML, CSS, Vite \267 ) Tj /F2 9 Tf (Backend:) Tj /F1 9 Tf ( Node.js, Express, REST APIs, Zod \267 ) Tj /F2 9 Tf (Data stores:) Tj /F1 9 Tf  T* (MySQL, MongoDB, SQL \267 ) Tj /F2 9 Tf (Testing and delivery:) Tj /F1 9 Tf ( Vitest, Playwright, GitHub Actions, CodeQL, Cloudflare, DirectAdmin,) Tj T* (cPanel \267 ) Tj /F2 9 Tf (Data:) Tj /F1 9 Tf ( Python \(pandas, NumPy, SciPy, Plotly\), Power BI, Streamlit \267 ) Tj /F2 9 Tf (Also:) Tj /F1 9 Tf ( WordPress, Google Analytics, Search) Tj T* (Console, SEO, Google Ads) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 232.5047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (EXPERIENCE) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 215.0047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Community Manager \(Africa\) ) Tj .290196 .282353 .376471 rg (| Global crypto exchange) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 204.0047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (December 2024 to present) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 178.6047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Grew the African community from zero to 25,000+ members in under 12 months; live trading lectures turned 7,000+) Tj T* -0.5 0 Td (members into active futures traders.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 153.2047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Run daily engagement and moderation across channels, and escalate user issues to support before they become) Tj T* -0.5 0 Td (complaints.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 140.0047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Built and run a custom Telegram safety bot that replaced paid moderation tools.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 114.6047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Host AMAs on X Spaces and Telegram; run KOL partnerships judged on trader sign-ups; sourced and onboarded a) Tj T* -0.5 0 Td (licensed Nigerian payments provider.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 101.4047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Write community newsletters and produce campaign visuals for Telegram, X, Instagram and Facebook.) Tj T* -0.5 0 Td ET
+Q
+Q
+ 
+endstream
+endobj
+13 0 obj
+<<
+/Length 5838
+>>
+stream
+1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 51.35433 783.7047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Web3 Community Manager / Business Developer ) Tj .290196 .282353 .376471 rg (| Gate.io) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 772.7047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (November 2021 to March 2024) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 759.5047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Grew and managed a Nigeria and Africa community of 20,000+ members.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 746.3047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Helped launch Gate.io P2P trading for Nigerian and African users.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 720.9047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Organised Gate.io's first local meetup in Nigeria \(2022\); hosted 30+ X Spaces with 1,000+ live listeners on international) Tj T* -0.5 0 Td (sessions.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 695.5047 cm
+q
+BT 1 0 0 1 1 15.4 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 15.4 Tm /F1 9 Tf 12.2 TL .5 0 Td (Ran monthly trading classes that turned an estimated 2,000 to 3,000 members into active traders; set up campus affiliate) Tj T* -0.5 0 Td (programmes with LASU and Yabatech.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 678.0047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Web Developer / Digital Marketer \(Freelance\) ) Tj .290196 .282353 .376471 rg (| Amaget Online Store) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 667.0047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (January 2020 to January 2023) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 653.8047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Managed site content and page builds; ran Google Ads, SEO and SEM; A/B tested landing pages to raise conversion.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 636.3047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Administrative Assistant, Operations ) Tj .290196 .282353 .376471 rg (| Sixteen by Nine Creatives) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 625.3047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (January 2020 to March 2021) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 612.1047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Deputised as HR and operations lead for 8 staff; coordinated music-video production and kept the accounts.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 594.6047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Web Developer / Digital Marketer ) Tj .290196 .282353 .376471 rg (| Blessing Computers and Technocrat NG) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 583.6047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (April 2016 to August 2018) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 570.4047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Built client websites in HTML, CSS, JavaScript and WordPress; ran Technocrat operations, Google Ads and SEO.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 552.9047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Senior Web Developer ) Tj .290196 .282353 .376471 rg (| Lantern Books) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 541.9047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (January 2015 to January 2016) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 528.7047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Built and ran the company website and IT, and started its digital marketing.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 511.2047 cm
+q
+BT 1 0 0 1 0 3.1 Tm 12.5 TL /F2 9.4 Tf .105882 .101961 .180392 rg (Web Developer ) Tj .290196 .282353 .376471 rg (| HCS Properties) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 500.2047 cm
+q
+.290196 .282353 .376471 rg
+BT 1 0 0 1 0 2.4 Tm /F1 8.6 Tf 11 TL (2014) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 487.0047 cm
+q
+BT 1 0 0 1 1 3.2 Tm /F1 10 Tf 12 TL .105882 .101961 .180392 rg (\177) Tj ET
+.105882 .101961 .180392 rg
+BT 1 0 0 1 10 3.2 Tm /F1 9 Tf 12.2 TL .5 0 Td (Built the company site and ran customer service and social media.) Tj T* -0.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 51.35433 465.0047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (EDUCATION AND CERTIFICATES) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 413.2047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 39.8 Tm /F1 9 Tf 12.2 TL (MERN Stack Professional Course, Udemy \(2024\) \267 Diploma in Software Development, British Computer Society) Tj T* (\(coursework completed\) \267 OND, Computer Science, Lagos City Polytechnic \(2010\) \267 IBM Data Analyst certificates: Data) Tj T* -0.072754 Tw (Analyst Capstone, Data Visualization with Python, Data Analysis with Python, Databases and SQL, Python for Data Science) Tj T* 0 Tw (and AI, Dashboards with Excel and Cognos) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 391.2047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3 Tm /F2 10 Tf 13 TL (LANGUAGES) Tj T* ET
+Q
+Q
+q
+1 0 0 1 51.35433 376.0047 cm
+q
+.105882 .101961 .180392 rg
+BT 1 0 0 1 0 3.2 Tm /F1 9 Tf 12.2 TL (English \(fluent\) \267 Yoruba \(fluent\) \267 Hausa \(conversational\)) Tj T* ET
+Q
+Q
+ 
+endstream
+endobj
+xref
+0 14
+0000000000 65535 f 
+0000000061 00000 n 
+0000000102 00000 n 
+0000000209 00000 n 
+0000000321 00000 n 
+0000000502 00000 n 
+0000000685 00000 n 
+0000000885 00000 n 
+0000001120 00000 n 
+0000001325 00000 n 
+0000001394 00000 n 
+0000001778 00000 n 
+0000001844 00000 n 
+0000010989 00000 n 
+trailer
+<<
+/ID 
+[<e0df71431c340684565ad542a3d2bf60><e0df71431c340684565ad542a3d2bf60>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 10 0 R
+/Root 9 0 R
+/Size 14
+>>
+startxref
+16879
+%%EOF

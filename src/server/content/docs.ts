@@ -24,7 +24,7 @@ export const SKILLS: Doc[] = [
     updated: DATE,
     body: `I'm Oluwaseyi Oshunwusi, a full-stack developer in Lagos, Nigeria. I build websites and web apps with React, Node.js, Express and MySQL, and I've been shipping for the web since 2014. You get one person who handles the design build, the server, the database and the launch, and who explains each step in plain words.
 
-My current work is live and public: Korrect Cars, a car marketplace for Lagos buyers, and this site, which you can read the code for on [GitHub](https://github.com/shykeys-data/meetoluwaseyi).
+My current work is live and public: Korrect Cars, a car marketplace for Lagos buyers, and this site, which you can read the code for on [GitHub](https://github.com/shykeys-data/meetoluwaseyi). I'm open to remote full-stack roles and freelance projects. [Download my CV](/cv)
 
 ## What I build
 

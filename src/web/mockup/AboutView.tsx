@@ -32,6 +32,7 @@ export function AboutView({ v }: { v: V }) {
                       <path d="M8 7h9v9" />
                     </svg></span>
                 </a>
+                <a className="pbtn ghost" href="/cv">Download CV (PDF)</a>
               </div>
             </div>
             <div className="shell enter" style={css("animation-delay:.2s;max-width:440px;width:100%;justify-self:end")}><div className="core" style={css("aspect-ratio:4/5")}><img src="/img/headshot.webp" alt="Oluwaseyi Oshunwusi" style={css("width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block")} /></div></div>

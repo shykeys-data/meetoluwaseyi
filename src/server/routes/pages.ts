@@ -13,6 +13,7 @@ import { parseMode, type Mode } from '../../shared/schemas.ts';
 
 /** HTML depends on the mode cookie, so shared caches must not store it. Assets are cached for a year instead. */
 const HTML_CACHE = 'private, no-cache';
+const BUNDLED_CV = '/cv/Oluwaseyi-Oshunwusi-CV.pdf';
 
 const STATIC: Record<string, RouteName> = {
   '/': 'home',
@@ -106,12 +107,12 @@ export function pagesRouter(ctx: Ctx, renderer: DocumentRenderer): express.Route
   }
 
   // ---------- CV: a stable URL that redirects to the current file ----------
+  // A CV link set in the admin wins; otherwise the CV shipped with the site (no phone number in it).
   r.get(
     '/cv',
-    handler(async (req, res) => {
+    handler(async (_req, res) => {
       const profile = await getProfile(ctx.db);
-      if (profile?.links.cv) return res.redirect(302, profile.links.cv);
-      await send(res, { ...(await base(req, 'notfound')) }, 404);
+      res.redirect(302, profile?.links.cv || BUNDLED_CV);
     }),
   );
 

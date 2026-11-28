@@ -170,6 +170,12 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
     expect((await fetch(`${base}/work/olist-ecommerce-bi`)).status).toBe(200);
   });
 
+  it('sends /cv to the CV shipped with the site when no CV link is set', async () => {
+    const r = await fetch(`${base}/cv`, { redirect: 'manual' });
+    expect(r.status).toBe(302);
+    expect(r.headers.get('location')).toBe('/cv/Oluwaseyi-Oshunwusi-CV.pdf');
+  });
+
   it('serves the skill pages and articles, lists them in the sitemap, and 404s unknown articles', async () => {
     for (const path of [
       '/full-stack-developer',
