@@ -173,7 +173,10 @@ describe.skipIf(!url)('API and pages (MySQL)', () => {
   it('sends /cv to the CV shipped with the site when no CV link is set', async () => {
     const r = await fetch(`${base}/cv`, { redirect: 'manual' });
     expect(r.status).toBe(302);
-    expect(r.headers.get('location')).toBe('/cv/Oluwaseyi-Oshunwusi-CV.pdf');
+    expect(r.headers.get('location')).toBe('/Oluwaseyi-Oshunwusi-CV.pdf');
+    // No public folder may share the /cv name, or the static server and the trailing-slash cleanup loop.
+    const { existsSync } = await import('node:fs');
+    expect(existsSync('public/cv')).toBe(false);
   });
 
   it('serves the skill pages and articles, lists them in the sitemap, and 404s unknown articles', async () => {

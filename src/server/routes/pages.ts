@@ -13,7 +13,7 @@ import { parseMode, type Mode } from '../../shared/schemas.ts';
 
 /** HTML depends on the mode cookie, so shared caches must not store it. Assets are cached for a year instead. */
 const HTML_CACHE = 'private, no-cache';
-const BUNDLED_CV = '/cv/Oluwaseyi-Oshunwusi-CV.pdf';
+const BUNDLED_CV = '/Oluwaseyi-Oshunwusi-CV.pdf';
 
 const STATIC: Record<string, RouteName> = {
   '/': 'home',
