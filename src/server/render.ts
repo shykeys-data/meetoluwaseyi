@@ -107,11 +107,15 @@ export function analyticsScripts(id: string | undefined, nonce: string): string 
     `b.innerHTML='<p>Can I use Google Analytics cookies to count visits? <a href="/privacy">Privacy</a></p><div><button type="button" data-v="granted">Allow</button><button type="button" data-v="denied">No thanks</button></div>';` +
     `b.addEventListener('click',function(e){var v=e.target&&e.target.getAttribute&&e.target.getAttribute('data-v');if(!v)return;` +
     `try{localStorage.setItem('mo_consent',v)}catch(x){}gtag('consent','update',{analytics_storage:v});b.remove()});` +
-    `document.body.appendChild(b)}`;
-  return [
-    `<script nonce="${nonce}">${init}</script>`,
-    `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}" nonce="${nonce}"></script>`,
-  ].join('\n');
+    `document.body.appendChild(b)}` +
+    // Google's tag is the heaviest script on the page, so it loads after the page is ready: on the
+    // visitor's first tap, key or scroll, or 4 seconds after load, whichever comes first.
+    `var done=0,ev=['pointerdown','keydown','scroll','touchstart'];function load(){if(done)return;done=1;` +
+    `ev.forEach(function(n){removeEventListener(n,load)});var s=document.createElement('script');s.async=true;` +
+    `s.src='https://www.googletagmanager.com/gtag/js?id=${id}';s.nonce='${nonce}';document.head.appendChild(s)}` +
+    `ev.forEach(function(n){addEventListener(n,load,{once:true,passive:true})});` +
+    `if(document.readyState==='complete')setTimeout(load,4000);else addEventListener('load',function(){setTimeout(load,4000)});`;
+  return `<script nonce="${nonce}">${init}</script>`;
 }
 
 function dataScript(data: PageData): string {

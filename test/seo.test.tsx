@@ -110,7 +110,14 @@ describe('analytics', () => {
   it('starts with analytics cookies denied and carries the nonce', () => {
     const s = analyticsScripts('G-G6JWK7XX3G', 'abc');
     expect(s).toContain("analytics_storage:c==='granted'?'granted':'denied'");
-    expect(s).toContain('gtag/js?id=G-G6JWK7XX3G" nonce="abc"');
-    expect(s.match(/nonce="abc"/g)).toHaveLength(2);
+    expect(s).toContain("gtag/js?id=G-G6JWK7XX3G';s.nonce='abc'");
+    expect(s.match(/nonce="abc"/g)).toHaveLength(1);
+  });
+  it('loads the Google tag after the page is ready, not during the first paint', () => {
+    const s = analyticsScripts('G-G6JWK7XX3G', 'abc');
+    expect(s).not.toContain('<script async src=');
+    expect(s).toContain("addEventListener('load'");
+    expect(s).toContain('setTimeout(load,4000)');
+    expect(s).toContain("'pointerdown','keydown','scroll','touchstart'");
   });
 });
